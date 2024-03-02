@@ -12,8 +12,8 @@ My journey in computer science has led me to develop a passion for cybersecurity
 
 | Skill                                         | Associated Project         |
 |-----------------------------------------------|----------------------------|
-| SIEM Implementation and Log Analysis          | <a href="https://google.com">Detection Lab</a>|
-| Network Traffic Monitoring and Attack Detection | <a href="https://google.com">Detection Lab</a>|
+| SIEM Implementation and Log Analysis          | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
+| Network Traffic Monitoring and Attack Detection | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
 | Security Automation with Shuffle SOAR         | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab|
 | Incident Response Planning and Execution      | <a href="https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9">SOC Home Lab|
 | Case Management with TheHive                  | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)">SOC Automation Lab|
@@ -50,7 +50,7 @@ My journey in computer science has led me to develop a passion for cybersecurity
 </div>
 
 ## Projects
-- Detection Lab with pfsense and security onion
+- <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>
 - SOC Automation Project with Wazuh, TheHive and Shuffle
 - Exploring Cybersecurity in the Cloud with Fortinet and Azure
 - SOC Home Lab with Lima Charlie as an EDR

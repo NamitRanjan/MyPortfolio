@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1,
+    "title": "Ransomware Attack on File Server",
+    "severity": "critical",
+    "status": "contained",
+    "created": "2026-02-13T10:33:21Z",
+    "updated": "2026-02-13T11:15:44Z",
+    "assignee": "Tier 2 SOC Analyst",
+    "affected_systems": ["FILE-SERVER-01", "BACKUP-01"],
+    "description": "LockBit 3.0 ransomware detected encrypting files",
+    "impact": "High - Critical business files encrypted",
+    "response_actions": [
+      "Host isolated from network",
+      "Backup restoration initiated",
+      "Forensic analysis in progress",
+      "Management notified"
+    ],
+    "timeline": [
+      {"time": "10:33", "event": "Initial detection by EDR"},
+      {"time": "10:35", "event": "Automated isolation executed"},
+      {"time": "10:42", "event": "Incident ticket created"},
+      {"time": "11:15", "event": "Containment confirmed"}
+    ]
+  },
+  {
+    "id": 2,
+    "title": "APT29 Intrusion Attempt",
+    "severity": "critical",
+    "status": "investigating",
+    "created": "2026-02-13T12:48:19Z",
+    "updated": "2026-02-13T14:22:35Z",
+    "assignee": "Threat Intelligence Team",
+    "affected_systems": ["APP-SERVER-02", "WEB-01"],
+    "description": "Nation-state actor attempting privilege escalation",
+    "impact": "Critical - Potential data breach",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Network traffic analysis ongoing",
+      "Threat intel correlation in progress",
+      "Incident response team engaged"
+    ],
+    "timeline": [
+      {"time": "12:48", "event": "Privilege escalation detected"},
+      {"time": "12:52", "event": "Threat actor identified as APT29"},
+      {"time": "13:15", "event": "Additional IOCs discovered"},
+      {"time": "14:22", "event": "Active investigation ongoing"}
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Credential Dumping on Domain Controller",
+    "severity": "critical",
+    "status": "mitigating",
+    "created": "2026-02-13T11:12:55Z",
+    "updated": "2026-02-13T12:05:18Z",
+    "assignee": "Senior SOC Analyst",
+    "affected_systems": ["DC-01", "DC-02"],
+    "description": "Mimikatz-like activity detected on domain controller",
+    "impact": "Critical - Domain credentials compromised",
+    "response_actions": [
+      "Domain controller isolated",
+      "Password reset initiated",
+      "Kerberos tickets invalidated",
+      "Security audit in progress"
+    ],
+    "timeline": [
+      {"time": "11:12", "event": "LSASS access detected"},
+      {"time": "11:14", "event": "Automated response triggered"},
+      {"time": "11:28", "event": "Credentials reset started"},
+      {"time": "12:05", "event": "Mitigation ongoing"}
+    ]
+  },
+  {
+    "id": 4,
+    "title": "DDoS Attack on Web Infrastructure",
+    "severity": "high",
+    "status": "mitigating",
+    "created": "2026-02-13T11:42:08Z",
+    "updated": "2026-02-13T13:30:22Z",
+    "assignee": "Network Security Team",
+    "affected_systems": ["WEB-01", "WEB-02", "LOAD-BALANCER-01"],
+    "description": "Large-scale DDoS attack targeting web services",
+    "impact": "High - Service degradation",
+    "response_actions": [
+      "DDoS mitigation service activated",
+      "Traffic filtering rules applied",
+      "Rate limiting increased",
+      "CDN protection enabled"
+    ],
+    "timeline": [
+      {"time": "11:42", "event": "Traffic spike detected"},
+      {"time": "11:45", "event": "DDoS pattern identified"},
+      {"time": "11:50", "event": "Mitigation activated"},
+      {"time": "13:30", "event": "Traffic normalizing"}
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Phishing Campaign Targeting Employees",
+    "severity": "medium",
+    "status": "resolved",
+    "created": "2026-02-13T09:15:30Z",
+    "updated": "2026-02-13T10:42:15Z",
+    "assignee": "Security Awareness Team",
+    "affected_systems": ["MAIL-01", "Multiple workstations"],
+    "description": "Coordinated phishing campaign with malicious attachments",
+    "impact": "Medium - 3 users clicked, 0 compromised",
+    "response_actions": [
+      "Emails quarantined",
+      "Affected users notified",
+      "Security awareness training scheduled",
+      "Email filters updated"
+    ],
+    "timeline": [
+      {"time": "09:15", "event": "Phishing emails detected"},
+      {"time": "09:18", "event": "Bulk quarantine executed"},
+      {"time": "09:45", "event": "User education sent"},
+      {"time": "10:42", "event": "Incident closed"}
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Malware Infection via USB Drive",
+    "severity": "high",
+    "status": "resolved",
+    "created": "2026-02-13T08:22:14Z",
+    "updated": "2026-02-13T09:55:33Z",
+    "assignee": "Endpoint Security Team",
+    "affected_systems": ["WKSTN-0892"],
+    "description": "Trojan delivered via removable media",
+    "impact": "Medium - Single workstation infected",
+    "response_actions": [
+      "Malware removed by AV",
+      "System reimaged",
+      "USB policy enforced",
+      "User educated"
+    ],
+    "timeline": [
+      {"time": "08:22", "event": "Malware detected"},
+      {"time": "08:25", "event": "Quarantine successful"},
+      {"time": "09:15", "event": "System reimage started"},
+      {"time": "09:55", "event": "System restored"}
+    ]
+  }
+]

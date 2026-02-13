@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Automation Dashboard - Real-Time Security Operations</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>SOC Automation Platform</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#alerts" class="nav-item" data-page="alerts">
+                    <i class="fas fa-exclamation-triangle"></i> Alerts
+                </a>
+                <a href="#threats" class="nav-item" data-page="threats">
+                    <i class="fas fa-bug"></i> Threats
+                </a>
+                <a href="#incidents" class="nav-item" data-page="incidents">
+                    <i class="fas fa-fire"></i> Incidents
+                </a>
+                <a href="#playbooks" class="nav-item" data-page="playbooks">
+                    <i class="fas fa-book"></i> Playbooks
+                </a>
+            </nav>
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span>SOC Analyst</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page active">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card critical">
+                    <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="critical-alerts">0</div>
+                        <div class="stat-label">Critical Alerts</div>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon"><i class="fas fa-shield-virus"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="active-threats">0</div>
+                        <div class="stat-label">Active Threats</div>
+                    </div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="automation-rate">0%</div>
+                        <div class="stat-label">Automation Rate</div>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="mttr">0</div>
+                        <div class="stat-label">Mean Time to Respond</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="dashboard-row">
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-area"></i> Security Events Timeline</h3>
+                    </div>
+                    <div class="card-content">
+                        <canvas id="timeline-chart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Alert Distribution</h3>
+                    </div>
+                    <div class="card-content">
+                        <canvas id="alert-distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed and Threat Map -->
+            <div class="dashboard-row">
+                <div class="activity-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-stream"></i> Real-Time Activity Feed</h3>
+                    </div>
+                    <div class="card-content">
+                        <div id="activity-feed" class="activity-feed"></div>
+                    </div>
+                </div>
+                <div class="map-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-globe"></i> Global Threat Map</h3>
+                    </div>
+                    <div class="card-content">
+                        <div id="threat-map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Page -->
+        <div id="alerts-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Security Alerts</h2>
+                <div class="page-actions">
+                    <select id="alert-filter-severity" class="filter-select">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <select id="alert-filter-status" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="investigating">Investigating</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+            </div>
+            <div id="alerts-list" class="alerts-list"></div>
+        </div>
+
+        <!-- Threats Page -->
+        <div id="threats-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-bug"></i> Threat Intelligence</h2>
+            </div>
+            <div id="threats-list" class="threats-list"></div>
+        </div>
+
+        <!-- Incidents Page -->
+        <div id="incidents-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-fire"></i> Security Incidents</h2>
+            </div>
+            <div id="incidents-list" class="incidents-list"></div>
+        </div>
+
+        <!-- Playbooks Page -->
+        <div id="playbooks-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-book"></i> Automated Response Playbooks</h2>
+            </div>
+            <div id="playbooks-list" class="playbooks-grid"></div>
+        </div>
+    </main>
+
+    <!-- Alert Detail Modal -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Alert Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="investigate-btn">
+                    <i class="fas fa-search"></i> Investigate
+                </button>
+                <button class="btn btn-success" id="respond-btn">
+                    <i class="fas fa-play"></i> Execute Response
+                </button>
+                <button class="btn btn-secondary modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

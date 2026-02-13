@@ -1,5 +1,68 @@
 // SOC Automation Dashboard - Main Application
-const API_BASE = 'http://localhost:5000/api';
+
+// Detect deployment environment
+const isGitHubPages = window.location.hostname.includes('github.io') || 
+                       (window.location.protocol === 'file:') ||
+                       (!window.location.hostname.includes('localhost') && !window.location.port);
+
+const API_BASE = isGitHubPages ? null : 'http://localhost:5000/api';
+
+// API wrapper that uses mock data when backend unavailable
+const API = {
+    async fetch(endpoint, options = {}) {
+        if (API_BASE && !isGitHubPages) {
+            try {
+                const response = await API.fetch(`${endpoint}`, options);
+                if (response.ok) {
+                    return response.json();
+                }
+            } catch (error) {
+                console.log('Backend unavailable, falling back to mock data');
+            }
+        }
+        
+        // Use mock data
+        return this.mockResponse(endpoint, options);
+    },
+    
+    mockResponse(endpoint, options) {
+        // Parse endpoint and return appropriate mock data
+        if (endpoint === '/dashboard/stats') return MOCK_DATA.getDashboardStats();
+        if (endpoint.startsWith('/alerts')) {
+            if (endpoint.includes('/investigate')) {
+                const alertId = parseInt(endpoint.match(/\/alerts\/(\d+)/)[1]);
+                return MOCK_DATA.investigateAlert(alertId);
+            }
+            if (endpoint.includes('/respond')) {
+                const alertId = parseInt(endpoint.match(/\/alerts\/(\d+)/)[1]);
+                const action = options.body ? JSON.parse(options.body).action : 'isolate';
+                return MOCK_DATA.respondToAlert(alertId, action);
+            }
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getAlerts(Object.fromEntries(params));
+        }
+        if (endpoint === '/threats') return MOCK_DATA.getThreats();
+        if (endpoint.startsWith('/incidents')) {
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getIncidents(Object.fromEntries(params));
+        }
+        if (endpoint.startsWith('/iocs')) {
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getIOCs(Object.fromEntries(params));
+        }
+        if (endpoint === '/playbooks') return MOCK_DATA.getPlaybooks();
+        if (endpoint.startsWith('/team')) {
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getTeam(Object.fromEntries(params));
+        }
+        if (endpoint === '/timeline') return MOCK_DATA.getTimeline();
+        if (endpoint === '/threat-map') return MOCK_DATA.getThreatMap();
+        if (endpoint === '/threat-intel/feeds') return MOCK_DATA.getThreatFeeds();
+        if (endpoint === '/threat-intel/recent') return MOCK_DATA.getRecentThreats();
+        
+        return {};
+    }
+};
 
 // State Management
 const state = {
@@ -75,9 +138,9 @@ async function loadDashboard() {
     showLoading();
     try {
         const [stats, alerts, timeline] = await Promise.all([
-            fetch(`${API_BASE}/dashboard/stats`).then(r => r.json()),
-            fetch(`${API_BASE}/alerts`).then(r => r.json()),
-            fetch(`${API_BASE}/timeline`).then(r => r.json())
+            API.fetch(`/dashboard/stats`).then(r => r.json()),
+            API.fetch(`/alerts`).then(r => r.json()),
+            API.fetch(`/timeline`).then(r => r.json())
         ]);
         
         updateStats(stats);
@@ -219,7 +282,7 @@ function renderAlertDistributionChart(alerts) {
 
 async function renderThreatMap() {
     try {
-        const locations = await fetch(`${API_BASE}/threat-map`).then(r => r.json());
+        const locations = await API.fetch(`/threat-map`).then(r => r.json());
         const mapDiv = document.getElementById('threat-map');
         mapDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #a0aec0;"><i class="fas fa-globe" style="font-size: 3rem; margin-bottom: 1rem;"></i><br>Global Threat Distribution<br><br>';
         
@@ -247,7 +310,7 @@ async function loadAlerts(filters = {}) {
     showLoading();
     try {
         const params = new URLSearchParams(filters);
-        const alerts = await fetch(`${API_BASE}/alerts?${params}`).then(r => r.json());
+        const alerts = await API.fetch(`/alerts?${params}`).then(r => r.json());
         state.alerts = alerts;
         renderAlerts(alerts);
     } catch (error) {
@@ -323,7 +386,7 @@ function renderAlerts(alerts) {
 async function loadThreats() {
     showLoading();
     try {
-        const threats = await fetch(`${API_BASE}/threats`).then(r => r.json());
+        const threats = await API.fetch(`/threats`).then(r => r.json());
         state.threats = threats;
         renderThreats(threats);
     } catch (error) {
@@ -389,7 +452,7 @@ function renderThreats(threats) {
 async function loadIncidents() {
     showLoading();
     try {
-        const incidents = await fetch(`${API_BASE}/incidents`).then(r => r.json());
+        const incidents = await API.fetch(`/incidents`).then(r => r.json());
         state.incidents = incidents;
         renderIncidents(incidents);
     } catch (error) {
@@ -454,7 +517,7 @@ function renderIncidents(incidents) {
 async function loadPlaybooks() {
     showLoading();
     try {
-        const playbooks = await fetch(`${API_BASE}/playbooks`).then(r => r.json());
+        const playbooks = await API.fetch(`/playbooks`).then(r => r.json());
         state.playbooks = playbooks;
         renderPlaybooks(playbooks);
     } catch (error) {
@@ -570,7 +633,7 @@ async function investigateAlert() {
     
     showLoading();
     try {
-        const result = await fetch(`${API_BASE}/alerts/${state.currentAlert.id}/investigate`, {
+        const result = await API.fetch(`/alerts/${state.currentAlert.id}/investigate`, {
             method: 'POST'
         }).then(r => r.json());
         
@@ -611,7 +674,7 @@ async function respondToAlert() {
     
     showLoading();
     try {
-        const result = await fetch(`${API_BASE}/alerts/${state.currentAlert.id}/respond`, {
+        const result = await API.fetch(`/alerts/${state.currentAlert.id}/respond`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: action.toLowerCase() })
@@ -661,7 +724,7 @@ function startRealTimeUpdates() {
     // Simulate real-time updates every 30 seconds
     setInterval(() => {
         if (document.querySelector('[data-page="dashboard"]').classList.contains('active')) {
-            fetch(`${API_BASE}/dashboard/stats`)
+            API.fetch(`/dashboard/stats`)
                 .then(r => r.json())
                 .then(stats => updateStats(stats))
                 .catch(console.error);
@@ -723,7 +786,7 @@ async function loadTeam(filters = {}) {
     showLoading();
     try {
         const params = new URLSearchParams(filters);
-        const team = await fetch(`${API_BASE}/team?${params}`).then(r => r.json());
+        const team = await API.fetch(`/team?${params}`).then(r => r.json());
         renderTeam(team);
     } catch (error) {
         showToast('Failed to load team data', 'error');
@@ -793,8 +856,8 @@ async function loadThreatIntel() {
     showLoading();
     try {
         const [feeds, recentThreats] = await Promise.all([
-            fetch(`${API_BASE}/threat-intel/feeds`).then(r => r.json()),
-            fetch(`${API_BASE}/threat-intel/recent`).then(r => r.json())
+            API.fetch(`/threat-intel/feeds`).then(r => r.json()),
+            API.fetch(`/threat-intel/recent`).then(r => r.json())
         ]);
         renderThreatFeeds(feeds);
         renderRecentThreats(recentThreats);

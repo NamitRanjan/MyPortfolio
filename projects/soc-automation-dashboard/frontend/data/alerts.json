@@ -1,0 +1,1008 @@
+[
+  {
+    "id": 22,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-13T13:55:48.447894Z",
+    "host": "WKSTN-0892",
+    "user": "brian.taylor",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 71
+  },
+  {
+    "id": 49,
+    "title": "Multiple Failed Login Attempts",
+    "severity": "medium",
+    "status": "contained",
+    "source": "SIEM",
+    "timestamp": "2026-02-13T06:55:48.447894Z",
+    "host": "WKSTN-1247",
+    "user": "jane.smith",
+    "description": "Multiple failed authentication attempts from suspicious IP",
+    "indicators": [
+      "brute_force",
+      "failed_auth",
+      "external_ip"
+    ],
+    "mitre_tactics": [
+      "T1110"
+    ],
+    "risk_score": 57
+  },
+  {
+    "id": 28,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-13T04:55:48.447894Z",
+    "host": "WEB-SERVER-01",
+    "user": "admin",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 69
+  },
+  {
+    "id": 19,
+    "title": "Privilege Escalation Attempt",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-12T23:55:48.447894Z",
+    "host": "WKSTN-5612",
+    "user": "jane.smith",
+    "description": "Unauthorized attempt to escalate privileges detected",
+    "indicators": [
+      "privilege_escalation",
+      "unauthorized_access",
+      "system_tampering"
+    ],
+    "mitre_tactics": [
+      "T1068"
+    ],
+    "risk_score": 76
+  },
+  {
+    "id": 39,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "contained",
+    "source": "EDR",
+    "timestamp": "2026-02-12T21:55:48.447894Z",
+    "host": "WKSTN-5612",
+    "user": "emily.davis",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 86
+  },
+  {
+    "id": 50,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "Firewall",
+    "timestamp": "2026-02-12T20:55:48.447894Z",
+    "host": "WEB-SERVER-01",
+    "user": "amanda.lee",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 77
+  },
+  {
+    "id": 3,
+    "title": "Privilege Escalation Attempt",
+    "severity": "critical",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-12T16:55:48.447894Z",
+    "host": "DC-01",
+    "user": "emily.davis",
+    "description": "Unauthorized attempt to escalate privileges detected",
+    "indicators": [
+      "privilege_escalation",
+      "unauthorized_access",
+      "system_tampering"
+    ],
+    "mitre_tactics": [
+      "T1068"
+    ],
+    "risk_score": 77
+  },
+  {
+    "id": 8,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "active",
+    "source": "Firewall",
+    "timestamp": "2026-02-12T12:55:48.447894Z",
+    "host": "LOAD-BALANCER-01",
+    "user": "jane.smith",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 83
+  },
+  {
+    "id": 26,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-12T08:55:48.447894Z",
+    "host": "WKSTN-7834",
+    "user": "chris.brown",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 86
+  },
+  {
+    "id": 44,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-12T08:55:48.447894Z",
+    "host": "WKSTN-1247",
+    "user": "brian.taylor",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 63
+  },
+  {
+    "id": 46,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "contained",
+    "source": "EDR",
+    "timestamp": "2026-02-12T04:55:48.447894Z",
+    "host": "LOAD-BALANCER-01",
+    "user": "sarah.williams",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 93
+  },
+  {
+    "id": 41,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-11T23:55:48.447894Z",
+    "host": "DB-SERVER-01",
+    "user": "mike.johnson",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 95
+  },
+  {
+    "id": 15,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-11T22:55:48.447894Z",
+    "host": "LOAD-BALANCER-01",
+    "user": "david.martinez",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 94
+  },
+  {
+    "id": 16,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "resolved",
+    "source": "Firewall",
+    "timestamp": "2026-02-11T21:55:48.447894Z",
+    "host": "APP-SERVER-01",
+    "user": "kevin.rodriguez",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 63
+  },
+  {
+    "id": 18,
+    "title": "Multiple Failed Login Attempts",
+    "severity": "medium",
+    "status": "contained",
+    "source": "SIEM",
+    "timestamp": "2026-02-11T19:55:48.447894Z",
+    "host": "WEB-SERVER-02",
+    "user": "robert.wilson",
+    "description": "Multiple failed authentication attempts from suspicious IP",
+    "indicators": [
+      "brute_force",
+      "failed_auth",
+      "external_ip"
+    ],
+    "mitre_tactics": [
+      "T1110"
+    ],
+    "risk_score": 35
+  },
+  {
+    "id": 21,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-11T17:55:48.447894Z",
+    "host": "APP-SERVER-02",
+    "user": "dbadmin",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 89
+  },
+  {
+    "id": 25,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-11T17:55:48.447894Z",
+    "host": "WKSTN-7834",
+    "user": "system",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 81
+  },
+  {
+    "id": 4,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-11T14:55:48.447894Z",
+    "host": "MAIL-01",
+    "user": "dbadmin",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 98
+  },
+  {
+    "id": 43,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "resolved",
+    "source": "Antivirus",
+    "timestamp": "2026-02-11T12:55:48.447894Z",
+    "host": "APP-SERVER-01",
+    "user": "brian.taylor",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 63
+  },
+  {
+    "id": 40,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-11T11:55:48.447894Z",
+    "host": "DB-SERVER-01",
+    "user": "kevin.rodriguez",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 98
+  },
+  {
+    "id": 13,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-11T05:55:48.447894Z",
+    "host": "DB-SERVER-03",
+    "user": "john.doe",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 62
+  },
+  {
+    "id": 12,
+    "title": "Lateral Movement Detected",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-10T23:55:48.447894Z",
+    "host": "DB-SERVER-01",
+    "user": "brian.taylor",
+    "description": "Unauthorized network share access detected",
+    "indicators": [
+      "lateral_movement",
+      "smb_enumeration",
+      "remote_access"
+    ],
+    "mitre_tactics": [
+      "T1021.002"
+    ],
+    "risk_score": 94
+  },
+  {
+    "id": 24,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "contained",
+    "source": "Firewall",
+    "timestamp": "2026-02-10T17:55:48.447894Z",
+    "host": "APP-SERVER-02",
+    "user": "chris.brown",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 95
+  },
+  {
+    "id": 29,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-10T16:55:48.447894Z",
+    "host": "WEB-SERVER-02",
+    "user": "david.martinez",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 89
+  },
+  {
+    "id": 6,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-10T11:55:48.447894Z",
+    "host": "DC-01",
+    "user": "jennifer.garcia",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 92
+  },
+  {
+    "id": 36,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-10T08:55:48.447894Z",
+    "host": "FILE-SERVER-01",
+    "user": "mike.johnson",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 88
+  },
+  {
+    "id": 23,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "EDR",
+    "timestamp": "2026-02-10T03:55:48.447894Z",
+    "host": "WKSTN-1247",
+    "user": "robert.wilson",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 80
+  },
+  {
+    "id": 30,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-10T02:55:48.447894Z",
+    "host": "DB-SERVER-03",
+    "user": "lisa.anderson",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 68
+  },
+  {
+    "id": 32,
+    "title": "Privilege Escalation Attempt",
+    "severity": "critical",
+    "status": "contained",
+    "source": "EDR",
+    "timestamp": "2026-02-09T23:55:48.447894Z",
+    "host": "DB-SERVER-03",
+    "user": "robert.wilson",
+    "description": "Unauthorized attempt to escalate privileges detected",
+    "indicators": [
+      "privilege_escalation",
+      "unauthorized_access",
+      "system_tampering"
+    ],
+    "mitre_tactics": [
+      "T1068"
+    ],
+    "risk_score": 74
+  },
+  {
+    "id": 37,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "contained",
+    "source": "Antivirus",
+    "timestamp": "2026-02-09T06:55:48.447894Z",
+    "host": "WKSTN-5612",
+    "user": "dbadmin",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 84
+  },
+  {
+    "id": 42,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-09T04:55:48.447894Z",
+    "host": "WKSTN-0892",
+    "user": "lisa.anderson",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 66
+  },
+  {
+    "id": 47,
+    "title": "Lateral Movement Detected",
+    "severity": "high",
+    "status": "contained",
+    "source": "EDR",
+    "timestamp": "2026-02-09T04:55:48.447894Z",
+    "host": "MAIL-01",
+    "user": "john.doe",
+    "description": "Unauthorized network share access detected",
+    "indicators": [
+      "lateral_movement",
+      "smb_enumeration",
+      "remote_access"
+    ],
+    "mitre_tactics": [
+      "T1021.002"
+    ],
+    "risk_score": 71
+  },
+  {
+    "id": 20,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "Antivirus",
+    "timestamp": "2026-02-08T23:55:48.447894Z",
+    "host": "WEB-SERVER-02",
+    "user": "jennifer.garcia",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 91
+  },
+  {
+    "id": 48,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "investigating",
+    "source": "Antivirus",
+    "timestamp": "2026-02-08T18:55:48.447894Z",
+    "host": "DB-SERVER-01",
+    "user": "kevin.rodriguez",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 61
+  },
+  {
+    "id": 45,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-08T07:55:48.447894Z",
+    "host": "PROXY-01",
+    "user": "dbadmin",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 83
+  },
+  {
+    "id": 7,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "Firewall",
+    "timestamp": "2026-02-08T04:55:48.447894Z",
+    "host": "DC-01",
+    "user": "mike.johnson",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 73
+  },
+  {
+    "id": 34,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "investigating",
+    "source": "Antivirus",
+    "timestamp": "2026-02-08T03:55:48.447894Z",
+    "host": "DC-01",
+    "user": "backup_service",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 77
+  },
+  {
+    "id": 2,
+    "title": "Suspicious Registry Modification",
+    "severity": "high",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-08T01:55:48.447894Z",
+    "host": "DB-SERVER-01",
+    "user": "robert.wilson",
+    "description": "Registry persistence mechanism detected",
+    "indicators": [
+      "registry_modification",
+      "persistence",
+      "auto_start"
+    ],
+    "mitre_tactics": [
+      "T1547.001"
+    ],
+    "risk_score": 73
+  },
+  {
+    "id": 35,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-07T23:55:48.447894Z",
+    "host": "WKSTN-2341",
+    "user": "mike.johnson",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 72
+  },
+  {
+    "id": 11,
+    "title": "Privilege Escalation Attempt",
+    "severity": "critical",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-07T21:55:48.447894Z",
+    "host": "WKSTN-7834",
+    "user": "amanda.lee",
+    "description": "Unauthorized attempt to escalate privileges detected",
+    "indicators": [
+      "privilege_escalation",
+      "unauthorized_access",
+      "system_tampering"
+    ],
+    "mitre_tactics": [
+      "T1068"
+    ],
+    "risk_score": 62
+  },
+  {
+    "id": 17,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-07T21:55:48.447894Z",
+    "host": "WKSTN-1247",
+    "user": "chris.brown",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 78
+  },
+  {
+    "id": 5,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-07T18:55:48.447894Z",
+    "host": "WEB-SERVER-01",
+    "user": "john.doe",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 92
+  },
+  {
+    "id": 10,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-07T17:55:48.447894Z",
+    "host": "APP-SERVER-01",
+    "user": "david.martinez",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 83
+  },
+  {
+    "id": 14,
+    "title": "Credential Dumping Detected",
+    "severity": "critical",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-07T12:55:48.447894Z",
+    "host": "DB-SERVER-02",
+    "user": "david.martinez",
+    "description": "Mimikatz-like behavior detected",
+    "indicators": [
+      "credential_access",
+      "lsass_access",
+      "memory_dump"
+    ],
+    "mitre_tactics": [
+      "T1003.001"
+    ],
+    "risk_score": 67
+  },
+  {
+    "id": 33,
+    "title": "Malware Signature Detected",
+    "severity": "critical",
+    "status": "monitoring",
+    "source": "Antivirus",
+    "timestamp": "2026-02-07T06:55:48.447894Z",
+    "host": "PROXY-01",
+    "user": "john.doe",
+    "description": "Known malware signature detected in downloaded file",
+    "indicators": [
+      "malware_detected",
+      "trojan",
+      "suspicious_download"
+    ],
+    "mitre_tactics": [
+      "T1204.002"
+    ],
+    "risk_score": 65
+  },
+  {
+    "id": 1,
+    "title": "Suspicious Process Injection",
+    "severity": "critical",
+    "status": "contained",
+    "source": "EDR",
+    "timestamp": "2026-02-07T05:55:48.447894Z",
+    "host": "APP-SERVER-02",
+    "user": "chris.brown",
+    "description": "Code injection into legitimate process detected",
+    "indicators": [
+      "process_injection",
+      "code_injection",
+      "evasion"
+    ],
+    "mitre_tactics": [
+      "T1055"
+    ],
+    "risk_score": 70
+  },
+  {
+    "id": 31,
+    "title": "Privilege Escalation Attempt",
+    "severity": "critical",
+    "status": "resolved",
+    "source": "EDR",
+    "timestamp": "2026-02-07T05:55:48.447894Z",
+    "host": "APP-SERVER-02",
+    "user": "dbadmin",
+    "description": "Unauthorized attempt to escalate privileges detected",
+    "indicators": [
+      "privilege_escalation",
+      "unauthorized_access",
+      "system_tampering"
+    ],
+    "mitre_tactics": [
+      "T1068"
+    ],
+    "risk_score": 67
+  },
+  {
+    "id": 38,
+    "title": "Unusual Outbound Network Traffic",
+    "severity": "high",
+    "status": "monitoring",
+    "source": "Firewall",
+    "timestamp": "2026-02-07T03:55:48.447894Z",
+    "host": "WKSTN-2341",
+    "user": "david.martinez",
+    "description": "Large data transfer to unknown external IP",
+    "indicators": [
+      "data_exfiltration",
+      "unusual_traffic",
+      "external_connection"
+    ],
+    "mitre_tactics": [
+      "T1041"
+    ],
+    "risk_score": 75
+  },
+  {
+    "id": 9,
+    "title": "Lateral Movement Detected",
+    "severity": "high",
+    "status": "investigating",
+    "source": "EDR",
+    "timestamp": "2026-02-07T00:55:48.447894Z",
+    "host": "WKSTN-0892",
+    "user": "amanda.lee",
+    "description": "Unauthorized network share access detected",
+    "indicators": [
+      "lateral_movement",
+      "smb_enumeration",
+      "remote_access"
+    ],
+    "mitre_tactics": [
+      "T1021.002"
+    ],
+    "risk_score": 84
+  },
+  {
+    "id": 27,
+    "title": "Suspicious PowerShell Execution Detected",
+    "severity": "high",
+    "status": "active",
+    "source": "EDR",
+    "timestamp": "2026-02-06T21:55:48.447894Z",
+    "host": "WEB-SERVER-02",
+    "user": "backup_service",
+    "description": "Encoded PowerShell command detected with base64 obfuscation",
+    "indicators": [
+      "powershell.exe",
+      "base64",
+      "network_connection"
+    ],
+    "mitre_tactics": [
+      "T1059.001",
+      "T1027"
+    ],
+    "risk_score": 68
+  }
+]

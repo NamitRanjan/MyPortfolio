@@ -7,7 +7,47 @@ A production-ready, full-stack SOC automation dashboard that demonstrates modern
 ![Dashboard Preview](https://img.shields.io/badge/Status-Production%20Ready-green)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0-lightgrey)
+![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-success)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+
+**🌐 Live Demo**: [View Dashboard on GitHub Pages](https://namitranjan.github.io/MyPortfolio/)
+
+---
+
+## ✨ Latest Enhancements (v2.0)
+
+### 300%+ More Security Data
+- **50 Alerts** (up from 12) - Comprehensive security scenarios
+- **35 Threats** (up from 10) - Diverse threat types including APT, ransomware, phishing
+- **25 Incidents** (up from 6) - Multi-severity incident cases
+- **150 IOCs** (up from 15) - Extensive threat intelligence database
+- **260+ Total Records** - Full-fledged enterprise SOC data
+
+### New Features
+
+#### 🧑‍💼 SOC Team Management
+- **12 Team Members** with complete profiles
+- Role-based organization (Manager, T1/T2/T3 Analysts, Threat Hunters)
+- Real-time status tracking (Online, Away, Offline)
+- Individual performance metrics and certifications
+- Shift scheduling and coverage tracking
+
+#### 🛡️ Threat Intelligence Feeds
+- **5 Active Threat Feeds**:
+  - AlienVault OTX (1,247 pulses, 15,832 indicators)
+  - AbuseIPDB (892 malicious IPs)
+  - VirusTotal (real-time scanning)
+  - Emerging Threats (8,942 rules)
+  - MISP (523 events)
+- Recent threat intelligence updates
+- Feed health monitoring
+- Automated IOC enrichment
+
+#### 🌐 GitHub Pages Deployment
+- **Static Site Deployment** - No backend required
+- **Mock API Layer** - Full functionality with static data
+- **CI/CD Pipeline** - Automated deployment via GitHub Actions
+- **Fast & Responsive** - Optimized for performance
 
 ---
 

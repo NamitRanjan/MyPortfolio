@@ -112,13 +112,3 @@ Created endpoint-focused detection and response workflows using Microsoft Defend
 ## Contact
 
 - LinkedIn: [namit-ranjan-cybersecurity](https://linkedin.com/in/namit-ranjan-cybersecurity)
-
----
-
-## Customization Requests (Input Needed)
-
-To tailor this portfolio further for your target roles, please share:
-1. Preferred job titles (SOC Analyst, Detection Engineer, Incident Responder, etc.).
-2. Any quantified outcomes you want included (e.g., detection improvement %, MTTR reductions).
-3. Links to GitHub repos/blogs you want prominently featured.
-4. Region-specific resume style preferences (US, EU, India format emphasis).

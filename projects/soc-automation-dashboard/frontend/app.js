@@ -61,6 +61,12 @@ function switchPage(page) {
         case 'playbooks':
             loadPlaybooks();
             break;
+        case 'team':
+            loadTeam();
+            break;
+        case 'threat-intel':
+            loadThreatIntel();
+            break;
     }
 }
 
@@ -711,3 +717,169 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 5000);
 }
+
+// Team
+async function loadTeam(filters = {}) {
+    showLoading();
+    try {
+        const params = new URLSearchParams(filters);
+        const team = await fetch(`${API_BASE}/team?${params}`).then(r => r.json());
+        renderTeam(team);
+    } catch (error) {
+        showToast('Failed to load team data', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderTeam(team) {
+    const container = document.getElementById('team-list');
+    container.innerHTML = '';
+    
+    if (team.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 3rem; color: #a0aec0;"><i class="fas fa-users" style="font-size: 3rem; margin-bottom: 1rem; color: #0066cc;"></i><br>No team members found</div>';
+        return;
+    }
+    
+    team.forEach(member => {
+        const card = document.createElement('div');
+        card.className = 'team-member-card';
+        card.innerHTML = `
+            <div class="team-member-header">
+                <div>
+                    <div class="team-member-name">${member.name}</div>
+                    <div class="team-member-role">${member.role}</div>
+                </div>
+                <div>
+                    <span class="status-indicator ${member.status}"></span>
+                </div>
+            </div>
+            <div style="margin: 1rem 0;">
+                <div style="color: #a0aec0; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-envelope"></i> ${member.email}
+                </div>
+                <div style="color: #a0aec0; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-clock"></i> ${member.shift}
+                </div>
+                <div style="color: #a0aec0; font-size: 0.9rem;">
+                    <i class="fas fa-briefcase"></i> ${member.experience_years} years experience
+                </div>
+            </div>
+            <div class="team-member-stats">
+                <div class="team-stat">
+                    <div class="team-stat-value">${member.cases_handled}</div>
+                    <div class="team-stat-label">Cases</div>
+                </div>
+                <div class="team-stat">
+                    <div class="team-stat-value">${member.avg_response_time}</div>
+                    <div class="team-stat-label">Avg Response</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2d3748;">
+                <div style="color: #00a3e0; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem;">Specialization</div>
+                <div style="color: #a0aec0; font-size: 0.85rem;">${member.specialization}</div>
+            </div>
+            <div class="team-member-certs">
+                ${member.certifications.map(cert => `<span class="cert-badge">${cert}</span>`).join('')}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Threat Intelligence
+async function loadThreatIntel() {
+    showLoading();
+    try {
+        const [feeds, recentThreats] = await Promise.all([
+            fetch(`${API_BASE}/threat-intel/feeds`).then(r => r.json()),
+            fetch(`${API_BASE}/threat-intel/recent`).then(r => r.json())
+        ]);
+        renderThreatFeeds(feeds);
+        renderRecentThreats(recentThreats);
+    } catch (error) {
+        showToast('Failed to load threat intelligence', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderThreatFeeds(feeds) {
+    const container = document.getElementById('threat-feeds-list');
+    container.innerHTML = '';
+    
+    feeds.forEach(feed => {
+        const card = document.createElement('div');
+        card.className = 'feed-card';
+        card.innerHTML = `
+            <div class="feed-header">
+                <div class="feed-name">${feed.name}</div>
+                <div class="feed-status">
+                    <i class="fas fa-circle"></i>
+                    <span>${feed.status}</span>
+                </div>
+            </div>
+            <div class="feed-stats">
+                ${feed.pulses_count ? `<div class="feed-stat-item"><span>Pulses</span><span class="feed-stat-value">${feed.pulses_count.toLocaleString()}</span></div>` : ''}
+                ${feed.indicators_count ? `<div class="feed-stat-item"><span>Indicators</span><span class="feed-stat-value">${feed.indicators_count.toLocaleString()}</span></div>` : ''}
+                ${feed.malicious_ips ? `<div class="feed-stat-item"><span>Malicious IPs</span><span class="feed-stat-value">${feed.malicious_ips.toLocaleString()}</span></div>` : ''}
+                ${feed.reports_count ? `<div class="feed-stat-item"><span>Reports</span><span class="feed-stat-value">${feed.reports_count.toLocaleString()}</span></div>` : ''}
+                ${feed.scans_today ? `<div class="feed-stat-item"><span>Scans Today</span><span class="feed-stat-value">${feed.scans_today}</span></div>` : ''}
+                ${feed.detections ? `<div class="feed-stat-item"><span>Detections</span><span class="feed-stat-value">${feed.detections}</span></div>` : ''}
+                ${feed.rules_count ? `<div class="feed-stat-item"><span>Rules</span><span class="feed-stat-value">${feed.rules_count.toLocaleString()}</span></div>` : ''}
+                ${feed.events ? `<div class="feed-stat-item"><span>Events</span><span class="feed-stat-value">${feed.events}</span></div>` : ''}
+                ${feed.attributes ? `<div class="feed-stat-item"><span>Attributes</span><span class="feed-stat-value">${feed.attributes.toLocaleString()}</span></div>` : ''}
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2d3748; color: #a0aec0; font-size: 0.85rem;">
+                <i class="fas fa-clock"></i> Updated: ${formatTime(feed.last_update)}
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function renderRecentThreats(threats) {
+    const container = document.getElementById('recent-threats-list');
+    container.innerHTML = '';
+    
+    threats.forEach(threat => {
+        const item = document.createElement('div');
+        item.className = 'recent-threat-item';
+        item.innerHTML = `
+            <div class="recent-threat-header">
+                <div>
+                    <div class="recent-threat-title">${threat.title}</div>
+                    <div class="recent-threat-meta">
+                        <div><i class="fas fa-shield-virus"></i> ${threat.source}</div>
+                        <div><i class="fas fa-clock"></i> ${formatTime(threat.published)}</div>
+                        <div><i class="fas fa-fingerprint"></i> ${threat.indicators} indicators</div>
+                    </div>
+                </div>
+                <span class="badge ${threat.severity}">${threat.severity}</span>
+            </div>
+            <div style="color: #a0aec0; margin-top: 0.75rem;">${threat.description}</div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Team filter initialization
+function initTeamFilters() {
+    const statusFilter = document.getElementById('team-filter-status');
+    if (statusFilter) {
+        statusFilter.addEventListener('change', (e) => {
+            const filters = {};
+            if (e.target.value) {
+                filters.status = e.target.value;
+            }
+            loadTeam(filters);
+        });
+    }
+}
+
+// Initialize filters on load
+document.addEventListener('DOMContentLoaded', () => {
+    initTeamFilters();
+});

@@ -31,6 +31,12 @@
                 <a href="#playbooks" class="nav-item" data-page="playbooks">
                     <i class="fas fa-book"></i> Playbooks
                 </a>
+                <a href="#team" class="nav-item" data-page="team">
+                    <i class="fas fa-users"></i> Team
+                </a>
+                <a href="#threat-intel" class="nav-item" data-page="threat-intel">
+                    <i class="fas fa-shield-alt"></i> Threat Intel
+                </a>
             </nav>
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
@@ -161,6 +167,39 @@
                 <h2><i class="fas fa-book"></i> Automated Response Playbooks</h2>
             </div>
             <div id="playbooks-list" class="playbooks-grid"></div>
+        </div>
+
+        <!-- Team Page -->
+        <div id="team-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-users"></i> SOC Team</h2>
+                <div class="page-actions">
+                    <select id="team-filter-status" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="online">Online</option>
+                        <option value="away">Away</option>
+                        <option value="offline">Offline</option>
+                    </select>
+                </div>
+            </div>
+            <div id="team-list" class="team-grid"></div>
+        </div>
+
+        <!-- Threat Intel Page -->
+        <div id="threat-intel-page" class="page">
+            <div class="page-header">
+                <h2><i class="fas fa-shield-alt"></i> Threat Intelligence Feeds</h2>
+            </div>
+            
+            <div class="threat-intel-section">
+                <h3><i class="fas fa-rss"></i> Active Feeds</h3>
+                <div id="threat-feeds-list" class="feeds-grid"></div>
+            </div>
+
+            <div class="threat-intel-section" style="margin-top: 2rem;">
+                <h3><i class="fas fa-newspaper"></i> Recent Threat Intelligence</h3>
+                <div id="recent-threats-list" class="threats-list"></div>
+            </div>
         </div>
     </main>
 

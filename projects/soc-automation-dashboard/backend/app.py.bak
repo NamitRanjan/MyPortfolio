@@ -13,7 +13,7 @@ import os
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
-# Load security data
+# Load dummy security data
 def load_data():
     data_dir = os.path.join(os.path.dirname(__file__), '../data')
     with open(os.path.join(data_dir, 'alerts.json'), 'r') as f:
@@ -24,11 +24,9 @@ def load_data():
         incidents = json.load(f)
     with open(os.path.join(data_dir, 'iocs.json'), 'r') as f:
         iocs = json.load(f)
-    with open(os.path.join(data_dir, 'team.json'), 'r') as f:
-        team = json.load(f)
-    return alerts, threats, incidents, iocs, team
+    return alerts, threats, incidents, iocs
 
-alerts_data, threats_data, incidents_data, iocs_data, team_data = load_data()
+alerts_data, threats_data, incidents_data, iocs_data = load_data()
 
 @app.route('/')
 def index():
@@ -269,173 +267,6 @@ def get_performance_metrics():
     }
     
     return jsonify(metrics)
-
-@app.route('/api/team')
-def get_team():
-    """Get SOC team members"""
-    status_filter = request.args.get('status', None)
-    role_filter = request.args.get('role', None)
-    
-    filtered_team = team_data
-    if status_filter:
-        filtered_team = [t for t in filtered_team if t['status'] == status_filter]
-    if role_filter:
-        filtered_team = [t for t in filtered_team if role_filter.lower() in t['role'].lower()]
-    
-    return jsonify(filtered_team)
-
-@app.route('/api/team/<int:member_id>')
-def get_team_member(member_id):
-    """Get specific team member details"""
-    member = next((t for t in team_data if t['id'] == member_id), None)
-    if not member:
-        return jsonify({'error': 'Team member not found'}), 404
-    return jsonify(member)
-
-@app.route('/api/threat-intel/feeds')
-def get_threat_feeds():
-    """Get aggregated threat intelligence feeds"""
-    # In production, this would integrate with real APIs (AbuseIPDB, AlienVault OTX, etc.)
-    # For now, return simulated feed data
-    feeds = [
-        {
-            'name': 'AlienVault OTX',
-            'status': 'active',
-            'last_update': datetime.now().isoformat(),
-            'pulses_count': 1247,
-            'indicators_count': 15832
-        },
-        {
-            'name': 'AbuseIPDB',
-            'status': 'active',
-            'last_update': datetime.now().isoformat(),
-            'malicious_ips': 892,
-            'reports_count': 5643
-        },
-        {
-            'name': 'VirusTotal',
-            'status': 'active',
-            'last_update': datetime.now().isoformat(),
-            'scans_today': 234,
-            'detections': 67
-        },
-        {
-            'name': 'Emerging Threats',
-            'status': 'active',
-            'last_update': datetime.now().isoformat(),
-            'rules_count': 8942,
-            'categories': 45
-        },
-        {
-            'name': 'MISP',
-            'status': 'active',
-            'last_update': datetime.now().isoformat(),
-            'events': 523,
-            'attributes': 7891
-        }
-    ]
-    return jsonify(feeds)
-
-@app.route('/api/threat-intel/check-ip/<ip>')
-def check_ip_reputation(ip):
-    """Check IP reputation (simulated)"""
-    # In production, integrate with AbuseIPDB API
-    reputation_score = random.randint(0, 100)
-    is_malicious = reputation_score > 75
-    
-    result = {
-        'ip': ip,
-        'reputation_score': reputation_score,
-        'is_malicious': is_malicious,
-        'country': random.choice(['US', 'RU', 'CN', 'BR', 'DE']),
-        'reports': random.randint(0, 500),
-        'last_reported': (datetime.now() - timedelta(days=random.randint(0, 30))).isoformat(),
-        'categories': random.sample(['bruteforce', 'spam', 'malware', 'scanning'], k=random.randint(1, 3)) if is_malicious else []
-    }
-    return jsonify(result)
-
-@app.route('/api/threat-intel/recent')
-def get_recent_threats():
-    """Get recent threat intelligence"""
-    recent_threats = [
-        {
-            'id': 1,
-            'title': 'New Ransomware Campaign Targeting Healthcare',
-            'severity': 'critical',
-            'published': (datetime.now() - timedelta(hours=2)).isoformat(),
-            'source': 'AlienVault OTX',
-            'indicators': 23,
-            'description': 'New variant of LockBit targeting healthcare institutions'
-        },
-        {
-            'id': 2,
-            'title': 'APT Group Using Zero-Day in Exchange Servers',
-            'severity': 'critical',
-            'published': (datetime.now() - timedelta(hours=5)).isoformat(),
-            'source': 'CISA',
-            'indicators': 15,
-            'description': 'State-sponsored actors exploiting previously unknown vulnerability'
-        },
-        {
-            'id': 3,
-            'title': 'Phishing Campaign Impersonating Microsoft',
-            'severity': 'high',
-            'published': (datetime.now() - timedelta(hours=8)).isoformat(),
-            'source': 'PhishTank',
-            'indicators': 47,
-            'description': 'Large-scale phishing targeting Office 365 credentials'
-        },
-        {
-            'id': 4,
-            'title': 'Botnet C2 Infrastructure Discovered',
-            'severity': 'high',
-            'published': (datetime.now() - timedelta(hours=12)).isoformat(),
-            'source': 'Emerging Threats',
-            'indicators': 89,
-            'description': 'New Mirai variant command and control servers identified'
-        },
-        {
-            'id': 5,
-            'title': 'Critical Vulnerability in Popular CMS',
-            'severity': 'critical',
-            'published': (datetime.now() - timedelta(hours=18)).isoformat(),
-            'source': 'NVD',
-            'indicators': 12,
-            'description': 'Remote code execution in WordPress plugin affecting 1M+ sites'
-        }
-    ]
-    return jsonify(recent_threats)
-
-@app.route('/api/stats/advanced')
-def get_advanced_stats():
-    """Get advanced SOC statistics"""
-    stats = {
-        'alert_trends': {
-            'today': random.randint(40, 60),
-            'yesterday': random.randint(35, 55),
-            'week_avg': 47,
-            'trend': 'increasing' if random.random() > 0.5 else 'decreasing'
-        },
-        'threat_landscape': {
-            'top_attack_type': 'phishing',
-            'top_target': 'endpoints',
-            'most_active_actor': 'APT29',
-            'emerging_threats': 3
-        },
-        'soc_performance': {
-            'alerts_closed_today': random.randint(30, 50),
-            'false_positive_rate': '6.2%',
-            'escalation_rate': '8.5%',
-            'sla_compliance': '94%'
-        },
-        'team_productivity': {
-            'analysts_online': sum(1 for t in team_data if t['status'] == 'online'),
-            'total_analysts': len(team_data),
-            'avg_case_load': 12,
-            'cases_this_week': 187
-        }
-    }
-    return jsonify(stats)
 
 if __name__ == '__main__':
     import os

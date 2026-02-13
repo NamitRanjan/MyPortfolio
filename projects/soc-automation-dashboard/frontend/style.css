@@ -745,3 +745,215 @@ body {
         gap: 1rem;
     }
 }
+
+/* Team Grid */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.team-member-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--primary-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.team-member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.team-member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.team-member-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.team-member-role {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-indicator.online {
+    background: var(--success-color);
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+.status-indicator.away {
+    background: var(--warning-color);
+}
+
+.status-indicator.offline {
+    background: var(--text-secondary);
+}
+
+.team-member-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.team-stat {
+    text-align: center;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.team-stat-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.team-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.team-member-certs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.cert-badge {
+    background: rgba(0, 102, 204, 0.2);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    border: 1px solid var(--secondary-color);
+}
+
+/* Threat Intel Feed */
+.feeds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.feed-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--success-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feed-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.feed-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.feed-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--success-color);
+    font-size: 0.85rem;
+}
+
+.feed-status i {
+    animation: pulse 2s infinite;
+}
+
+.feed-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.feed-stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.feed-stat-value {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.threat-intel-section {
+    margin-bottom: 2rem;
+}
+
+.threat-intel-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.recent-threat-item {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--danger-color);
+    transition: transform 0.3s;
+}
+
+.recent-threat-item:hover {
+    transform: translateX(5px);
+}
+
+.recent-threat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.recent-threat-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.recent-threat-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}

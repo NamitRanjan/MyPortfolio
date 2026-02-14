@@ -17,7 +17,8 @@ My journey in computer science has led me to develop a passion for cybersecurity
 | Security Automation with Shuffle SOAR         | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab|
 | Incident Response Planning and Execution      | <a href="https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9">SOC Home Lab|
 | Case Management with TheHive                  | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)">SOC Automation Lab|
-| Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure
+| Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure|
+| Full-Stack SOC Automation Dashboard           | <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">SOC Automation Dashboard</a>
 
 ## Tools
 
@@ -50,6 +51,7 @@ My journey in computer science has led me to develop a passion for cybersecurity
 </div>
 
 ## Projects
+- <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">**SOC Automation Dashboard** - Production-ready full-stack security operations platform</a>
 - <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>
 - SOC Automation Project with Wazuh, TheHive and Shuffle
 - Exploring Cybersecurity in the Cloud with Fortinet and Azure

@@ -1,0 +1,2378 @@
+[
+  {
+    "id": 1,
+    "type": "ip",
+    "value": "118.242.99.53",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "trojan",
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 2,
+    "type": "hash",
+    "value": "1d8c1ebb5d6fff2c8ac05ad61d99944200d3bcf34e3ca96968062d13cdeeaf86",
+    "threat_type": "spam",
+    "first_seen": "2026-02-11T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 3,
+    "type": "email",
+    "value": "noreply@update.cn",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-02T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 4,
+    "type": "hash",
+    "value": "0b93fedb16f32ea90c5a36e90297ef52e34935d801184126552ab7c0ac93f01d",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "malware",
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 5,
+    "type": "url",
+    "value": "http://payment-site.com/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 6,
+    "type": "ip",
+    "value": "163.97.46.170",
+    "threat_type": "spam",
+    "first_seen": "2026-01-17T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "trojan",
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 7,
+    "type": "hash",
+    "value": "68265564eb55afdbb6e664ba947b258d86ba3cff2dfa333a7b688607495088cd",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-29T15:55:48.449064Z",
+    "last_seen": "2026-02-01T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "phishing"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 8,
+    "type": "domain",
+    "value": "bank-payment.cn",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-09T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "trojan",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 9,
+    "type": "url",
+    "value": "http://login-site.org/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 10,
+    "type": "ip",
+    "value": "110.14.108.158",
+    "threat_type": "apt",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 11,
+    "type": "email",
+    "value": "noreply@account.top",
+    "threat_type": "spam",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 12,
+    "type": "domain",
+    "value": "admin-secure.xyz",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-15T15:55:48.449064Z",
+    "last_seen": "2026-01-25T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 13,
+    "type": "hash",
+    "value": "a6a731e0aacba89ffbbe951135bf0d9f824324acb008dfbf8e167ed758c4bc62",
+    "threat_type": "apt",
+    "first_seen": "2026-01-25T15:55:48.449064Z",
+    "last_seen": "2026-01-29T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 14,
+    "type": "ip",
+    "value": "76.133.242.93",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-28T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "phishing"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 15,
+    "type": "domain",
+    "value": "bank-update.top",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-12T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "malware",
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 16,
+    "type": "url",
+    "value": "http://admin-site.xyz/malicious",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-22T15:55:48.449064Z",
+    "last_seen": "2026-02-03T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 17,
+    "type": "email",
+    "value": "noreply@secure.com",
+    "threat_type": "apt",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 18,
+    "type": "email",
+    "value": "noreply@secure.top",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "phishing"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 19,
+    "type": "hash",
+    "value": "1e5ed85c7c6bd50818f13381293b1e756ee6c4ca11c65f5a4dcaa56039cc93b0",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-21T15:55:48.449064Z",
+    "last_seen": "2026-01-23T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 20,
+    "type": "hash",
+    "value": "3f22ad7085c43024aedbaccfd5fb5d6da391341360cdda4ede4ef6c78527a3c3",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-30T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 21,
+    "type": "domain",
+    "value": "payment-payment.net",
+    "threat_type": "apt",
+    "first_seen": "2026-01-21T15:55:48.449064Z",
+    "last_seen": "2026-01-21T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "malware",
+      "exploit"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 22,
+    "type": "domain",
+    "value": "secure-verify.ru",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 23,
+    "type": "ip",
+    "value": "97.114.211.246",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-16T15:55:48.449064Z",
+    "last_seen": "2026-01-25T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 24,
+    "type": "email",
+    "value": "noreply@account.com",
+    "threat_type": "spam",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 25,
+    "type": "email",
+    "value": "noreply@payment.cn",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-24T15:55:48.449064Z",
+    "last_seen": "2026-02-02T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 26,
+    "type": "url",
+    "value": "http://payment-site.xyz/malicious",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-27T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "c2_server",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 27,
+    "type": "email",
+    "value": "noreply@update.net",
+    "threat_type": "apt",
+    "first_seen": "2026-02-11T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 28,
+    "type": "ip",
+    "value": "13.46.195.222",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-01-26T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 29,
+    "type": "url",
+    "value": "http://login-site.com/malicious",
+    "threat_type": "apt",
+    "first_seen": "2026-02-02T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 30,
+    "type": "url",
+    "value": "http://verify-site.top/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 31,
+    "type": "ip",
+    "value": "203.130.185.140",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "exploit",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 32,
+    "type": "url",
+    "value": "http://payment-site.cn/malicious",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "c2_server",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 33,
+    "type": "hash",
+    "value": "c3222592c238d5d047d500eb5ca8909cfe3152021c2e735f27f5dfee3fad531a",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 34,
+    "type": "domain",
+    "value": "admin-verify.com",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-14T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "malware",
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 35,
+    "type": "email",
+    "value": "noreply@bank.xyz",
+    "threat_type": "spam",
+    "first_seen": "2026-02-13T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 36,
+    "type": "email",
+    "value": "noreply@update.com",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-11T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 37,
+    "type": "email",
+    "value": "noreply@payment.xyz",
+    "threat_type": "spam",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 38,
+    "type": "domain",
+    "value": "bank-update.xyz",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-01-19T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 39,
+    "type": "url",
+    "value": "http://verify-site.top/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-17T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 40,
+    "type": "url",
+    "value": "http://bank-site.cn/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-22T15:55:48.449064Z",
+    "last_seen": "2026-01-24T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "malware",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 41,
+    "type": "url",
+    "value": "http://bank-site.net/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-14T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "c2_server"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 42,
+    "type": "url",
+    "value": "http://update-site.org/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 43,
+    "type": "email",
+    "value": "noreply@update.xyz",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-16T15:55:48.449064Z",
+    "last_seen": "2026-01-16T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "exploit",
+      "phishing"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 44,
+    "type": "email",
+    "value": "noreply@secure.top",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-16T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "malware",
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 45,
+    "type": "url",
+    "value": "http://verify-site.net/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-25T15:55:48.449064Z",
+    "last_seen": "2026-01-30T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "exploit",
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 46,
+    "type": "ip",
+    "value": "20.131.25.205",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 47,
+    "type": "hash",
+    "value": "cc473d3a891cbac14887cfab487f96a0d6c0b30f77132205e6275b5d0692a3a0",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "malware",
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 48,
+    "type": "domain",
+    "value": "login-login.com",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-16T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "phishing",
+      "exploit"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 49,
+    "type": "ip",
+    "value": "21.166.255.242",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-08T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 50,
+    "type": "ip",
+    "value": "117.212.147.145",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-03T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "trojan",
+      "exploit",
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 51,
+    "type": "domain",
+    "value": "update-login.ru",
+    "threat_type": "apt",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 52,
+    "type": "url",
+    "value": "http://login-site.net/malicious",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 53,
+    "type": "email",
+    "value": "noreply@secure.top",
+    "threat_type": "apt",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 54,
+    "type": "hash",
+    "value": "43868b96fef33aacfcfd4874d5d39c8cde6492b409acbd8df144fc778d9e735f",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 55,
+    "type": "domain",
+    "value": "update-admin.ru",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-27T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 56,
+    "type": "domain",
+    "value": "payment-admin.xyz",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-10T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "c2_server",
+      "phishing"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 57,
+    "type": "email",
+    "value": "noreply@account.org",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 58,
+    "type": "url",
+    "value": "http://bank-site.cn/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-08T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 59,
+    "type": "domain",
+    "value": "payment-account.cn",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-01T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 60,
+    "type": "domain",
+    "value": "login-bank.top",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-11T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 61,
+    "type": "url",
+    "value": "http://update-site.ru/malicious",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-01T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 62,
+    "type": "hash",
+    "value": "4469894e81102ec170df395349ba1cf225ae5dbd0e26dd200be74e5bf15e462e",
+    "threat_type": "spam",
+    "first_seen": "2026-02-05T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 63,
+    "type": "ip",
+    "value": "41.44.156.49",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-06T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 64,
+    "type": "ip",
+    "value": "78.211.237.47",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 65,
+    "type": "domain",
+    "value": "login-secure.org",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 66,
+    "type": "hash",
+    "value": "893c50c34f884470465a583406182dd782dfd8cb17c41850448642fc6144616f",
+    "threat_type": "spam",
+    "first_seen": "2026-01-29T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 67,
+    "type": "ip",
+    "value": "33.139.178.6",
+    "threat_type": "apt",
+    "first_seen": "2026-02-09T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 68,
+    "type": "email",
+    "value": "noreply@payment.com",
+    "threat_type": "apt",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 69,
+    "type": "domain",
+    "value": "verify-bank.org",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-24T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 70,
+    "type": "hash",
+    "value": "a1fd379fa720be0ed2a9d83156a39d30e82f0b9cd61e2f2ca2a4be6f30ef6106",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 71,
+    "type": "email",
+    "value": "noreply@secure.xyz",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 72,
+    "type": "ip",
+    "value": "253.31.46.173",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-15T15:55:48.449064Z",
+    "last_seen": "2026-01-17T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 73,
+    "type": "url",
+    "value": "http://admin-site.top/malicious",
+    "threat_type": "apt",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 74,
+    "type": "email",
+    "value": "noreply@login.org",
+    "threat_type": "apt",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-08T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "c2_server",
+      "phishing"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 75,
+    "type": "email",
+    "value": "noreply@verify.ru",
+    "threat_type": "spam",
+    "first_seen": "2026-01-14T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 76,
+    "type": "url",
+    "value": "http://admin-site.xyz/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-14T15:55:48.449064Z",
+    "last_seen": "2026-01-21T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 77,
+    "type": "ip",
+    "value": "9.181.133.142",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-25T15:55:48.449064Z",
+    "last_seen": "2026-01-26T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 78,
+    "type": "ip",
+    "value": "66.216.26.231",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-02-04T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 79,
+    "type": "domain",
+    "value": "admin-login.org",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "c2_server",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 80,
+    "type": "url",
+    "value": "http://secure-site.cn/malicious",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-01-24T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 81,
+    "type": "hash",
+    "value": "7585ca346dd5a78d21b0be107db45276d75422bc64271696cae388bf02af2ba0",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-01-28T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 82,
+    "type": "url",
+    "value": "http://bank-site.top/malicious",
+    "threat_type": "apt",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 83,
+    "type": "email",
+    "value": "noreply@update.xyz",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "c2_server",
+      "exploit",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 84,
+    "type": "hash",
+    "value": "c79241cb93ffdd11f34dc42110a1fe52c1240b9ab9ad3af4ec98b7ae747d91de",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 85,
+    "type": "url",
+    "value": "http://admin-site.org/malicious",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-02-03T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 86,
+    "type": "hash",
+    "value": "448c26cd3f0f37d13963873d01d3605eb08c69e314e5fd5a342b59813355cd7e",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "exploit",
+      "phishing"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 87,
+    "type": "email",
+    "value": "noreply@login.cn",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-02T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 88,
+    "type": "url",
+    "value": "http://payment-site.cn/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-02-10T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 89,
+    "type": "hash",
+    "value": "face7c50b774f1f821e8269f93bb98e0cfef0654cba7a173290a2bf0d1ccc7af",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-21T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "malware",
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 90,
+    "type": "hash",
+    "value": "954d1c4a9eb5058fbd783f30cb91bd6f51d4278dae59f304546c1e86a201be99",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "malware",
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 91,
+    "type": "ip",
+    "value": "211.52.228.191",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-25T15:55:48.449064Z",
+    "last_seen": "2026-01-30T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "trojan",
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 92,
+    "type": "ip",
+    "value": "181.50.202.68",
+    "threat_type": "spam",
+    "first_seen": "2026-01-28T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 93,
+    "type": "hash",
+    "value": "ac8b7c43717e3c81b4a3b118254b728a0b58592545f5079c60ca513dc2ea18ae",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-02-03T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 94,
+    "type": "domain",
+    "value": "secure-secure.org",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-25T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 95,
+    "type": "ip",
+    "value": "186.41.130.213",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-01T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "malware",
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 96,
+    "type": "email",
+    "value": "noreply@login.org",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-01-27T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 97,
+    "type": "domain",
+    "value": "login-payment.ru",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-10T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "trojan"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 98,
+    "type": "hash",
+    "value": "b3b5372e1f6a8933f15fd38ff0cfd95fbc54d6458054f0a30a0287f33cc67af2",
+    "threat_type": "spam",
+    "first_seen": "2026-02-06T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 99,
+    "type": "email",
+    "value": "noreply@login.cn",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 100,
+    "type": "ip",
+    "value": "84.124.24.4",
+    "threat_type": "spam",
+    "first_seen": "2026-01-27T15:55:48.449064Z",
+    "last_seen": "2026-02-05T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 101,
+    "type": "ip",
+    "value": "90.181.181.156",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 102,
+    "type": "email",
+    "value": "noreply@bank.cn",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-01-31T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "c2_server",
+      "phishing"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 103,
+    "type": "domain",
+    "value": "payment-admin.net",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 104,
+    "type": "ip",
+    "value": "201.59.199.172",
+    "threat_type": "exploit",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 105,
+    "type": "hash",
+    "value": "3be8a6d248592df6e72f185894801117df293377ae1d377db0d5d7110bebe860",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "phishing"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 106,
+    "type": "email",
+    "value": "noreply@admin.net",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-08T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 107,
+    "type": "ip",
+    "value": "76.83.189.228",
+    "threat_type": "spam",
+    "first_seen": "2026-01-15T15:55:48.449064Z",
+    "last_seen": "2026-01-19T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 108,
+    "type": "email",
+    "value": "noreply@payment.com",
+    "threat_type": "spam",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 109,
+    "type": "domain",
+    "value": "account-admin.org",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-02-08T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 110,
+    "type": "ip",
+    "value": "152.171.60.243",
+    "threat_type": "apt",
+    "first_seen": "2026-02-13T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 111,
+    "type": "email",
+    "value": "noreply@update.net",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server",
+      "exploit",
+      "phishing"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 112,
+    "type": "url",
+    "value": "http://account-site.net/malicious",
+    "threat_type": "apt",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "phishing",
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 113,
+    "type": "domain",
+    "value": "verify-admin.cn",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-27T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "trojan",
+      "c2_server"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 114,
+    "type": "ip",
+    "value": "184.43.88.45",
+    "threat_type": "apt",
+    "first_seen": "2026-02-03T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 115,
+    "type": "hash",
+    "value": "7a3a5cb9c5f5165a828c5496ec610b0c25e99b61aed9429e6c962e30aaf9b989",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-24T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 116,
+    "type": "hash",
+    "value": "ad1a7293ea980f1c8811502d5cae1ca96a338c8088a6e3c6f321bc80fdab02f3",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-24T15:55:48.449064Z",
+    "last_seen": "2026-01-30T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 117,
+    "type": "email",
+    "value": "noreply@update.com",
+    "threat_type": "spam",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 118,
+    "type": "email",
+    "value": "noreply@admin.org",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-03T15:55:48.449064Z",
+    "last_seen": "2026-02-07T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 119,
+    "type": "hash",
+    "value": "a00356a95d04b7e546ec183cbc963a2a0eebf5ca8e6fabb109670d61f765c67d",
+    "threat_type": "apt",
+    "first_seen": "2026-02-10T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 120,
+    "type": "ip",
+    "value": "86.36.209.50",
+    "threat_type": "spam",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "malware",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 121,
+    "type": "email",
+    "value": "noreply@bank.net",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit",
+      "trojan",
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 122,
+    "type": "ip",
+    "value": "40.100.168.66",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-05T15:55:48.449064Z",
+    "last_seen": "2026-02-06T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 123,
+    "type": "domain",
+    "value": "account-login.ru",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-27T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "phishing",
+      "c2_server",
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 124,
+    "type": "url",
+    "value": "http://admin-site.xyz/malicious",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-01-28T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "trojan"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 125,
+    "type": "email",
+    "value": "noreply@update.com",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-01-25T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 126,
+    "type": "hash",
+    "value": "8df74053d681fad439e1829e2eafc5151bb34de0808da446b768d9bcb5788986",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-29T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 127,
+    "type": "email",
+    "value": "noreply@verify.cn",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-02T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "c2_server",
+      "exploit",
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 128,
+    "type": "ip",
+    "value": "232.129.60.181",
+    "threat_type": "apt",
+    "first_seen": "2026-01-23T15:55:48.449064Z",
+    "last_seen": "2026-01-23T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 129,
+    "type": "domain",
+    "value": "login-login.net",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-01-29T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 130,
+    "type": "hash",
+    "value": "1852e532172495b7527ca902dedbe4d04dfedc3032cef8ae104a891fde834090",
+    "threat_type": "spam",
+    "first_seen": "2026-01-15T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 131,
+    "type": "hash",
+    "value": "ec024869b59b74e1cf58caf7ecd0781ddd933127b95e6605b8fb845a912ea484",
+    "threat_type": "apt",
+    "first_seen": "2026-01-18T15:55:48.449064Z",
+    "last_seen": "2026-01-27T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 132,
+    "type": "domain",
+    "value": "verify-login.cn",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-03T15:55:48.449064Z",
+    "last_seen": "2026-02-06T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "exploit",
+      "phishing",
+      "c2_server"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 133,
+    "type": "ip",
+    "value": "184.224.145.108",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-01T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "c2_server",
+      "trojan"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 134,
+    "type": "hash",
+    "value": "28284d04111020f2d5c0fc1be4404816904189f531e266c862a9617ed9cb73d2",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-30T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Lazarus",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "malware",
+      "c2_server",
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 135,
+    "type": "email",
+    "value": "noreply@update.top",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-16T15:55:48.449064Z",
+    "last_seen": "2026-01-26T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 136,
+    "type": "email",
+    "value": "noreply@admin.ru",
+    "threat_type": "botnet",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "high",
+    "status": "blocked",
+    "tags": [
+      "trojan",
+      "malware"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 137,
+    "type": "hash",
+    "value": "e0d4e4a449d5218fe4bc0b116c6efd6a3d2942711257003e85b9a8ef76daf80f",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-28T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 138,
+    "type": "email",
+    "value": "noreply@bank.cn",
+    "threat_type": "phishing",
+    "first_seen": "2026-01-31T15:55:48.449064Z",
+    "last_seen": "2026-02-09T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "malware",
+      "c2_server"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 139,
+    "type": "url",
+    "value": "http://bank-site.com/malicious",
+    "threat_type": "ransomware",
+    "first_seen": "2026-02-02T15:55:48.449064Z",
+    "last_seen": "2026-02-03T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 140,
+    "type": "url",
+    "value": "http://update-site.net/malicious",
+    "threat_type": "apt",
+    "first_seen": "2026-02-07T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 141,
+    "type": "email",
+    "value": "noreply@account.top",
+    "threat_type": "spam",
+    "first_seen": "2026-01-17T15:55:48.449064Z",
+    "last_seen": "2026-02-02T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "monitoring",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 142,
+    "type": "url",
+    "value": "http://admin-site.xyz/malicious",
+    "threat_type": "spam",
+    "first_seen": "2026-01-26T15:55:48.449064Z",
+    "last_seen": "2026-02-01T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "exploit"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 143,
+    "type": "domain",
+    "value": "update-payment.ru",
+    "threat_type": "botnet",
+    "first_seen": "2026-01-19T15:55:48.449064Z",
+    "last_seen": "2026-01-22T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "malware"
+    ],
+    "description": "Malicious domain associated with threat activity"
+  },
+  {
+    "id": 144,
+    "type": "hash",
+    "value": "8589ddd74754ee0643c1ec3142030d1ad490690bcfd712bd5e51f700cd3b5089",
+    "threat_type": "apt",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "high",
+    "status": "monitoring",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 145,
+    "type": "url",
+    "value": "http://account-site.xyz/malicious",
+    "threat_type": "ransomware",
+    "first_seen": "2026-01-27T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "medium",
+    "status": "monitoring",
+    "tags": [
+      "trojan",
+      "malware"
+    ],
+    "description": "Malicious url associated with threat activity"
+  },
+  {
+    "id": 146,
+    "type": "hash",
+    "value": "38fcc42af344751e1c81a00dab072951ef6663fe9440a3bbca91f9ab863e73ec",
+    "threat_type": "apt",
+    "first_seen": "2026-02-13T15:55:48.449064Z",
+    "last_seen": "2026-02-13T15:55:48.449064Z",
+    "threat_actor": "FIN7",
+    "severity": "critical",
+    "status": "blocked",
+    "tags": [
+      "phishing",
+      "malware"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 147,
+    "type": "ip",
+    "value": "158.29.74.151",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-05T15:55:48.449064Z",
+    "last_seen": "2026-02-12T15:55:48.449064Z",
+    "threat_actor": "Unknown",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "c2_server"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  },
+  {
+    "id": 148,
+    "type": "email",
+    "value": "noreply@payment.com",
+    "threat_type": "phishing",
+    "first_seen": "2026-02-10T15:55:48.449064Z",
+    "last_seen": "2026-02-10T15:55:48.449064Z",
+    "threat_actor": "APT29",
+    "severity": "critical",
+    "status": "active",
+    "tags": [
+      "trojan"
+    ],
+    "description": "Malicious email associated with threat activity"
+  },
+  {
+    "id": 149,
+    "type": "hash",
+    "value": "29ae37654630b56a5412aeeea5509cf54c23f9501895acf2bbf6598177716a66",
+    "threat_type": "malware_c2",
+    "first_seen": "2026-02-04T15:55:48.449064Z",
+    "last_seen": "2026-02-11T15:55:48.449064Z",
+    "threat_actor": "Emotet Group",
+    "severity": "medium",
+    "status": "blocked",
+    "tags": [
+      "phishing"
+    ],
+    "description": "Malicious hash associated with threat activity"
+  },
+  {
+    "id": 150,
+    "type": "ip",
+    "value": "180.122.31.22",
+    "threat_type": "exploit",
+    "first_seen": "2026-01-20T15:55:48.449064Z",
+    "last_seen": "2026-01-27T15:55:48.449064Z",
+    "threat_actor": "TA505",
+    "severity": "high",
+    "status": "active",
+    "tags": [
+      "exploit"
+    ],
+    "description": "Malicious ip associated with threat activity"
+  }
+]

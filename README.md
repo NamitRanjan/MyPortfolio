@@ -1,14 +1,16 @@
-# Hello, I'm Namit
-<a href="https://linkedin.com/in/namit-ranjan-cybersecurity"><img src="https://img.shields.io/badge/-LinkedIn-0072b1?&style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+# Namit Ranjan | Cybersecurity Portfolio
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Namit%20Ranjan-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/namit-ranjan-cybersecurity)
+[![Role](https://img.shields.io/badge/Focus-SOC%20%7C%20Detection%20Engineering-1F6FEB?style=for-the-badge)](#featured-projects)
+[![Open to Work](https://img.shields.io/badge/Open%20to-SOC%20Analyst%20Roles-success?style=for-the-badge)](#contact)
 
-I am an aspiring Cybersecurity professional with a profound interest in technology and a dedication to solving complex problems.
+## Professional Summary
 
-## Objective
+Cybersecurity practitioner with hands-on experience designing SOC labs, tuning SIEM detections, automating incident response workflows, and investigating endpoint/network telemetry. I build practical blue-team systems focused on measurable improvements in detection coverage, triage speed, and incident containment.
 
-My journey in computer science has led me to develop a passion for cybersecurity, and I am now eager to transition into this field, specifically aiming to join a Security Operations Center (SOC) as a Tier 1 Analyst.
+---
 
-## Skills
+## Core Competencies
 
 | Skill                                         | Associated Project         |
 |-----------------------------------------------|----------------------------|
@@ -20,27 +22,73 @@ My journey in computer science has led me to develop a passion for cybersecurity
 | Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure|
 | Full-Stack SOC Automation Dashboard           | <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">SOC Automation Dashboard</a>
 
-## Tools
+---
 
-### Network
-<div>
-    <img src="https://img.shields.io/badge/-Wireshark-1679A7?&style=for-the-badge&logo=Wireshark&logoColor=white" />
-    <img src="https://img.shields.io/badge/-Suricata-EF3B2D?&style=for-the-badge&logo=Suricata&logoColor=white" />
-    <img src="https://img.shields.io/badge/-Zeek-777BB4?&style=for-the-badge&logo=Zeek&logoColor=white" />
-</div>
+## Tools & Platforms
 
-### Endpoint
-<div>
-    <img src="https://img.shields.io/badge/-Microsoft_Defender_for_Endpoint-00A4EF?&style=for-the-badge&logo=Microsoft&logoColor=white" />
-    <img src="https://img.shields.io/badge/-Velociraptor-4B275F?&style=for-the-badge&logo=Velociraptor&logoColor=white" />
-</div>
+### SIEM / Detection
+`Microsoft Sentinel` · `Splunk` · `Elastic` · `Wazuh`
 
-### SIEM
-<div>
-    <img src="https://img.shields.io/badge/-Microsoft_Sentinel-0078D4?&style=for-the-badge&logo=Microsoft&logoColor=white" />
-    <img src="https://img.shields.io/badge/-Splunk-000000?&style=for-the-badge&logo=Splunk&logoColor=white" />
-    <img src="https://img.shields.io/badge/-Elastic-005571?&style=for-the-badge&logo=Elastic&logoColor=white" />
-</div>
+### Endpoint & DFIR
+`Microsoft Defender for Endpoint` · `Velociraptor` · `Sysmon` · `LimaCharlie`
+
+### Network Security
+`Wireshark` · `Suricata` · `Zeek` · `Fortinet`
+
+### Automation & Case Management
+`Shuffle SOAR` · `TheHive` · `Cortex`
+
+---
+
+## Featured Projects
+
+### 1) SOC Detection Lab (End-to-End Monitoring Pipeline)
+Built a home SOC that ingests host/network logs into SIEM, applies custom detections mapped to MITRE ATT&CK, and supports repeatable alert triage workflows.
+
+**Highlights**
+- Centralized telemetry from Windows endpoints and network sensors.
+- Implemented ATT&CK-aligned detection logic and triage runbooks.
+- Practiced incident handling from alert intake to closure documentation.
+
+➡️ **Project deep dive:** [`projects/soc-detection-lab.md`](projects/soc-detection-lab.md)
+
+---
+
+### 2) SOAR Automation with TheHive + Shuffle + Wazuh
+Designed a security automation pipeline that enriches alerts, creates cases automatically, and triggers response actions for high-confidence detections.
+
+**Highlights**
+- Automated repetitive Tier-1 tasks to reduce investigation overhead.
+- Linked SIEM alerts to case lifecycle tracking in TheHive.
+- Standardized enrichment and containment playbooks.
+
+➡️ **Project deep dive:** [`projects/soar-automation-pipeline.md`](projects/soar-automation-pipeline.md)
+
+---
+
+### 3) Cloud Security Monitoring on Azure with Fortinet
+Deployed and monitored cloud security controls in Azure, with emphasis on perimeter security, telemetry visibility, and incident response readiness.
+
+**Highlights**
+- Implemented cloud firewall controls and monitored traffic behavior.
+- Correlated cloud events with SOC workflows for faster response.
+- Documented secure deployment and hardening considerations.
+
+➡️ **Project deep dive:** [`projects/azure-fortinet-cloud-security.md`](projects/azure-fortinet-cloud-security.md)
+
+---
+
+### 4) Endpoint Threat Detection & Response (Defender + Sysmon)
+Created endpoint-focused detection and response workflows using Microsoft Defender and Sysmon events to identify suspicious process, script, and persistence behavior.
+
+**Highlights**
+- Investigated endpoint telemetry for common attacker techniques.
+- Built practical analyst playbooks for triage and containment.
+- Improved confidence in endpoint incident handling.
+
+➡️ **Project deep dive:** [`projects/endpoint-detection-response.md`](projects/endpoint-detection-response.md)
+
+---
 
 ## Certifications
 <div>

@@ -1079,22 +1079,39 @@ const MOCK_DATA = {
     // ===== COMPLIANCE METHODS =====
     
     getComplianceFrameworks() {
-        // Extract unique frameworks from compliance mappings
-        const frameworks = new Set();
-        this.complianceMappings.forEach(mapping => {
-            frameworks.add(mapping.framework);
-        });
+        // Parse nested compliance mappings structure
+        if (!this.complianceMappings || !this.complianceMappings.frameworks) {
+            return [];
+        }
         
-        return Array.from(frameworks).map(framework => {
-            const mappings = this.complianceMappings.filter(m => m.framework === framework);
-            return {
-                id: framework.toLowerCase().replace(/\s+/g, '_'),
-                name: framework,
-                total_controls: mappings.length,
-                covered_controls: mappings.filter(m => m.coverage_status === 'covered').length,
-                compliance_percentage: Math.round((mappings.filter(m => m.coverage_status === 'covered').length / mappings.length) * 100)
-            };
-        });
+        const frameworksData = this.complianceMappings.frameworks;
+        const result = [];
+        
+        // Process each framework
+        for (const [frameworkKey, frameworkData] of Object.entries(frameworksData)) {
+            let totalControls = 0;
+            let coveredControls = 0;
+            
+            // Count controls across all categories
+            if (frameworkData.categories) {
+                for (const [categoryKey, categoryData] of Object.entries(frameworkData.categories)) {
+                    if (categoryData.controls && Array.isArray(categoryData.controls)) {
+                        totalControls += categoryData.controls.length;
+                        coveredControls += categoryData.controls.filter(c => c.covered === true).length;
+                    }
+                }
+            }
+            
+            result.push({
+                id: frameworkKey.toLowerCase(),
+                name: frameworkData.name || frameworkKey,
+                total_controls: totalControls,
+                covered_controls: coveredControls,
+                compliance_percentage: totalControls > 0 ? Math.round((coveredControls / totalControls) * 100) : 0
+            });
+        }
+        
+        return result;
     },
     
     getCompliancePosture() {
@@ -1113,44 +1130,90 @@ const MOCK_DATA = {
     },
     
     getComplianceCoverage(frameworkId) {
-        const framework = frameworkId.toUpperCase().replace(/_/g, ' ');
-        const mappings = this.complianceMappings.filter(m => m.framework === framework);
+        if (!this.complianceMappings || !this.complianceMappings.frameworks) {
+            return { controls: [], total_controls: 0, covered_controls: 0, partial_controls: 0, gap_controls: 0 };
+        }
+        
+        const frameworkKey = frameworkId.toUpperCase();
+        const frameworkData = this.complianceMappings.frameworks[frameworkKey];
+        
+        if (!frameworkData || !frameworkData.categories) {
+            return { controls: [], total_controls: 0, covered_controls: 0, partial_controls: 0, gap_controls: 0 };
+        }
+        
+        const controls = [];
+        let totalControls = 0;
+        let coveredControls = 0;
+        let partialControls = 0;
+        
+        for (const [categoryKey, categoryData] of Object.entries(frameworkData.categories)) {
+            if (categoryData.controls && Array.isArray(categoryData.controls)) {
+                categoryData.controls.forEach(control => {
+                    totalControls++;
+                    if (control.covered === true) {
+                        coveredControls++;
+                    } else if (control.covered === 'partial') {
+                        partialControls++;
+                    }
+                    
+                    controls.push({
+                        control_id: control.id,
+                        control_name: control.name,
+                        category: categoryKey,
+                        coverage_status: control.covered === true ? 'covered' : (control.covered === 'partial' ? 'partial' : 'gap'),
+                        priority: control.priority || 'medium',
+                        mapped_alerts: control.mapped_alerts || [],
+                        mapped_playbooks: control.mapped_playbooks || [],
+                        remediation: control.remediation || ''
+                    });
+                });
+            }
+        }
         
         return {
             framework_id: frameworkId,
-            framework_name: framework,
-            controls: mappings.map(m => ({
-                control_id: m.control_id,
-                control_name: m.control_name,
-                mitre_techniques: m.mitre_techniques || [],
-                coverage_status: m.coverage_status,
-                detection_rules: m.detection_rules || [],
-                gaps: m.gaps || []
-            })),
-            total_controls: mappings.length,
-            covered_controls: mappings.filter(m => m.coverage_status === 'covered').length,
-            partial_controls: mappings.filter(m => m.coverage_status === 'partial').length,
-            gap_controls: mappings.filter(m => m.coverage_status === 'gap').length
+            framework_name: frameworkData.name,
+            controls: controls,
+            total_controls: totalControls,
+            covered_controls: coveredControls,
+            partial_controls: partialControls,
+            gap_controls: totalControls - coveredControls - partialControls
         };
     },
     
     getComplianceGaps() {
-        const gaps = this.complianceMappings
-            .filter(m => m.coverage_status === 'gap' || m.coverage_status === 'partial')
-            .map(m => ({
-                framework: m.framework,
-                control_id: m.control_id,
-                control_name: m.control_name,
-                coverage_status: m.coverage_status,
-                mitre_techniques: m.mitre_techniques || [],
-                gaps: m.gaps || [],
-                priority: m.coverage_status === 'gap' ? 'high' : 'medium'
-            }));
+        if (!this.complianceMappings || !this.complianceMappings.frameworks) {
+            return { total_gaps: 0, critical_gaps: 0, gaps: [] };
+        }
+        
+        const gaps = [];
+        
+        for (const [frameworkKey, frameworkData] of Object.entries(this.complianceMappings.frameworks)) {
+            if (frameworkData.categories) {
+                for (const [categoryKey, categoryData] of Object.entries(frameworkData.categories)) {
+                    if (categoryData.controls && Array.isArray(categoryData.controls)) {
+                        categoryData.controls.forEach(control => {
+                            if (control.covered === false || control.covered === 'partial') {
+                                gaps.push({
+                                    framework: frameworkData.name,
+                                    control_id: control.id,
+                                    control_name: control.name,
+                                    category: categoryKey,
+                                    coverage_status: control.covered === 'partial' ? 'partial' : 'gap',
+                                    priority: control.priority || 'medium',
+                                    remediation: control.remediation || ''
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        }
         
         return {
             total_gaps: gaps.length,
-            critical_gaps: gaps.filter(g => g.priority === 'high').length,
-            gaps: gaps
+            critical_gaps: gaps.filter(g => g.priority === 'critical' || g.priority === 'high').length,
+            gaps: gaps.slice(0, 10) // Return top 10
         };
     },
     
@@ -1169,15 +1232,26 @@ const MOCK_DATA = {
         });
         
         // Check coverage from compliance mappings
-        this.complianceMappings.forEach(mapping => {
-            if (mapping.mitre_techniques) {
-                mapping.mitre_techniques.forEach(technique => {
-                    if (!techniqueCoverage[technique] || mapping.coverage_status === 'covered') {
-                        techniqueCoverage[technique] = mapping.coverage_status;
+        if (this.complianceMappings && this.complianceMappings.frameworks) {
+            for (const [frameworkKey, frameworkData] of Object.entries(this.complianceMappings.frameworks)) {
+                if (frameworkData.categories) {
+                    for (const [categoryKey, categoryData] of Object.entries(frameworkData.categories)) {
+                        if (categoryData.controls && Array.isArray(categoryData.controls)) {
+                            categoryData.controls.forEach(control => {
+                                if (control.mitre_techniques && Array.isArray(control.mitre_techniques)) {
+                                    control.mitre_techniques.forEach(technique => {
+                                        const status = control.covered === true ? 'covered' : (control.covered === 'partial' ? 'partial' : 'gap');
+                                        if (!techniqueCoverage[technique] || status === 'covered') {
+                                            techniqueCoverage[technique] = status;
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
-                });
+                }
             }
-        });
+        }
         
         // Build heatmap data
         const heatmap = Object.keys({...techniqueCount, ...techniqueCoverage}).map(technique => ({

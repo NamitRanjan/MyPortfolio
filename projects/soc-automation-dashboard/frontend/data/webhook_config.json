@@ -1,0 +1,63 @@
+[
+  {
+    "id": 1,
+    "name": "Slack SOC Channel",
+    "type": "slack",
+    "url": "https://hooks.slack.com/services/SIMULATED/WEBHOOK/URL",
+    "enabled": true,
+    "trigger_severity": [
+      "critical",
+      "high"
+    ],
+    "events": [
+      "new_alert",
+      "sla_breach",
+      "escalation"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Teams Security Channel",
+    "type": "teams",
+    "url": "https://outlook.office.com/webhook/SIMULATED/URL",
+    "enabled": true,
+    "trigger_severity": [
+      "critical"
+    ],
+    "events": [
+      "new_alert",
+      "escalation"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "PagerDuty Integration",
+    "type": "pagerduty",
+    "url": "https://events.pagerduty.com/v2/enqueue",
+    "enabled": true,
+    "trigger_severity": [
+      "critical"
+    ],
+    "events": [
+      "sla_breach",
+      "escalation"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Email Notifications",
+    "type": "email",
+    "url": "smtp://mail.soc.local:587",
+    "enabled": true,
+    "trigger_severity": [
+      "critical",
+      "high",
+      "medium"
+    ],
+    "events": [
+      "new_alert",
+      "assignment",
+      "sla_breach"
+    ]
+  }
+]

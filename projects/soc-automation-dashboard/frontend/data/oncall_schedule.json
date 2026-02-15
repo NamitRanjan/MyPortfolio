@@ -1,0 +1,41 @@
+{
+  "current_oncall": {
+    "primary": {
+      "user_id": 4,
+      "name": "Emily Zhang",
+      "role": "t2_analyst",
+      "start": "2026-02-10T09:15:01.027906Z",
+      "end": "2026-02-17T09:15:01.027910Z"
+    },
+    "secondary": {
+      "user_id": 3,
+      "name": "Mike Ross",
+      "role": "t3_analyst",
+      "start": "2026-02-10T09:15:01.027914Z",
+      "end": "2026-02-17T09:15:01.027917Z"
+    }
+  },
+  "schedule": [
+    {
+      "week_start": "2026-02-10",
+      "primary_user_id": 4,
+      "secondary_user_id": 3
+    },
+    {
+      "week_start": "2026-02-17",
+      "primary_user_id": 5,
+      "secondary_user_id": 4
+    },
+    {
+      "week_start": "2026-02-24",
+      "primary_user_id": 3,
+      "secondary_user_id": 5
+    },
+    {
+      "week_start": "2026-03-03",
+      "primary_user_id": 4,
+      "secondary_user_id": 3
+    }
+  ],
+  "override": null
+}

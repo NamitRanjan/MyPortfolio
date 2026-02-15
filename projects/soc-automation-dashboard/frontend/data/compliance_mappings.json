@@ -1,0 +1,2615 @@
+{
+  "frameworks": {
+    "NIST_CSF": {
+      "name": "NIST Cybersecurity Framework",
+      "version": "1.1",
+      "categories": {
+        "Identify": {
+          "controls": [
+            {
+              "id": "ID.AM-1",
+              "name": "Asset Management - Physical Devices",
+              "description": "Physical devices and systems within the organization are inventoried",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "EDR",
+                "Asset Discovery"
+              ],
+              "mapped_alerts": [
+                1,
+                5,
+                12,
+                23
+              ],
+              "mapped_playbooks": [
+                1,
+                3
+              ],
+              "mapped_iocs": [
+                2,
+                15,
+                28
+              ],
+              "remediation": "Deploy automated asset discovery tools and maintain CMDB"
+            },
+            {
+              "id": "ID.AM-2",
+              "name": "Asset Management - Software Platforms",
+              "description": "Software platforms and applications within the organization are inventoried",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "SIEM",
+                "Vulnerability Scanner"
+              ],
+              "mapped_alerts": [
+                3,
+                8,
+                19
+              ],
+              "mapped_playbooks": [
+                2
+              ],
+              "mapped_iocs": [
+                5,
+                22
+              ],
+              "remediation": "Implement software asset management solution"
+            },
+            {
+              "id": "ID.AM-3",
+              "name": "Organizational Communication Flows",
+              "description": "Organizational communication and data flows are mapped",
+              "covered": false,
+              "priority": "medium",
+              "coverage_sources": [],
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": [],
+              "remediation": "Deploy network mapping and data flow analysis tools"
+            },
+            {
+              "id": "ID.RA-1",
+              "name": "Asset Vulnerabilities",
+              "description": "Asset vulnerabilities are identified and documented",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "Vulnerability Scanner",
+                "Threat Intel"
+              ],
+              "mapped_alerts": [
+                7,
+                14,
+                21,
+                29
+              ],
+              "mapped_playbooks": [
+                5,
+                7
+              ],
+              "mapped_iocs": [
+                9,
+                18,
+                31
+              ],
+              "remediation": "Weekly vulnerability scans and risk-based patching"
+            },
+            {
+              "id": "ID.RA-5",
+              "name": "Threat Intelligence",
+              "description": "Threat and vulnerability information is received from information sharing forums",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "Threat Intel Feeds",
+                "ISAC"
+              ],
+              "mapped_alerts": [
+                2,
+                11,
+                27
+              ],
+              "mapped_playbooks": [
+                9
+              ],
+              "mapped_iocs": [
+                1,
+                4,
+                13,
+                25,
+                38
+              ],
+              "remediation": "Subscribe to industry threat intelligence feeds"
+            }
+          ]
+        },
+        "Protect": {
+          "controls": [
+            {
+              "id": "PR.AC-1",
+              "name": "Access Control - Identity Management",
+              "description": "Identities and credentials are issued, managed, verified, revoked, and audited",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "IAM",
+                "SIEM"
+              ],
+              "mapped_alerts": [
+                4,
+                10,
+                16,
+                24,
+                32
+              ],
+              "mapped_playbooks": [
+                4,
+                11
+              ],
+              "mapped_iocs": [
+                7,
+                19,
+                27
+              ],
+              "remediation": "Implement IAM with MFA and regular access reviews"
+            },
+            {
+              "id": "PR.AC-4",
+              "name": "Access Permissions",
+              "description": "Access permissions and authorizations are managed",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "Active Directory",
+                "SIEM"
+              ],
+              "mapped_alerts": [
+                6,
+                13,
+                20
+              ],
+              "mapped_playbooks": [
+                6
+              ],
+              "mapped_iocs": [
+                11,
+                23
+              ],
+              "remediation": "Quarterly access recertification and least privilege enforcement"
+            },
+            {
+              "id": "PR.DS-1",
+              "name": "Data at Rest Protection",
+              "description": "Data-at-rest is protected",
+              "covered": false,
+              "priority": "high",
+              "coverage_sources": [],
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": [],
+              "remediation": "Deploy encryption for databases and file systems"
+            },
+            {
+              "id": "PR.DS-2",
+              "name": "Data in Transit Protection",
+              "description": "Data-in-transit is protected",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "Network Monitor",
+                "SSL Inspection"
+              ],
+              "mapped_alerts": [
+                9,
+                17
+              ],
+              "mapped_playbooks": [
+                8
+              ],
+              "mapped_iocs": [
+                14,
+                29
+              ],
+              "remediation": "Enforce TLS 1.2+ and monitor for unencrypted protocols"
+            },
+            {
+              "id": "PR.PT-1",
+              "name": "Audit Logs",
+              "description": "Audit/log records are determined, documented, implemented, and reviewed",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "SIEM",
+                "Log Management"
+              ],
+              "mapped_alerts": [
+                15,
+                22,
+                30
+              ],
+              "mapped_playbooks": [
+                10,
+                12
+              ],
+              "mapped_iocs": [
+                6,
+                17,
+                33
+              ],
+              "remediation": "Centralized logging with 90-day retention"
+            }
+          ]
+        },
+        "Detect": {
+          "controls": [
+            {
+              "id": "DE.AE-1",
+              "name": "Network Baseline",
+              "description": "A baseline of network operations is established",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "SIEM",
+                "Network Monitor"
+              ],
+              "mapped_alerts": [
+                18,
+                26,
+                34
+              ],
+              "mapped_playbooks": [
+                13
+              ],
+              "mapped_iocs": [
+                20,
+                36
+              ],
+              "remediation": "Establish behavioral baselines using ML-driven analytics"
+            },
+            {
+              "id": "DE.AE-2",
+              "name": "Anomaly Detection",
+              "description": "Detected events are analyzed to understand attack targets and methods",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "SIEM",
+                "EDR",
+                "UEBA"
+              ],
+              "mapped_alerts": [
+                1,
+                11,
+                19,
+                28,
+                35
+              ],
+              "mapped_playbooks": [
+                1,
+                14,
+                15
+              ],
+              "mapped_iocs": [
+                3,
+                10,
+                21,
+                39
+              ],
+              "remediation": "Deploy UEBA for anomaly detection"
+            },
+            {
+              "id": "DE.CM-1",
+              "name": "Network Monitoring",
+              "description": "The network is monitored to detect potential cybersecurity events",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "IDS/IPS",
+                "SIEM"
+              ],
+              "mapped_alerts": [
+                5,
+                12,
+                25,
+                31
+              ],
+              "mapped_playbooks": [
+                2,
+                16
+              ],
+              "mapped_iocs": [
+                8,
+                16,
+                24,
+                40
+              ],
+              "remediation": "24/7 SOC monitoring with automated alerting"
+            },
+            {
+              "id": "DE.CM-4",
+              "name": "Malicious Code Detection",
+              "description": "Malicious code is detected",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "Antivirus",
+                "EDR",
+                "Sandbox"
+              ],
+              "mapped_alerts": [
+                3,
+                14,
+                23,
+                33
+              ],
+              "mapped_playbooks": [
+                3,
+                17
+              ],
+              "mapped_iocs": [
+                12,
+                26,
+                35,
+                42
+              ],
+              "remediation": "Multi-layer endpoint protection with sandboxing"
+            },
+            {
+              "id": "DE.DP-4",
+              "name": "Event Detection",
+              "description": "Event detection information is communicated",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "SIEM",
+                "SOAR"
+              ],
+              "mapped_alerts": [
+                8,
+                21,
+                37
+              ],
+              "mapped_playbooks": [
+                18,
+                19
+              ],
+              "mapped_iocs": [
+                30,
+                44
+              ],
+              "remediation": "Automated incident notification and escalation"
+            }
+          ]
+        },
+        "Respond": {
+          "controls": [
+            {
+              "id": "RS.RP-1",
+              "name": "Response Plan",
+              "description": "Response plan is executed during or after an incident",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "SOAR",
+                "Playbooks"
+              ],
+              "mapped_alerts": [
+                2,
+                9,
+                16,
+                27
+              ],
+              "mapped_playbooks": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "mapped_iocs": [
+                32,
+                41
+              ],
+              "remediation": "Documented IR playbooks with quarterly testing"
+            },
+            {
+              "id": "RS.CO-2",
+              "name": "Incident Reporting",
+              "description": "Incidents are reported consistent with established criteria",
+              "covered": true,
+              "priority": "high",
+              "coverage_sources": [
+                "Ticketing System",
+                "SOAR"
+              ],
+              "mapped_alerts": [
+                7,
+                20,
+                29
+              ],
+              "mapped_playbooks": [
+                6,
+                20
+              ],
+              "mapped_iocs": [
+                34,
+                45
+              ],
+              "remediation": "Automated incident reporting and notification workflows"
+            },
+            {
+              "id": "RS.AN-1",
+              "name": "Incident Notification",
+              "description": "Notifications from detection systems are investigated",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "SIEM",
+                "SOC"
+              ],
+              "mapped_alerts": [
+                4,
+                13,
+                22,
+                36
+              ],
+              "mapped_playbooks": [
+                7,
+                8
+              ],
+              "mapped_iocs": [
+                37,
+                46
+              ],
+              "remediation": "SLA-based alert triage and investigation"
+            },
+            {
+              "id": "RS.MI-2",
+              "name": "Incident Mitigation",
+              "description": "Incidents are mitigated",
+              "covered": true,
+              "priority": "critical",
+              "coverage_sources": [
+                "EDR",
+                "SOAR"
+              ],
+              "mapped_alerts": [
+                10,
+                24,
+                38
+              ],
+              "mapped_playbooks": [
+                9,
+                10,
+                11
+              ],
+              "mapped_iocs": [
+                43,
+                48
+              ],
+              "remediation": "Automated containment and remediation capabilities"
+            }
+          ]
+        },
+        "Recover": {
+          "controls": [
+            {
+              "id": "RC.RP-1",
+              "name": "Recovery Plan",
+              "description": "Recovery plan is executed during or after a cybersecurity incident",
+              "covered": false,
+              "priority": "high",
+              "coverage_sources": [],
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": [],
+              "remediation": "Develop and test disaster recovery procedures"
+            },
+            {
+              "id": "RC.CO-3",
+              "name": "Recovery Communications",
+              "description": "Recovery activities are communicated to internal and external stakeholders",
+              "covered": true,
+              "priority": "medium",
+              "coverage_sources": [
+                "Communication Platform"
+              ],
+              "mapped_alerts": [
+                6,
+                18
+              ],
+              "mapped_playbooks": [
+                12
+              ],
+              "mapped_iocs": [],
+              "remediation": "Crisis communication plan and templates"
+            },
+            {
+              "id": "RC.IM-1",
+              "name": "Recovery Plan Improvement",
+              "description": "Recovery plans incorporate lessons learned",
+              "covered": true,
+              "priority": "medium",
+              "coverage_sources": [
+                "Ticketing System"
+              ],
+              "mapped_alerts": [
+                11,
+                26
+              ],
+              "mapped_playbooks": [
+                13
+              ],
+              "mapped_iocs": [],
+              "remediation": "Post-incident reviews and continuous improvement"
+            }
+          ]
+        }
+      }
+    },
+    "ISO_27001": {
+      "name": "ISO/IEC 27001:2013",
+      "version": "2013",
+      "domains": [
+        {
+          "id": "A.5",
+          "name": "Information Security Policies",
+          "description": "Management direction for information security",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Policy Management"
+          ],
+          "mapped_alerts": [
+            15
+          ],
+          "mapped_playbooks": [
+            14
+          ],
+          "mapped_iocs": [],
+          "remediation": "Annual policy review and approval"
+        },
+        {
+          "id": "A.6",
+          "name": "Organization of Information Security",
+          "description": "Governance structure and responsibilities",
+          "covered": true,
+          "priority": "medium",
+          "coverage_sources": [
+            "HR System"
+          ],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Define security roles and responsibilities"
+        },
+        {
+          "id": "A.7",
+          "name": "Human Resource Security",
+          "description": "Security in employment lifecycle",
+          "covered": false,
+          "priority": "medium",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Background checks and security awareness training"
+        },
+        {
+          "id": "A.8",
+          "name": "Asset Management",
+          "description": "Identification and protection of organizational assets",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "CMDB",
+            "Asset Discovery"
+          ],
+          "mapped_alerts": [
+            1,
+            12,
+            23
+          ],
+          "mapped_playbooks": [
+            1,
+            15
+          ],
+          "mapped_iocs": [
+            2,
+            15,
+            28
+          ],
+          "remediation": "Complete asset inventory with ownership"
+        },
+        {
+          "id": "A.9",
+          "name": "Access Control",
+          "description": "Management of access to systems and data",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "IAM",
+            "Active Directory"
+          ],
+          "mapped_alerts": [
+            4,
+            10,
+            16,
+            24
+          ],
+          "mapped_playbooks": [
+            4,
+            6,
+            11
+          ],
+          "mapped_iocs": [
+            7,
+            19,
+            27
+          ],
+          "remediation": "Role-based access control with MFA"
+        },
+        {
+          "id": "A.10",
+          "name": "Cryptography",
+          "description": "Proper use of cryptographic controls",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Encryption Management"
+          ],
+          "mapped_alerts": [
+            9,
+            17
+          ],
+          "mapped_playbooks": [
+            8
+          ],
+          "mapped_iocs": [
+            14
+          ],
+          "remediation": "Encryption key management and rotation"
+        },
+        {
+          "id": "A.11",
+          "name": "Physical and Environmental Security",
+          "description": "Protection of physical infrastructure",
+          "covered": false,
+          "priority": "medium",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Physical access controls and monitoring"
+        },
+        {
+          "id": "A.12",
+          "name": "Operations Security",
+          "description": "Secure operations and change management",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Change Management",
+            "Backup System"
+          ],
+          "mapped_alerts": [
+            8,
+            21
+          ],
+          "mapped_playbooks": [
+            10,
+            16
+          ],
+          "mapped_iocs": [
+            30
+          ],
+          "remediation": "Documented operational procedures"
+        },
+        {
+          "id": "A.13",
+          "name": "Communications Security",
+          "description": "Network and information transfer security",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Firewall",
+            "Network Monitor"
+          ],
+          "mapped_alerts": [
+            5,
+            18,
+            25,
+            34
+          ],
+          "mapped_playbooks": [
+            2,
+            13
+          ],
+          "mapped_iocs": [
+            8,
+            16,
+            20,
+            36
+          ],
+          "remediation": "Network segmentation and encryption"
+        },
+        {
+          "id": "A.14",
+          "name": "System Acquisition, Development and Maintenance",
+          "description": "Security in SDLC",
+          "covered": true,
+          "priority": "medium",
+          "coverage_sources": [
+            "DevSecOps Tools"
+          ],
+          "mapped_alerts": [
+            3
+          ],
+          "mapped_playbooks": [
+            17
+          ],
+          "mapped_iocs": [],
+          "remediation": "Secure coding practices and code review"
+        },
+        {
+          "id": "A.15",
+          "name": "Supplier Relationships",
+          "description": "Security in supplier agreements",
+          "covered": false,
+          "priority": "medium",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Vendor risk assessments"
+        },
+        {
+          "id": "A.16",
+          "name": "Information Security Incident Management",
+          "description": "Incident response procedures",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SOAR",
+            "Ticketing"
+          ],
+          "mapped_alerts": [
+            2,
+            7,
+            13,
+            20,
+            29,
+            36
+          ],
+          "mapped_playbooks": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            18,
+            19,
+            20
+          ],
+          "mapped_iocs": [
+            32,
+            34,
+            37,
+            41,
+            45,
+            46
+          ],
+          "remediation": "24/7 incident response capability"
+        },
+        {
+          "id": "A.17",
+          "name": "Information Security Aspects of Business Continuity",
+          "description": "Continuity planning",
+          "covered": false,
+          "priority": "high",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Business continuity and disaster recovery plans"
+        },
+        {
+          "id": "A.18",
+          "name": "Compliance",
+          "description": "Legal and regulatory compliance",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Compliance Monitoring"
+          ],
+          "mapped_alerts": [
+            11,
+            26
+          ],
+          "mapped_playbooks": [
+            12,
+            13
+          ],
+          "mapped_iocs": [],
+          "remediation": "Regular compliance audits"
+        }
+      ]
+    },
+    "SOC_2": {
+      "name": "SOC 2 Trust Service Criteria",
+      "version": "2017",
+      "criteria": [
+        {
+          "id": "CC1",
+          "name": "Control Environment",
+          "description": "Organization demonstrates commitment to integrity and ethical values",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Policy Management",
+            "HR System"
+          ],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Documented code of conduct and ethics training"
+        },
+        {
+          "id": "CC2",
+          "name": "Communication and Information",
+          "description": "Information necessary to support the functioning of internal control",
+          "covered": true,
+          "priority": "medium",
+          "coverage_sources": [
+            "Communication Platform"
+          ],
+          "mapped_alerts": [
+            6,
+            18
+          ],
+          "mapped_playbooks": [
+            12
+          ],
+          "mapped_iocs": [],
+          "remediation": "Internal communication procedures"
+        },
+        {
+          "id": "CC3",
+          "name": "Risk Assessment",
+          "description": "Risk identification and analysis",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Risk Management Platform",
+            "Threat Intel"
+          ],
+          "mapped_alerts": [
+            7,
+            14,
+            21
+          ],
+          "mapped_playbooks": [
+            5,
+            7
+          ],
+          "mapped_iocs": [
+            9,
+            18,
+            31
+          ],
+          "remediation": "Quarterly risk assessments"
+        },
+        {
+          "id": "CC4",
+          "name": "Monitoring Activities",
+          "description": "Ongoing and separate evaluations",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "SOC"
+          ],
+          "mapped_alerts": [
+            1,
+            5,
+            11,
+            12,
+            19,
+            25,
+            28,
+            31,
+            35
+          ],
+          "mapped_playbooks": [
+            1,
+            2,
+            13,
+            14,
+            15,
+            16
+          ],
+          "mapped_iocs": [
+            3,
+            8,
+            10,
+            16,
+            21,
+            24,
+            39,
+            40
+          ],
+          "remediation": "Continuous monitoring and quarterly audits"
+        },
+        {
+          "id": "CC5",
+          "name": "Control Activities",
+          "description": "Actions to address risks",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "EDR",
+            "SOAR"
+          ],
+          "mapped_alerts": [
+            3,
+            10,
+            14,
+            23,
+            24,
+            33,
+            38
+          ],
+          "mapped_playbooks": [
+            3,
+            9,
+            10,
+            11,
+            17
+          ],
+          "mapped_iocs": [
+            12,
+            26,
+            35,
+            42,
+            43,
+            48
+          ],
+          "remediation": "Automated and manual security controls"
+        },
+        {
+          "id": "CC6",
+          "name": "Logical and Physical Access Controls",
+          "description": "Access to assets is restricted",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "IAM",
+            "Physical Security"
+          ],
+          "mapped_alerts": [
+            4,
+            10,
+            16,
+            24,
+            32
+          ],
+          "mapped_playbooks": [
+            4,
+            6,
+            11
+          ],
+          "mapped_iocs": [
+            7,
+            19,
+            27
+          ],
+          "remediation": "Multi-factor authentication and access reviews"
+        },
+        {
+          "id": "CC7",
+          "name": "System Operations",
+          "description": "Support system operation objectives",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Monitoring Tools",
+            "Change Management"
+          ],
+          "mapped_alerts": [
+            8,
+            15,
+            21,
+            22,
+            30
+          ],
+          "mapped_playbooks": [
+            10,
+            12,
+            16
+          ],
+          "mapped_iocs": [
+            6,
+            17,
+            30,
+            33
+          ],
+          "remediation": "Change control and capacity management"
+        },
+        {
+          "id": "CC8",
+          "name": "Change Management",
+          "description": "System changes are authorized and tested",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "Change Management",
+            "DevSecOps"
+          ],
+          "mapped_alerts": [
+            3
+          ],
+          "mapped_playbooks": [
+            17
+          ],
+          "mapped_iocs": [],
+          "remediation": "Formal change approval process"
+        },
+        {
+          "id": "CC9",
+          "name": "Risk Mitigation",
+          "description": "Risk mitigation activities are identified and deployed",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "Vulnerability Scanner",
+            "Patch Management"
+          ],
+          "mapped_alerts": [
+            7,
+            14,
+            21,
+            29
+          ],
+          "mapped_playbooks": [
+            5,
+            7,
+            9,
+            10,
+            11
+          ],
+          "mapped_iocs": [
+            9,
+            18,
+            31,
+            43,
+            48
+          ],
+          "remediation": "Risk-based patching and compensating controls"
+        }
+      ]
+    },
+    "CIS_CONTROLS": {
+      "name": "CIS Critical Security Controls",
+      "version": "8.0",
+      "controls": [
+        {
+          "id": "CIS-1",
+          "name": "Inventory and Control of Enterprise Assets",
+          "description": "Actively manage all enterprise assets",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            1,
+            12,
+            23
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            23,
+            50,
+            37
+          ],
+          "remediation": "Implement inventory and control of enterprise assets"
+        },
+        {
+          "id": "CIS-2",
+          "name": "Inventory and Control of Software Assets",
+          "description": "Actively manage all software",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            3,
+            8,
+            19
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            3,
+            43,
+            9
+          ],
+          "remediation": "Implement inventory and control of software assets"
+        },
+        {
+          "id": "CIS-3",
+          "name": "Data Protection",
+          "description": "Protect organizational data",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            9,
+            17
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            1,
+            21
+          ],
+          "remediation": "Implement data protection"
+        },
+        {
+          "id": "CIS-4",
+          "name": "Secure Configuration",
+          "description": "Establish and maintain secure configurations",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            8,
+            21
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            21,
+            26
+          ],
+          "remediation": "Implement secure configuration"
+        },
+        {
+          "id": "CIS-5",
+          "name": "Account Management",
+          "description": "Manage the lifecycle of accounts",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            4,
+            10,
+            16,
+            24,
+            32
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            34,
+            14,
+            38
+          ],
+          "remediation": "Implement account management"
+        },
+        {
+          "id": "CIS-6",
+          "name": "Access Control Management",
+          "description": "Use MFA for all access",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            4,
+            10,
+            16,
+            24,
+            32
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            17,
+            19,
+            16
+          ],
+          "remediation": "Implement access control management"
+        },
+        {
+          "id": "CIS-7",
+          "name": "Continuous Vulnerability Management",
+          "description": "Develop process to continuously assess and remediate",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            7,
+            14,
+            21,
+            29
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            48,
+            5,
+            18
+          ],
+          "remediation": "Implement continuous vulnerability management"
+        },
+        {
+          "id": "CIS-8",
+          "name": "Audit Log Management",
+          "description": "Collect, alert, review, and retain audit logs",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            15,
+            22,
+            30
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            34,
+            3,
+            13
+          ],
+          "remediation": "Implement audit log management"
+        },
+        {
+          "id": "CIS-9",
+          "name": "Email and Web Browser Protections",
+          "description": "Protect email and web browsing",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            3,
+            14,
+            23
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            12,
+            30,
+            19
+          ],
+          "remediation": "Implement email and web browser protections"
+        },
+        {
+          "id": "CIS-10",
+          "name": "Malware Defenses",
+          "description": "Prevent or control malware",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            3,
+            14,
+            23,
+            33
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            1,
+            9,
+            42
+          ],
+          "remediation": "Implement malware defenses"
+        },
+        {
+          "id": "CIS-11",
+          "name": "Data Recovery",
+          "description": "Establish and maintain data recovery practices",
+          "covered": false,
+          "priority": "high",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Implement data recovery"
+        },
+        {
+          "id": "CIS-12",
+          "name": "Network Infrastructure Management",
+          "description": "Establish and maintain secure network architecture",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            5,
+            18,
+            25,
+            34
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            19,
+            19,
+            21
+          ],
+          "remediation": "Implement network infrastructure management"
+        },
+        {
+          "id": "CIS-13",
+          "name": "Network Monitoring and Defense",
+          "description": "Monitor and defend the network",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            5,
+            12,
+            25,
+            31
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            24,
+            46,
+            31
+          ],
+          "remediation": "Implement network monitoring and defense"
+        },
+        {
+          "id": "CIS-14",
+          "name": "Security Awareness Training",
+          "description": "Establish security awareness program",
+          "covered": false,
+          "priority": "high",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Implement security awareness training"
+        },
+        {
+          "id": "CIS-15",
+          "name": "Service Provider Management",
+          "description": "Manage security risks of service providers",
+          "covered": false,
+          "priority": "medium",
+          "coverage_sources": [],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Implement service provider management"
+        },
+        {
+          "id": "CIS-16",
+          "name": "Application Software Security",
+          "description": "Secure application software",
+          "covered": true,
+          "priority": "high",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            3
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            13
+          ],
+          "remediation": "Implement application software security"
+        },
+        {
+          "id": "CIS-17",
+          "name": "Incident Response Management",
+          "description": "Establish incident response program",
+          "covered": true,
+          "priority": "critical",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [
+            2,
+            7,
+            9,
+            13,
+            16,
+            20,
+            27,
+            29,
+            36
+          ],
+          "mapped_playbooks": [
+            1,
+            2
+          ],
+          "mapped_iocs": [
+            50,
+            41,
+            37
+          ],
+          "remediation": "Implement incident response management"
+        },
+        {
+          "id": "CIS-18",
+          "name": "Penetration Testing",
+          "description": "Conduct penetration tests",
+          "covered": true,
+          "priority": "medium",
+          "coverage_sources": [
+            "SIEM",
+            "EDR"
+          ],
+          "mapped_alerts": [],
+          "mapped_playbooks": [],
+          "mapped_iocs": [],
+          "remediation": "Implement penetration testing"
+        }
+      ]
+    },
+    "MITRE_ATTACK": {
+      "name": "MITRE ATT&CK Framework",
+      "version": "v13.1",
+      "tactics": [
+        {
+          "id": "TA0001",
+          "name": "Initial Access",
+          "description": "Trying to get into your network",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1566",
+              "name": "Phishing",
+              "covered": true,
+              "mapped_alerts": [
+                3,
+                14,
+                23
+              ],
+              "mapped_playbooks": [
+                3
+              ],
+              "mapped_iocs": [
+                12,
+                26,
+                35
+              ]
+            },
+            {
+              "id": "T1190",
+              "name": "Exploit Public-Facing Application",
+              "covered": true,
+              "mapped_alerts": [
+                7,
+                21
+              ],
+              "mapped_playbooks": [
+                5
+              ],
+              "mapped_iocs": [
+                9,
+                18
+              ]
+            },
+            {
+              "id": "T1133",
+              "name": "External Remote Services",
+              "covered": true,
+              "mapped_alerts": [
+                4,
+                16
+              ],
+              "mapped_playbooks": [
+                4
+              ],
+              "mapped_iocs": [
+                7,
+                19
+              ]
+            },
+            {
+              "id": "T1078",
+              "name": "Valid Accounts",
+              "covered": true,
+              "mapped_alerts": [
+                10,
+                24,
+                32
+              ],
+              "mapped_playbooks": [
+                6,
+                11
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TA0002",
+          "name": "Execution",
+          "description": "Trying to run malicious code",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1059",
+              "name": "Command and Scripting Interpreter",
+              "covered": true,
+              "mapped_alerts": [
+                8,
+                21,
+                30
+              ],
+              "mapped_playbooks": [
+                10
+              ],
+              "mapped_iocs": [
+                6,
+                17,
+                33
+              ]
+            },
+            {
+              "id": "T1204",
+              "name": "User Execution",
+              "covered": true,
+              "mapped_alerts": [
+                3,
+                14
+              ],
+              "mapped_playbooks": [
+                3
+              ],
+              "mapped_iocs": [
+                12,
+                26
+              ]
+            },
+            {
+              "id": "T1053",
+              "name": "Scheduled Task/Job",
+              "covered": true,
+              "mapped_alerts": [
+                15,
+                22
+              ],
+              "mapped_playbooks": [
+                12
+              ],
+              "mapped_iocs": [
+                33
+              ]
+            },
+            {
+              "id": "T1106",
+              "name": "Native API",
+              "covered": true,
+              "mapped_alerts": [
+                30
+              ],
+              "mapped_playbooks": [
+                10
+              ],
+              "mapped_iocs": [
+                6
+              ]
+            },
+            {
+              "id": "T1569",
+              "name": "System Services",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0003",
+          "name": "Persistence",
+          "description": "Trying to maintain foothold",
+          "covered": true,
+          "priority": "high",
+          "techniques": [
+            {
+              "id": "T1098",
+              "name": "Account Manipulation",
+              "covered": true,
+              "mapped_alerts": [
+                10,
+                24
+              ],
+              "mapped_playbooks": [
+                6
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            },
+            {
+              "id": "T1136",
+              "name": "Create Account",
+              "covered": true,
+              "mapped_alerts": [
+                4,
+                16,
+                32
+              ],
+              "mapped_playbooks": [
+                4,
+                11
+              ],
+              "mapped_iocs": [
+                7,
+                19
+              ]
+            },
+            {
+              "id": "T1053",
+              "name": "Scheduled Task/Job",
+              "covered": true,
+              "mapped_alerts": [
+                15,
+                22
+              ],
+              "mapped_playbooks": [
+                12
+              ],
+              "mapped_iocs": [
+                33
+              ]
+            },
+            {
+              "id": "T1547",
+              "name": "Boot or Logon Autostart Execution",
+              "covered": true,
+              "mapped_alerts": [
+                8
+              ],
+              "mapped_playbooks": [
+                10
+              ],
+              "mapped_iocs": [
+                30
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TA0004",
+          "name": "Privilege Escalation",
+          "description": "Trying to gain higher-level permissions",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1068",
+              "name": "Exploitation for Privilege Escalation",
+              "covered": true,
+              "mapped_alerts": [
+                7,
+                14,
+                29
+              ],
+              "mapped_playbooks": [
+                5,
+                7
+              ],
+              "mapped_iocs": [
+                9,
+                18,
+                31
+              ]
+            },
+            {
+              "id": "T1078",
+              "name": "Valid Accounts",
+              "covered": true,
+              "mapped_alerts": [
+                10,
+                24,
+                32
+              ],
+              "mapped_playbooks": [
+                6,
+                11
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            },
+            {
+              "id": "T1134",
+              "name": "Access Token Manipulation",
+              "covered": true,
+              "mapped_alerts": [
+                24
+              ],
+              "mapped_playbooks": [
+                11
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            },
+            {
+              "id": "T1053",
+              "name": "Scheduled Task/Job",
+              "covered": true,
+              "mapped_alerts": [
+                15,
+                22
+              ],
+              "mapped_playbooks": [
+                12
+              ],
+              "mapped_iocs": [
+                33
+              ]
+            },
+            {
+              "id": "T1548",
+              "name": "Abuse Elevation Control Mechanism",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0005",
+          "name": "Defense Evasion",
+          "description": "Trying to avoid being detected",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1140",
+              "name": "Deobfuscate/Decode Files or Information",
+              "covered": true,
+              "mapped_alerts": [
+                3,
+                33
+              ],
+              "mapped_playbooks": [
+                17
+              ],
+              "mapped_iocs": [
+                35,
+                42
+              ]
+            },
+            {
+              "id": "T1070",
+              "name": "Indicator Removal",
+              "covered": true,
+              "mapped_alerts": [
+                15,
+                22
+              ],
+              "mapped_playbooks": [
+                12
+              ],
+              "mapped_iocs": [
+                33
+              ]
+            },
+            {
+              "id": "T1562",
+              "name": "Impair Defenses",
+              "covered": true,
+              "mapped_alerts": [
+                23,
+                33
+              ],
+              "mapped_playbooks": [
+                3,
+                17
+              ],
+              "mapped_iocs": [
+                42
+              ]
+            },
+            {
+              "id": "T1218",
+              "name": "System Binary Proxy Execution",
+              "covered": true,
+              "mapped_alerts": [
+                21,
+                30
+              ],
+              "mapped_playbooks": [
+                10
+              ],
+              "mapped_iocs": [
+                6,
+                17
+              ]
+            },
+            {
+              "id": "T1027",
+              "name": "Obfuscated Files or Information",
+              "covered": true,
+              "mapped_alerts": [
+                3,
+                14
+              ],
+              "mapped_playbooks": [
+                3,
+                17
+              ],
+              "mapped_iocs": [
+                12,
+                26,
+                35
+              ]
+            },
+            {
+              "id": "T1055",
+              "name": "Process Injection",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0006",
+          "name": "Credential Access",
+          "description": "Trying to steal account names and passwords",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1110",
+              "name": "Brute Force",
+              "covered": true,
+              "mapped_alerts": [
+                4,
+                10,
+                16
+              ],
+              "mapped_playbooks": [
+                4
+              ],
+              "mapped_iocs": [
+                7,
+                19
+              ]
+            },
+            {
+              "id": "T1555",
+              "name": "Credentials from Password Stores",
+              "covered": true,
+              "mapped_alerts": [
+                24
+              ],
+              "mapped_playbooks": [
+                11
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            },
+            {
+              "id": "T1003",
+              "name": "OS Credential Dumping",
+              "covered": true,
+              "mapped_alerts": [
+                24,
+                32
+              ],
+              "mapped_playbooks": [
+                11
+              ],
+              "mapped_iocs": [
+                27
+              ]
+            },
+            {
+              "id": "T1056",
+              "name": "Input Capture",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0007",
+          "name": "Discovery",
+          "description": "Trying to figure out your environment",
+          "covered": true,
+          "priority": "high",
+          "techniques": [
+            {
+              "id": "T1087",
+              "name": "Account Discovery",
+              "covered": true,
+              "mapped_alerts": [
+                1,
+                19
+              ],
+              "mapped_playbooks": [
+                1,
+                14
+              ],
+              "mapped_iocs": [
+                3,
+                21
+              ]
+            },
+            {
+              "id": "T1083",
+              "name": "File and Directory Discovery",
+              "covered": true,
+              "mapped_alerts": [
+                11,
+                28
+              ],
+              "mapped_playbooks": [
+                15
+              ],
+              "mapped_iocs": [
+                10,
+                39
+              ]
+            },
+            {
+              "id": "T1046",
+              "name": "Network Service Discovery",
+              "covered": true,
+              "mapped_alerts": [
+                5,
+                18,
+                34
+              ],
+              "mapped_playbooks": [
+                2,
+                13
+              ],
+              "mapped_iocs": [
+                8,
+                20,
+                36
+              ]
+            },
+            {
+              "id": "T1057",
+              "name": "Process Discovery",
+              "covered": true,
+              "mapped_alerts": [
+                35
+              ],
+              "mapped_playbooks": [
+                14
+              ],
+              "mapped_iocs": [
+                39
+              ]
+            },
+            {
+              "id": "T1082",
+              "name": "System Information Discovery",
+              "covered": true,
+              "mapped_alerts": [
+                1,
+                12
+              ],
+              "mapped_playbooks": [
+                1
+              ],
+              "mapped_iocs": [
+                2,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TA0008",
+          "name": "Lateral Movement",
+          "description": "Trying to move through your environment",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1021",
+              "name": "Remote Services",
+              "covered": true,
+              "mapped_alerts": [
+                4,
+                16,
+                25
+              ],
+              "mapped_playbooks": [
+                4,
+                13
+              ],
+              "mapped_iocs": [
+                7,
+                19,
+                40
+              ]
+            },
+            {
+              "id": "T1534",
+              "name": "Internal Spearphishing",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            },
+            {
+              "id": "T1210",
+              "name": "Exploitation of Remote Services",
+              "covered": true,
+              "mapped_alerts": [
+                7,
+                21,
+                29
+              ],
+              "mapped_playbooks": [
+                5,
+                7
+              ],
+              "mapped_iocs": [
+                9,
+                18,
+                31
+              ]
+            },
+            {
+              "id": "T1080",
+              "name": "Taint Shared Content",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0009",
+          "name": "Collection",
+          "description": "Trying to gather data of interest",
+          "covered": true,
+          "priority": "high",
+          "techniques": [
+            {
+              "id": "T1560",
+              "name": "Archive Collected Data",
+              "covered": true,
+              "mapped_alerts": [
+                11,
+                28
+              ],
+              "mapped_playbooks": [
+                15
+              ],
+              "mapped_iocs": [
+                10,
+                39
+              ]
+            },
+            {
+              "id": "T1005",
+              "name": "Data from Local System",
+              "covered": true,
+              "mapped_alerts": [
+                11,
+                35
+              ],
+              "mapped_playbooks": [
+                14,
+                15
+              ],
+              "mapped_iocs": [
+                10,
+                21,
+                39
+              ]
+            },
+            {
+              "id": "T1074",
+              "name": "Data Staged",
+              "covered": true,
+              "mapped_alerts": [
+                28
+              ],
+              "mapped_playbooks": [
+                15
+              ],
+              "mapped_iocs": [
+                39
+              ]
+            },
+            {
+              "id": "T1113",
+              "name": "Screen Capture",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0010",
+          "name": "Command and Control",
+          "description": "Trying to communicate with compromised systems",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1071",
+              "name": "Application Layer Protocol",
+              "covered": true,
+              "mapped_alerts": [
+                5,
+                12,
+                18,
+                25,
+                31,
+                34
+              ],
+              "mapped_playbooks": [
+                2,
+                13,
+                16
+              ],
+              "mapped_iocs": [
+                8,
+                16,
+                20,
+                24,
+                36,
+                40
+              ]
+            },
+            {
+              "id": "T1573",
+              "name": "Encrypted Channel",
+              "covered": true,
+              "mapped_alerts": [
+                9,
+                17
+              ],
+              "mapped_playbooks": [
+                8
+              ],
+              "mapped_iocs": [
+                14,
+                29
+              ]
+            },
+            {
+              "id": "T1090",
+              "name": "Proxy",
+              "covered": true,
+              "mapped_alerts": [
+                25,
+                34
+              ],
+              "mapped_playbooks": [
+                13
+              ],
+              "mapped_iocs": [
+                36,
+                40
+              ]
+            },
+            {
+              "id": "T1095",
+              "name": "Non-Application Layer Protocol",
+              "covered": true,
+              "mapped_alerts": [
+                31
+              ],
+              "mapped_playbooks": [
+                16
+              ],
+              "mapped_iocs": [
+                24
+              ]
+            },
+            {
+              "id": "T1219",
+              "name": "Remote Access Software",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0011",
+          "name": "Exfiltration",
+          "description": "Trying to steal data",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1020",
+              "name": "Automated Exfiltration",
+              "covered": true,
+              "mapped_alerts": [
+                11,
+                28
+              ],
+              "mapped_playbooks": [
+                15
+              ],
+              "mapped_iocs": [
+                39
+              ]
+            },
+            {
+              "id": "T1041",
+              "name": "Exfiltration Over C2 Channel",
+              "covered": true,
+              "mapped_alerts": [
+                12,
+                25,
+                31
+              ],
+              "mapped_playbooks": [
+                2,
+                13,
+                16
+              ],
+              "mapped_iocs": [
+                16,
+                24,
+                40
+              ]
+            },
+            {
+              "id": "T1048",
+              "name": "Exfiltration Over Alternative Protocol",
+              "covered": true,
+              "mapped_alerts": [
+                18,
+                34
+              ],
+              "mapped_playbooks": [
+                13
+              ],
+              "mapped_iocs": [
+                20,
+                36
+              ]
+            },
+            {
+              "id": "T1567",
+              "name": "Exfiltration Over Web Service",
+              "covered": true,
+              "mapped_alerts": [
+                5,
+                35
+              ],
+              "mapped_playbooks": [
+                14
+              ],
+              "mapped_iocs": [
+                8,
+                21
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TA0040",
+          "name": "Impact",
+          "description": "Trying to manipulate, interrupt, or destroy systems and data",
+          "covered": true,
+          "priority": "critical",
+          "techniques": [
+            {
+              "id": "T1486",
+              "name": "Data Encrypted for Impact",
+              "covered": true,
+              "mapped_alerts": [
+                2,
+                13,
+                20,
+                36
+              ],
+              "mapped_playbooks": [
+                7,
+                18,
+                19,
+                20
+              ],
+              "mapped_iocs": [
+                32,
+                37,
+                45,
+                46
+              ]
+            },
+            {
+              "id": "T1485",
+              "name": "Data Destruction",
+              "covered": true,
+              "mapped_alerts": [
+                13,
+                36
+              ],
+              "mapped_playbooks": [
+                18,
+                20
+              ],
+              "mapped_iocs": [
+                45
+              ]
+            },
+            {
+              "id": "T1490",
+              "name": "Inhibit System Recovery",
+              "covered": true,
+              "mapped_alerts": [
+                20
+              ],
+              "mapped_playbooks": [
+                19
+              ],
+              "mapped_iocs": [
+                46
+              ]
+            },
+            {
+              "id": "T1498",
+              "name": "Network Denial of Service",
+              "covered": true,
+              "mapped_alerts": [
+                9,
+                27
+              ],
+              "mapped_playbooks": [
+                8,
+                9
+              ],
+              "mapped_iocs": [
+                41
+              ]
+            },
+            {
+              "id": "T1491",
+              "name": "Defacement",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0042",
+          "name": "Resource Development",
+          "description": "Trying to establish resources for operations",
+          "covered": true,
+          "priority": "medium",
+          "techniques": [
+            {
+              "id": "T1583",
+              "name": "Acquire Infrastructure",
+              "covered": true,
+              "mapped_alerts": [
+                2,
+                11
+              ],
+              "mapped_playbooks": [
+                9
+              ],
+              "mapped_iocs": [
+                1,
+                4,
+                13,
+                25,
+                38
+              ]
+            },
+            {
+              "id": "T1588",
+              "name": "Obtain Capabilities",
+              "covered": true,
+              "mapped_alerts": [
+                27
+              ],
+              "mapped_playbooks": [
+                9
+              ],
+              "mapped_iocs": [
+                41
+              ]
+            },
+            {
+              "id": "T1584",
+              "name": "Compromise Infrastructure",
+              "covered": true,
+              "mapped_alerts": [
+                2
+              ],
+              "mapped_playbooks": [
+                9
+              ],
+              "mapped_iocs": [
+                32,
+                41
+              ]
+            },
+            {
+              "id": "T1587",
+              "name": "Develop Capabilities",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            }
+          ]
+        },
+        {
+          "id": "TA0043",
+          "name": "Reconnaissance",
+          "description": "Trying to gather information for planning",
+          "covered": true,
+          "priority": "medium",
+          "techniques": [
+            {
+              "id": "T1595",
+              "name": "Active Scanning",
+              "covered": true,
+              "mapped_alerts": [
+                5,
+                18,
+                34
+              ],
+              "mapped_playbooks": [
+                2,
+                13
+              ],
+              "mapped_iocs": [
+                8,
+                20,
+                36
+              ]
+            },
+            {
+              "id": "T1592",
+              "name": "Gather Victim Host Information",
+              "covered": true,
+              "mapped_alerts": [
+                1,
+                12,
+                23
+              ],
+              "mapped_playbooks": [
+                1,
+                15
+              ],
+              "mapped_iocs": [
+                2,
+                15,
+                28
+              ]
+            },
+            {
+              "id": "T1589",
+              "name": "Gather Victim Identity Information",
+              "covered": false,
+              "mapped_alerts": [],
+              "mapped_playbooks": [],
+              "mapped_iocs": []
+            },
+            {
+              "id": "T1590",
+              "name": "Gather Victim Network Information",
+              "covered": true,
+              "mapped_alerts": [
+                5,
+                18
+              ],
+              "mapped_playbooks": [
+                2,
+                13
+              ],
+              "mapped_iocs": [
+                8,
+                20
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "overall_coverage": {
+    "total_controls": 149,
+    "covered_controls": 104,
+    "coverage_percentage": 69.8
+  }
+}

@@ -3087,7 +3087,7 @@ async function loadCompliancePosture() {
         }
         
         // Draw gauge chart
-        const canvas = document.getElementById('compliance-gauge-chart') || document.getElementById('compliance-gauge');
+        const canvas = document.getElementById('compliance-gauge-chart');
         if (canvas) {
             drawPostureGauge(canvas, posture.overall_compliance);
         }
@@ -4435,7 +4435,7 @@ function launchHuntFromStatic(huntType, card) {
             hypothesis: formData.get('hypothesis'),
             query: formData.get('query'),
             category: template.category,
-            mitre_techniques: tags.filter(t => t.includes('MITRE:')).map(t => t.replace('MITRE:', '').trim()),
+            mitre_technique: tags.filter(t => t.includes('MITRE:')).map(t => t.replace('MITRE:', '').trim()).join(', '),
             analyst: authState.user?.username || 'analyst'
         };
         

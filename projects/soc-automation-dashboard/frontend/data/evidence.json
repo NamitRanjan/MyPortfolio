@@ -1,0 +1,802 @@
+[
+  {
+    "id": 1,
+    "alert_id": 6,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T13:15:01.026752Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T04:15:01.026756Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "c2",
+      "network"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 2,
+    "alert_id": 50,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T16:15:01.026765Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T07:15:01.026768Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 3,
+    "alert_id": 50,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-15T06:15:01.026773Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T17:15:01.026776Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 4,
+    "alert_id": 49,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-13T14:15:01.026781Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T20:15:01.026783Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 5,
+    "alert_id": 42,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T23:15:01.026788Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T00:15:01.026791Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 6,
+    "alert_id": 4,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-13T15:15:01.026796Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T21:15:01.026799Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 7,
+    "alert_id": 4,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-13T10:15:01.026803Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-15T00:15:01.026805Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 8,
+    "alert_id": 47,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T12:15:01.026810Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-13T17:15:01.026812Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 9,
+    "alert_id": 47,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T01:15:01.026817Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T08:15:01.026820Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 10,
+    "alert_id": 25,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T05:15:01.026826Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T13:15:01.026829Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 11,
+    "alert_id": 25,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T13:15:01.026833Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-14T05:15:01.026836Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 12,
+    "alert_id": 43,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T14:15:01.026841Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-15T00:15:01.026843Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 13,
+    "alert_id": 43,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-14T23:15:01.026848Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-13T12:15:01.026850Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 14,
+    "alert_id": 23,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-13T20:15:01.026855Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T21:15:01.026858Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 15,
+    "alert_id": 23,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-15T05:15:01.026862Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T17:15:01.026865Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 16,
+    "alert_id": 30,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T09:15:01.026870Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T23:15:01.026872Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 17,
+    "alert_id": 33,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-14T18:15:01.026880Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T06:15:01.026882Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 18,
+    "alert_id": 33,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T12:15:01.026887Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-13T21:15:01.026889Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 19,
+    "alert_id": 7,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-15T02:15:01.026894Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-13T17:15:01.026896Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "c2",
+      "network"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 20,
+    "alert_id": 48,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T05:15:01.026901Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T11:15:01.026904Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 21,
+    "alert_id": 48,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T10:15:01.026908Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-14T06:15:01.026910Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "c2",
+      "network"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 22,
+    "alert_id": 41,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T22:15:01.026916Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-13T14:15:01.026918Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 23,
+    "alert_id": 41,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T04:15:01.027058Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-15T08:15:01.027062Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 24,
+    "alert_id": 24,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-15T03:15:01.027070Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T06:15:01.027072Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 25,
+    "alert_id": 16,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T01:15:01.027077Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T14:15:01.027080Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 26,
+    "alert_id": 34,
+    "incident_id": null,
+    "type": "domain",
+    "value": "malicious-domain.com",
+    "hash_type": null,
+    "description": "Known malicious domain",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-13T12:15:01.027085Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T17:15:01.027087Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "domain",
+      "c2"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 27,
+    "alert_id": 34,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-14T04:15:01.027091Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-13T17:15:01.027094Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "c2",
+      "network"
+    ],
+    "status": "analyzed"
+  },
+  {
+    "id": 28,
+    "alert_id": 20,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-13T15:15:01.027099Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T01:15:01.027101Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "c2",
+      "network"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 29,
+    "alert_id": 2,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-14T18:15:01.027110Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-14T12:15:01.027112Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 30,
+    "alert_id": 2,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-13T22:15:01.027116Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-15T06:15:01.027118Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "verified"
+  },
+  {
+    "id": 31,
+    "alert_id": 15,
+    "incident_id": null,
+    "type": "email",
+    "value": "phishing@malicious.com",
+    "hash_type": null,
+    "description": "Phishing email address",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T07:15:01.027123Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T22:15:01.027125Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "phishing",
+      "email"
+    ],
+    "status": "collected"
+  },
+  {
+    "id": 32,
+    "alert_id": 15,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious file hash",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-14T14:15:01.027129Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-14T02:15:01.027132Z",
+        "notes": "Extracted from security logs"
+      }
+    ],
+    "tags": [
+      "malware",
+      "file"
+    ],
+    "status": "analyzed"
+  }
+]

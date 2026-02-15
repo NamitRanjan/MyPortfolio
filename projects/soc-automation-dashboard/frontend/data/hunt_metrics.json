@@ -1,0 +1,187 @@
+{
+  "total_hunts_launched": 47,
+  "active_hunts": 2,
+  "completed_hunts": 42,
+  "paused_hunts": 3,
+  "detection_improvements": {
+    "new_detection_rules_created": 18,
+    "existing_rules_tuned": 34,
+    "false_positive_reduction": 42.5,
+    "alert_quality_improvement": 38.2
+  },
+  "new_iocs_discovered": {
+    "total": 127,
+    "ips": 45,
+    "domains": 32,
+    "hashes": 38,
+    "urls": 12
+  },
+  "skill_levels": {
+    "beginner": {
+      "hunts_completed": 12,
+      "avg_success_rate": 0.71,
+      "avg_time_hours": 5.2
+    },
+    "intermediate": {
+      "hunts_completed": 20,
+      "avg_success_rate": 0.78,
+      "avg_time_hours": 8.7
+    },
+    "advanced": {
+      "hunts_completed": 13,
+      "avg_success_rate": 0.73,
+      "avg_time_hours": 11.4
+    },
+    "expert": {
+      "hunts_completed": 2,
+      "avg_success_rate": 0.82,
+      "avg_time_hours": 16.5
+    }
+  },
+  "top_hunters": [
+    {
+      "analyst_id": 1,
+      "name": "Sarah Chen",
+      "hunts_completed": 12,
+      "success_rate": 0.85,
+      "total_hours": 96.5,
+      "iocs_discovered": 28,
+      "detection_rules_created": 6,
+      "rank": 1
+    },
+    {
+      "analyst_id": 3,
+      "name": "Aisha Okafor",
+      "hunts_completed": 11,
+      "success_rate": 0.82,
+      "total_hours": 110.0,
+      "iocs_discovered": 31,
+      "detection_rules_created": 7,
+      "rank": 2
+    },
+    {
+      "analyst_id": 2,
+      "name": "Marcus Rodriguez",
+      "hunts_completed": 9,
+      "success_rate": 0.78,
+      "total_hours": 87.5,
+      "iocs_discovered": 24,
+      "detection_rules_created": 4,
+      "rank": 3
+    },
+    {
+      "analyst_id": 6,
+      "name": "Raj Patel",
+      "hunts_completed": 8,
+      "success_rate": 0.75,
+      "total_hours": 72.0,
+      "iocs_discovered": 19,
+      "detection_rules_created": 5,
+      "rank": 4
+    },
+    {
+      "analyst_id": 4,
+      "name": "James Liu",
+      "hunts_completed": 7,
+      "success_rate": 0.71,
+      "total_hours": 63.0,
+      "iocs_discovered": 15,
+      "detection_rules_created": 3,
+      "rank": 5
+    }
+  ],
+  "hunt_categories": {
+    "Credential Access": {
+      "hunts_completed": 9,
+      "avg_success_rate": 0.82,
+      "total_findings": 24,
+      "incidents_generated": 7
+    },
+    "Defense Evasion": {
+      "hunts_completed": 8,
+      "avg_success_rate": 0.76,
+      "total_findings": 19,
+      "incidents_generated": 5
+    },
+    "Command and Control": {
+      "hunts_completed": 7,
+      "avg_success_rate": 0.74,
+      "total_findings": 18,
+      "incidents_generated": 6
+    },
+    "Exfiltration": {
+      "hunts_completed": 6,
+      "avg_success_rate": 0.79,
+      "total_findings": 16,
+      "incidents_generated": 5
+    },
+    "Persistence": {
+      "hunts_completed": 6,
+      "avg_success_rate": 0.68,
+      "total_findings": 13,
+      "incidents_generated": 4
+    },
+    "Privilege Escalation": {
+      "hunts_completed": 5,
+      "avg_success_rate": 0.81,
+      "total_findings": 12,
+      "incidents_generated": 4
+    },
+    "Initial Access": {
+      "hunts_completed": 4,
+      "avg_success_rate": 0.73,
+      "total_findings": 9,
+      "incidents_generated": 3
+    },
+    "Cloud Security": {
+      "hunts_completed": 2,
+      "avg_success_rate": 0.7,
+      "total_findings": 5,
+      "incidents_generated": 2
+    }
+  },
+  "time_investment": {
+    "total_hours": 1247.5,
+    "avg_hours_per_hunt": 8.9,
+    "analyst_hours_saved": 342.0,
+    "efficiency_gain_percent": 27.4
+  },
+  "outcome_tracking": {
+    "true_positives": 116,
+    "false_positives": 89,
+    "no_findings": 23,
+    "precision": 0.566,
+    "hunts_leading_to_incidents": 32,
+    "incident_conversion_rate": 0.681
+  },
+  "quarterly_trends": [
+    {
+      "quarter": "Q4 2023",
+      "hunts_completed": 15,
+      "success_rate": 0.73,
+      "iocs_discovered": 42,
+      "incidents_generated": 11
+    },
+    {
+      "quarter": "Q1 2024",
+      "hunts_completed": 27,
+      "success_rate": 0.78,
+      "iocs_discovered": 85,
+      "incidents_generated": 21
+    }
+  ],
+  "mitre_coverage_improvement": {
+    "tactics_covered_before": 10,
+    "tactics_covered_after": 14,
+    "techniques_covered_before": 38,
+    "techniques_covered_after": 67,
+    "improvement_percentage": 76.3
+  },
+  "roi_metrics": {
+    "threats_discovered": 32,
+    "prevented_incidents_estimated": 18,
+    "cost_avoidance_estimated": 2150000,
+    "program_cost": 385000,
+    "roi_multiple": 5.58
+  }
+}

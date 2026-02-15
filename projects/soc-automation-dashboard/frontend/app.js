@@ -198,6 +198,67 @@ const API = {
             return MOCK_DATA.getWebhooks();
         }
         
+        // Phase 3: Compliance endpoints
+        if (endpoint.startsWith('/compliance')) {
+            if (endpoint.includes('/frameworks')) return MOCK_DATA.getComplianceFrameworks();
+            if (endpoint.includes('/posture')) return MOCK_DATA.getCompliancePosture();
+            if (endpoint.includes('/coverage/')) {
+                const framework = endpoint.match(/\/coverage\/([^/?]+)/)[1];
+                return MOCK_DATA.getComplianceCoverage(framework);
+            }
+            if (endpoint.includes('/gaps')) return MOCK_DATA.getComplianceGaps();
+        }
+        if (endpoint === '/mitre/heatmap') return MOCK_DATA.getMitreHeatmap();
+        if (endpoint.startsWith('/reports')) {
+            if (endpoint.includes('/generate') && options.method === 'POST') {
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.generateReport(body.report_type, body.parameters);
+            }
+            return MOCK_DATA.getReports();
+        }
+        
+        // Phase 3: Threat hunting endpoints
+        if (endpoint.startsWith('/hunts')) {
+            if (endpoint === '/hunts' && options.method === 'POST') {
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.createHunt(body);
+            }
+            if (endpoint.match(/\/hunts\/\d+$/)) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                return MOCK_DATA.getHunt(huntId);
+            }
+            if (endpoint.includes('/query') && options.method === 'PUT') {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.updateHuntQuery(huntId, body);
+            }
+            if (endpoint.includes('/findings')) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                if (options.method === 'POST') {
+                    const body = options.body ? JSON.parse(options.body) : {};
+                    return MOCK_DATA.addHuntFinding(huntId, body);
+                }
+                return MOCK_DATA.getHuntFindings(huntId);
+            }
+            if (endpoint.includes('/journal')) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                if (options.method === 'POST') {
+                    const body = options.body ? JSON.parse(options.body) : {};
+                    return MOCK_DATA.addHuntJournalEntry(huntId, body);
+                }
+                return MOCK_DATA.getHuntJournal(huntId);
+            }
+            if (endpoint.includes('/complete') && options.method === 'PUT') {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.completeHunt(huntId, body);
+            }
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getHunts(Object.fromEntries(params));
+        }
+        if (endpoint === '/hunt-library') return MOCK_DATA.getHuntLibrary();
+        if (endpoint === '/hunt-metrics') return MOCK_DATA.getHuntMetrics();
+        
         return {};
     }
 };
@@ -538,6 +599,15 @@ function switchPage(page) {
         case 'audit-log':
             loadAuditLog();
             break;
+        case 'compliance':
+            loadCompliancePage();
+            break;
+        case 'reports':
+            loadReportsPage();
+            break;
+        case 'threat-hunting':
+            loadThreatHuntingPage();
+            break;
     }
 }
 
@@ -545,13 +615,24 @@ function switchPage(page) {
 async function loadDashboard() {
     showLoading();
     try {
-        const [stats, alerts, timeline] = await Promise.all([
+        const promises = [
             API.fetch(`/dashboard/stats`).then(r => r.json()),
             API.fetch(`/alerts`).then(r => r.json()),
             API.fetch(`/timeline`).then(r => r.json())
-        ]);
+        ];
         
-        updateStats(stats);
+        // Optionally load Phase 3 stats if elements exist
+        if (document.getElementById('compliance-score')) {
+            promises.push(API.fetch('/compliance/posture').then(r => r.json()).catch(() => null));
+        }
+        if (document.getElementById('active-hunts')) {
+            promises.push(API.fetch('/hunt-metrics').then(r => r.json()).catch(() => null));
+        }
+        
+        const results = await Promise.all(promises);
+        const [stats, alerts, timeline, compliancePosture, huntMetrics] = results;
+        
+        updateStats(stats, compliancePosture, huntMetrics);
         updateActivityFeed(alerts);
         renderTimelineChart(timeline);
         renderAlertDistributionChart(alerts);
@@ -564,11 +645,19 @@ async function loadDashboard() {
     }
 }
 
-function updateStats(stats) {
+function updateStats(stats, compliancePosture = null, huntMetrics = null) {
     document.getElementById('critical-alerts').textContent = stats.active_alerts || 0;
     document.getElementById('active-threats').textContent = stats.blocked_threats || 0;
     document.getElementById('automation-rate').textContent = stats.automation_rate || '0%';
     document.getElementById('mttr').textContent = stats.mttr || '0 min';
+    
+    // Update Phase 3 stats if available
+    if (compliancePosture && document.getElementById('compliance-score')) {
+        document.getElementById('compliance-score').textContent = compliancePosture.overall_compliance + '%';
+    }
+    if (huntMetrics && document.getElementById('active-hunts')) {
+        document.getElementById('active-hunts').textContent = huntMetrics.active_hunts || 0;
+    }
 }
 
 function updateActivityFeed(alerts) {
@@ -2937,4 +3026,1139 @@ async function toggleWebhook(webhookId) {
         showToast('Failed to update webhook', 'error');
         console.error(error);
     }
+}
+
+// ============================================================================
+// PHASE 3: COMPLIANCE PAGE FUNCTIONS
+// ============================================================================
+
+// Main compliance page loader
+async function loadCompliancePage() {
+    showLoading();
+    try {
+        await Promise.all([
+            loadCompliancePosture(),
+            loadFrameworkCards(),
+            loadGapAnalysis(),
+            loadMitreHeatmap()
+        ]);
+    } catch (error) {
+        showToast('Failed to load compliance data', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Load and display overall compliance posture with gauge chart
+async function loadCompliancePosture() {
+    try {
+        const posture = await API.fetch('/compliance/posture').then(r => r.json());
+        
+        // Update posture stats using correct HTML element IDs
+        const gaugeValue = document.getElementById('gauge-value');
+        if (gaugeValue) {
+            gaugeValue.textContent = posture.overall_compliance + '%';
+        }
+        
+        const controlsPassed = document.getElementById('controls-passed');
+        if (controlsPassed) {
+            controlsPassed.textContent = posture.covered_controls;
+        }
+        
+        const controlsFailed = document.getElementById('controls-failed');
+        if (controlsFailed) {
+            controlsFailed.textContent = posture.gap_controls;
+        }
+        
+        const controlsPartial = document.getElementById('controls-partial');
+        if (controlsPartial) {
+            // Calculate partial from total - covered - gaps
+            const partial = posture.total_controls - posture.covered_controls - posture.gap_controls;
+            controlsPartial.textContent = partial > 0 ? partial : 0;
+        }
+        
+        // Draw gauge chart
+        const canvas = document.getElementById('compliance-gauge');
+        if (canvas) {
+            drawPostureGauge(canvas, posture.overall_compliance);
+        }
+        
+        // Update last updated time
+        const lastUpdated = document.getElementById('compliance-last-updated');
+        if (lastUpdated) {
+            lastUpdated.textContent = 'Last updated: ' + formatTime(posture.last_updated);
+        }
+    } catch (error) {
+        console.error('Failed to load compliance posture:', error);
+    }
+}
+
+// Draw circular gauge chart for compliance score
+function drawPostureGauge(canvas, score) {
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.min(centerX, centerY) - 10;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background arc
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0.75 * Math.PI, 2.25 * Math.PI);
+    ctx.lineWidth = 20;
+    ctx.strokeStyle = '#2d3748';
+    ctx.stroke();
+    
+    // Draw score arc
+    const scoreAngle = 0.75 * Math.PI + (1.5 * Math.PI * (score / 100));
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0.75 * Math.PI, scoreAngle);
+    ctx.lineWidth = 20;
+    
+    // Color based on score
+    if (score >= 80) {
+        ctx.strokeStyle = '#48bb78';
+    } else if (score >= 60) {
+        ctx.strokeStyle = '#ed8936';
+    } else {
+        ctx.strokeStyle = '#f56565';
+    }
+    ctx.stroke();
+    
+    // Draw score text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 48px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(score + '%', centerX, centerY);
+    
+    // Draw label
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#a0aec0';
+    ctx.fillText('Compliance Score', centerX, centerY + 30);
+}
+
+// Load and display framework score cards
+async function loadFrameworkCards() {
+    try {
+        const frameworks = await API.fetch('/compliance/frameworks').then(r => r.json());
+        const container = document.getElementById('framework-cards');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (frameworks.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 3rem; color: #a0aec0;">No frameworks configured</div>';
+            return;
+        }
+        
+        frameworks.forEach(framework => {
+            const card = document.createElement('div');
+            card.className = 'framework-card';
+            
+            const percentage = framework.compliance_percentage;
+            const statusClass = percentage >= 80 ? 'success' : percentage >= 60 ? 'warning' : 'error';
+            
+            card.innerHTML = `
+                <div class="framework-header">
+                    <h3>${framework.name}</h3>
+                    <span class="framework-score ${statusClass}">${percentage}%</span>
+                </div>
+                <div class="framework-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill ${statusClass}" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+                <div class="framework-stats">
+                    <div class="framework-stat">
+                        <span class="stat-label">Controls</span>
+                        <span class="stat-value">${framework.covered_controls}/${framework.total_controls}</span>
+                    </div>
+                    <div class="framework-stat">
+                        <span class="stat-label">Gaps</span>
+                        <span class="stat-value">${framework.total_controls - framework.covered_controls}</span>
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="viewFrameworkDetails('${framework.id}')">
+                    View Details
+                </button>
+            `;
+            
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Failed to load framework cards:', error);
+    }
+}
+
+// Load and display top compliance gaps
+async function loadGapAnalysis() {
+    try {
+        const gapsData = await API.fetch('/compliance/gaps').then(r => r.json());
+        const container = document.getElementById('gap-analysis-list');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (gapsData.gaps.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No compliance gaps found</div>';
+            return;
+        }
+        
+        // Show top 10 gaps
+        gapsData.gaps.slice(0, 10).forEach(gap => {
+            const item = document.createElement('div');
+            item.className = 'gap-item';
+            
+            const priorityBadge = gap.priority === 'high' ? 
+                '<span class="badge critical">High Priority</span>' : 
+                '<span class="badge warning">Medium Priority</span>';
+            
+            item.innerHTML = `
+                <div class="gap-header">
+                    <div>
+                        <strong>${gap.framework}</strong> - ${gap.control_id}
+                        ${priorityBadge}
+                    </div>
+                    <span class="badge ${gap.coverage_status === 'gap' ? 'error' : 'warning'}">${gap.coverage_status}</span>
+                </div>
+                <div class="gap-description">${gap.control_name}</div>
+                ${gap.mitre_techniques && gap.mitre_techniques.length > 0 ? 
+                    `<div class="gap-techniques">
+                        <i class="fas fa-shield-alt"></i> MITRE: ${gap.mitre_techniques.join(', ')}
+                    </div>` : ''}
+                ${gap.gaps && gap.gaps.length > 0 ? 
+                    `<div class="gap-details">
+                        <strong>Gaps:</strong> ${gap.gaps.join(', ')}
+                    </div>` : ''}
+            `;
+            
+            container.appendChild(item);
+        });
+    } catch (error) {
+        console.error('Failed to load gap analysis:', error);
+    }
+}
+
+// Load and display MITRE ATT&CK heatmap
+async function loadMitreHeatmap() {
+    try {
+        const heatmap = await API.fetch('/mitre/heatmap').then(r => r.json());
+        const container = document.getElementById('mitre-heatmap');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        // Group techniques by tactic
+        const tacticGroups = {};
+        heatmap.forEach(item => {
+            if (!tacticGroups[item.tactic]) {
+                tacticGroups[item.tactic] = [];
+            }
+            tacticGroups[item.tactic].push(item);
+        });
+        
+        // Render each tactic group
+        Object.keys(tacticGroups).forEach(tactic => {
+            const tacticSection = document.createElement('div');
+            tacticSection.className = 'mitre-tactic-section';
+            
+            const tacticHeader = document.createElement('div');
+            tacticHeader.className = 'mitre-tactic-header';
+            tacticHeader.textContent = tactic;
+            tacticSection.appendChild(tacticHeader);
+            
+            const techniqueGrid = document.createElement('div');
+            techniqueGrid.className = 'mitre-technique-grid';
+            
+            tacticGroups[tactic].forEach(technique => {
+                const cell = document.createElement('div');
+                cell.className = 'mitre-technique-cell';
+                cell.title = `${technique.technique_id}: ${technique.technique_name}\nAlerts: ${technique.alert_count}\nCoverage: ${technique.coverage_status}`;
+                
+                // Color based on alert count and coverage
+                let intensityClass = 'low';
+                if (technique.alert_count > 10) {
+                    intensityClass = 'critical';
+                } else if (technique.alert_count > 5) {
+                    intensityClass = 'high';
+                } else if (technique.alert_count > 0) {
+                    intensityClass = 'medium';
+                }
+                
+                if (technique.coverage_status === 'gap') {
+                    cell.classList.add('no-coverage');
+                }
+                
+                cell.classList.add(intensityClass);
+                cell.innerHTML = `
+                    <div class="technique-id">${technique.technique_id}</div>
+                    <div class="technique-count">${technique.alert_count}</div>
+                `;
+                
+                techniqueGrid.appendChild(cell);
+            });
+            
+            tacticSection.appendChild(techniqueGrid);
+            container.appendChild(tacticSection);
+        });
+    } catch (error) {
+        console.error('Failed to load MITRE heatmap:', error);
+    }
+}
+
+// View detailed framework coverage matrix
+async function viewFrameworkDetails(frameworkId) {
+    showLoading();
+    try {
+        const coverage = await API.fetch(`/compliance/coverage/${frameworkId}`).then(r => r.json());
+        
+        // Create modal content
+        const modal = document.getElementById('framework-detail-modal') || createFrameworkModal();
+        const modalBody = modal.querySelector('.modal-body');
+        
+        modalBody.innerHTML = `
+            <div class="framework-detail-header">
+                <h2>${coverage.framework_name}</h2>
+                <div class="framework-summary">
+                    <div class="summary-stat">
+                        <span class="stat-value ${coverage.covered_controls > 0 ? 'success' : ''}">${coverage.covered_controls}</span>
+                        <span class="stat-label">Covered</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-value ${coverage.partial_controls > 0 ? 'warning' : ''}">${coverage.partial_controls}</span>
+                        <span class="stat-label">Partial</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-value ${coverage.gap_controls > 0 ? 'error' : ''}">${coverage.gap_controls}</span>
+                        <span class="stat-label">Gaps</span>
+                    </div>
+                </div>
+            </div>
+            <div class="framework-controls-list">
+                ${coverage.controls.map(control => `
+                    <div class="control-item ${control.coverage_status}">
+                        <div class="control-header">
+                            <strong>${control.control_id}</strong>
+                            <span class="badge ${control.coverage_status === 'covered' ? 'success' : control.coverage_status === 'partial' ? 'warning' : 'error'}">
+                                ${control.coverage_status}
+                            </span>
+                        </div>
+                        <div class="control-name">${control.control_name}</div>
+                        ${control.mitre_techniques && control.mitre_techniques.length > 0 ? 
+                            `<div class="control-mitre">
+                                <i class="fas fa-shield-alt"></i> ${control.mitre_techniques.join(', ')}
+                            </div>` : ''}
+                        ${control.detection_rules && control.detection_rules.length > 0 ? 
+                            `<div class="control-rules">
+                                <i class="fas fa-check-circle"></i> ${control.detection_rules.length} detection rules
+                            </div>` : ''}
+                        ${control.gaps && control.gaps.length > 0 ? 
+                            `<div class="control-gaps">
+                                <i class="fas fa-exclamation-triangle"></i> ${control.gaps.join(', ')}
+                            </div>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+    } catch (error) {
+        showToast('Failed to load framework details', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Create framework detail modal if it doesn't exist
+function createFrameworkModal() {
+    const modal = document.createElement('div');
+    modal.id = 'framework-detail-modal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content large">
+            <span class="modal-close" onclick="document.getElementById('framework-detail-modal').style.display='none'">&times;</span>
+            <div class="modal-body"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    return modal;
+}
+
+// ============================================================================
+// PHASE 3: REPORTS PAGE FUNCTIONS
+// ============================================================================
+
+// Main reports page loader
+async function loadReportsPage() {
+    showLoading();
+    try {
+        await loadReportsList();
+    } catch (error) {
+        showToast('Failed to load reports', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Load and display list of reports
+async function loadReportsList() {
+    try {
+        const reports = await API.fetch('/reports').then(r => r.json());
+        const container = document.getElementById('reports-list');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (reports.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 3rem; color: #a0aec0;"><i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 1rem; color: #0066cc;"></i><br>No reports generated yet</div>';
+            return;
+        }
+        
+        reports.forEach(report => {
+            const card = document.createElement('div');
+            card.className = 'report-card';
+            
+            const typeIcons = {
+                'daily': 'calendar-day',
+                'weekly': 'calendar-week',
+                'monthly': 'calendar-alt',
+                'executive': 'chart-pie',
+                'compliance': 'shield-alt',
+                'incident': 'exclamation-circle'
+            };
+            
+            const icon = typeIcons[report.type] || 'file-alt';
+            
+            card.innerHTML = `
+                <div class="report-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="report-info">
+                    <h3>${report.title}</h3>
+                    <div class="report-meta">
+                        <span><i class="fas fa-tag"></i> ${report.type}</span>
+                        <span><i class="fas fa-clock"></i> ${formatTime(report.generated_at)}</span>
+                    </div>
+                    ${report.description ? `<p class="report-description">${report.description}</p>` : ''}
+                </div>
+                <div class="report-actions">
+                    <button class="btn-primary" onclick="viewReport(${report.id})">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    <button class="btn-secondary" onclick="exportReport(${report.id}, 'pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-secondary" onclick="exportReport(${report.id}, 'json')">
+                        <i class="fas fa-file-code"></i> JSON
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Failed to load reports list:', error);
+    }
+}
+
+// Generate new report
+async function generateReport(type) {
+    const button = event.target;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    
+    try {
+        const params = { type };
+        
+        // Add date range if specified
+        const startDate = document.getElementById('report-start-date')?.value;
+        const endDate = document.getElementById('report-end-date')?.value;
+        
+        if (startDate) params.start_date = startDate;
+        if (endDate) params.end_date = endDate;
+        
+        const result = await API.fetch('/reports/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        }).then(r => r.json());
+        
+        showToast(`${type} report generated successfully`, 'success');
+        
+        // Reload reports list
+        await loadReportsList();
+        
+        // Auto-view the new report
+        if (result.report_id) {
+            setTimeout(() => viewReport(result.report_id), 500);
+        }
+    } catch (error) {
+        showToast('Failed to generate report', 'error');
+        console.error(error);
+    } finally {
+        button.disabled = false;
+        button.innerHTML = button.getAttribute('data-original-text') || 'Generate';
+    }
+}
+
+// View full report in viewer
+async function viewReport(reportId) {
+    showLoading();
+    try {
+        const report = await API.fetch(`/reports/${reportId}`).then(r => r.json());
+        
+        // Create or get report viewer modal
+        const modal = document.getElementById('report-viewer-modal') || createReportViewerModal();
+        const modalBody = modal.querySelector('.modal-body');
+        
+        modalBody.innerHTML = formatReportContent(report);
+        
+        modal.style.display = 'block';
+    } catch (error) {
+        showToast('Failed to load report', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Format report content for display
+function formatReportContent(report) {
+    let html = `
+        <div class="report-viewer">
+            <div class="report-header">
+                <h1>${report.title}</h1>
+                <div class="report-metadata">
+                    <span><i class="fas fa-calendar"></i> ${new Date(report.generated_at).toLocaleString()}</span>
+                    <span><i class="fas fa-tag"></i> ${report.type}</span>
+                </div>
+            </div>
+    `;
+    
+    if (report.summary) {
+        html += `
+            <div class="report-section">
+                <h2>Executive Summary</h2>
+                <p>${report.summary}</p>
+            </div>
+        `;
+    }
+    
+    if (report.data) {
+        // Format based on report type
+        if (report.type === 'daily' || report.type === 'weekly' || report.type === 'monthly') {
+            html += `
+                <div class="report-section">
+                    <h2>Key Metrics</h2>
+                    <div class="report-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.total_alerts || 0}</div>
+                            <div class="metric-label">Total Alerts</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.critical_alerts || 0}</div>
+                            <div class="metric-label">Critical Alerts</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.incidents_created || 0}</div>
+                            <div class="metric-label">Incidents</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.threats_blocked || 0}</div>
+                            <div class="metric-label">Threats Blocked</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            if (report.data.top_threats && report.data.top_threats.length > 0) {
+                html += `
+                    <div class="report-section">
+                        <h2>Top Threats</h2>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Threat</th>
+                                    <th>Count</th>
+                                    <th>Severity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${report.data.top_threats.map(threat => `
+                                    <tr>
+                                        <td>${threat.name}</td>
+                                        <td>${threat.count}</td>
+                                        <td><span class="badge ${threat.severity}">${threat.severity}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        } else if (report.type === 'compliance') {
+            html += `
+                <div class="report-section">
+                    <h2>Compliance Status</h2>
+                    <div class="report-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.overall_compliance || 0}%</div>
+                            <div class="metric-label">Overall Score</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.frameworks_count || 0}</div>
+                            <div class="metric-label">Frameworks</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.total_controls || 0}</div>
+                            <div class="metric-label">Total Controls</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value">${report.data.gap_controls || 0}</div>
+                            <div class="metric-label">Gaps</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+// Export report as PDF or JSON
+async function exportReport(reportId, format) {
+    try {
+        const report = await API.fetch(`/reports/${reportId}`).then(r => r.json());
+        
+        if (format === 'json') {
+            // Export as JSON
+            const dataStr = JSON.stringify(report, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `report_${reportId}_${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('Report exported as JSON', 'success');
+        } else if (format === 'pdf') {
+            // In mock mode, just download the JSON with PDF extension
+            // In real backend mode, this would call the backend PDF generation endpoint
+            if (API_BASE && !isGitHubPages) {
+                const response = await API.fetch(`/reports/${reportId}/export?format=pdf`);
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `report_${reportId}.pdf`;
+                link.click();
+                URL.revokeObjectURL(url);
+            } else {
+                showToast('PDF export available with backend', 'info');
+            }
+        }
+    } catch (error) {
+        showToast('Failed to export report', 'error');
+        console.error(error);
+    }
+}
+
+// Create report viewer modal
+function createReportViewerModal() {
+    const modal = document.createElement('div');
+    modal.id = 'report-viewer-modal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content large">
+            <span class="modal-close" onclick="document.getElementById('report-viewer-modal').style.display='none'">&times;</span>
+            <div class="modal-body"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    return modal;
+}
+
+// ============================================================================
+// PHASE 3: THREAT HUNTING PAGE FUNCTIONS
+// ============================================================================
+
+// Main threat hunting page loader
+async function loadThreatHuntingPage() {
+    showLoading();
+    try {
+        await Promise.all([
+            loadHuntStatistics(),
+            loadHuntLibrary(),
+            loadActiveHunts()
+        ]);
+    } catch (error) {
+        showToast('Failed to load threat hunting data', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Load and display hunt statistics
+async function loadHuntStatistics() {
+    try {
+        const stats = await API.fetch('/hunt-metrics').then(r => r.json());
+        
+        // Update hunt stats using correct HTML element IDs
+        const huntActive = document.getElementById('hunt-active');
+        if (huntActive) {
+            huntActive.textContent = stats.active_hunts || 0;
+        }
+        
+        const huntCompleted = document.getElementById('hunt-completed');
+        if (huntCompleted) {
+            huntCompleted.textContent = stats.completed_hunts || 0;
+        }
+        
+        const huntFindings = document.getElementById('hunt-findings');
+        if (huntFindings) {
+            huntFindings.textContent = stats.total_findings || 0;
+        }
+        
+        const huntLaunched = document.getElementById('hunt-launched');
+        if (huntLaunched) {
+            huntLaunched.textContent = stats.total_hunts || 0;
+        }
+    } catch (error) {
+        console.error('Failed to load hunt statistics:', error);
+    }
+}
+
+// Load and display hunt library (packages)
+async function loadHuntLibrary() {
+    try {
+        const library = await API.fetch('/hunt-library').then(r => r.json());
+        const container = document.getElementById('hunt-library-list');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (library.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No hunt packages available</div>';
+            return;
+        }
+        
+        library.forEach(pkg => {
+            const card = document.createElement('div');
+            card.className = 'hunt-package-card';
+            
+            card.innerHTML = `
+                <div class="hunt-package-header">
+                    <h3>${pkg.name}</h3>
+                    ${pkg.mitre_technique ? `<span class="badge info">${pkg.mitre_technique}</span>` : ''}
+                </div>
+                <p class="hunt-package-description">${pkg.description}</p>
+                <div class="hunt-package-meta">
+                    <span><i class="fas fa-layer-group"></i> ${pkg.category}</span>
+                    <span><i class="fas fa-signal"></i> ${pkg.difficulty}</span>
+                </div>
+                <button class="btn-primary" onclick="startHunt(${pkg.id})">
+                    <i class="fas fa-play"></i> Start Hunt
+                </button>
+            `;
+            
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Failed to load hunt library:', error);
+    }
+}
+
+// Load and display active hunts
+async function loadActiveHunts() {
+    try {
+        const hunts = await API.fetch('/hunts?status=active').then(r => r.json());
+        const container = document.getElementById('active-hunts-list');
+        
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (hunts.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No active hunts</div>';
+            return;
+        }
+        
+        hunts.forEach(hunt => {
+            const card = document.createElement('div');
+            card.className = 'hunt-card';
+            card.onclick = () => viewHuntDetails(hunt.id);
+            
+            const statusBadge = {
+                'active': '<span class="badge info">Active</span>',
+                'completed': '<span class="badge success">Completed</span>',
+                'on_hold': '<span class="badge warning">On Hold</span>'
+            }[hunt.status] || '<span class="badge">Unknown</span>';
+            
+            card.innerHTML = `
+                <div class="hunt-card-header">
+                    <h3>${hunt.name}</h3>
+                    ${statusBadge}
+                </div>
+                <p class="hunt-hypothesis">${hunt.hypothesis}</p>
+                <div class="hunt-card-meta">
+                    <span><i class="fas fa-user"></i> ${hunt.analyst}</span>
+                    <span><i class="fas fa-clock"></i> ${formatTime(hunt.created_at)}</span>
+                    <span><i class="fas fa-search"></i> ${hunt.findings_count || 0} findings</span>
+                </div>
+                <div class="hunt-card-progress">
+                    <div class="progress-label">Progress</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${hunt.progress || 0}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Failed to load active hunts:', error);
+    }
+}
+
+// Start a new hunt from a package
+async function startHunt(packageId) {
+    showLoading();
+    try {
+        const result = await API.fetch('/hunts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                package_id: packageId,
+                analyst: authState.user?.username || 'analyst'
+            })
+        }).then(r => r.json());
+        
+        showToast('Hunt started successfully', 'success');
+        
+        // Reload active hunts
+        await loadActiveHunts();
+        await loadHuntStatistics();
+        
+        // Open hunt details
+        setTimeout(() => viewHuntDetails(result.hunt_id), 500);
+    } catch (error) {
+        showToast('Failed to start hunt', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// View hunt details
+async function viewHuntDetails(huntId) {
+    showLoading();
+    try {
+        const [hunt, findings, journal] = await Promise.all([
+            API.fetch(`/hunts/${huntId}`).then(r => r.json()),
+            API.fetch(`/hunts/${huntId}/findings`).then(r => r.json()),
+            API.fetch(`/hunts/${huntId}/journal`).then(r => r.json())
+        ]);
+        
+        // Create or get hunt detail modal
+        const modal = document.getElementById('hunt-detail-modal') || createHuntDetailModal();
+        const modalBody = modal.querySelector('.modal-body');
+        
+        modalBody.innerHTML = `
+            <div class="hunt-detail-view">
+                <div class="hunt-detail-header">
+                    <h1>${hunt.name}</h1>
+                    <div class="hunt-actions">
+                        ${hunt.status === 'active' ? `
+                            <button class="btn-success" onclick="completeHunt(${huntId})">
+                                <i class="fas fa-check"></i> Complete Hunt
+                            </button>
+                        ` : ''}
+                        <button class="btn-secondary" onclick="document.getElementById('hunt-detail-modal').style.display='none'">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hunt-detail-meta">
+                    <span><i class="fas fa-user"></i> ${hunt.analyst}</span>
+                    <span><i class="fas fa-clock"></i> Started ${formatTime(hunt.created_at)}</span>
+                    <span class="badge ${hunt.status === 'active' ? 'info' : 'success'}">${hunt.status}</span>
+                    ${hunt.mitre_technique ? `<span class="badge warning">${hunt.mitre_technique}</span>` : ''}
+                </div>
+                
+                <div class="hunt-section">
+                    <h2>Hypothesis</h2>
+                    <p class="hunt-hypothesis">${hunt.hypothesis}</p>
+                </div>
+                
+                <div class="hunt-section">
+                    <h2>Query</h2>
+                    <div class="hunt-query-editor">
+                        <textarea id="hunt-query-${huntId}" class="hunt-query-input" rows="6">${hunt.query || ''}</textarea>
+                        <button class="btn-primary" onclick="updateHuntQuery(${huntId})">
+                            <i class="fas fa-play"></i> Execute Query
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hunt-section">
+                    <div class="section-header">
+                        <h2>Findings (${findings.length})</h2>
+                        <button class="btn-secondary" onclick="addHuntFinding(${huntId})">
+                            <i class="fas fa-plus"></i> Add Finding
+                        </button>
+                    </div>
+                    <div id="hunt-findings-list" class="findings-list">
+                        ${findings.length === 0 ? 
+                            '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No findings yet</div>' :
+                            findings.map(finding => `
+                                <div class="finding-item">
+                                    <div class="finding-header">
+                                        <strong>${finding.title}</strong>
+                                        <span class="badge ${finding.severity}">${finding.severity}</span>
+                                    </div>
+                                    <p>${finding.description}</p>
+                                    <div class="finding-meta">
+                                        <span><i class="fas fa-clock"></i> ${formatTime(finding.timestamp)}</span>
+                                        ${finding.ioc ? `<span><i class="fas fa-fingerprint"></i> ${finding.ioc}</span>` : ''}
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+                
+                <div class="hunt-section">
+                    <div class="section-header">
+                        <h2>Hunt Journal</h2>
+                        <button class="btn-secondary" onclick="addJournalEntry(${huntId})">
+                            <i class="fas fa-plus"></i> Add Entry
+                        </button>
+                    </div>
+                    <div id="hunt-journal-list" class="journal-list">
+                        ${journal.length === 0 ? 
+                            '<div style="text-align: center; padding: 2rem; color: #a0aec0;">No journal entries</div>' :
+                            journal.map(entry => `
+                                <div class="journal-entry">
+                                    <div class="journal-header">
+                                        <strong>${entry.analyst}</strong>
+                                        <span class="journal-time">${formatTime(entry.timestamp)}</span>
+                                    </div>
+                                    <p>${entry.entry}</p>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+    } catch (error) {
+        showToast('Failed to load hunt details', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Update and execute hunt query
+async function updateHuntQuery(huntId) {
+    const textarea = document.getElementById(`hunt-query-${huntId}`);
+    const query = textarea.value;
+    
+    try {
+        const result = await API.fetch(`/hunts/${huntId}/query`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+        }).then(r => r.json());
+        
+        showToast(`Query executed: ${result.results_count || 0} results found`, 'success');
+        
+        // If results found, prompt to add as finding
+        if (result.results_count > 0) {
+            if (confirm(`Found ${result.results_count} results. Add as finding?`)) {
+                addHuntFinding(huntId);
+            }
+        }
+    } catch (error) {
+        showToast('Failed to execute query', 'error');
+        console.error(error);
+    }
+}
+
+// Add finding to hunt
+async function addHuntFinding(huntId) {
+    const title = prompt('Finding title:');
+    if (!title) return;
+    
+    const description = prompt('Finding description:');
+    if (!description) return;
+    
+    const severity = prompt('Severity (low/medium/high/critical):', 'medium');
+    
+    try {
+        await API.fetch(`/hunts/${huntId}/findings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                title, 
+                description, 
+                severity,
+                analyst: authState.user?.username || 'analyst'
+            })
+        });
+        
+        showToast('Finding added successfully', 'success');
+        
+        // Reload hunt details
+        viewHuntDetails(huntId);
+    } catch (error) {
+        showToast('Failed to add finding', 'error');
+        console.error(error);
+    }
+}
+
+// Add journal entry
+async function addJournalEntry(huntId) {
+    const entry = prompt('Journal entry:');
+    if (!entry) return;
+    
+    try {
+        await API.fetch(`/hunts/${huntId}/journal`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                entry,
+                analyst: authState.user?.username || 'analyst'
+            })
+        });
+        
+        showToast('Journal entry added', 'success');
+        
+        // Reload hunt details
+        viewHuntDetails(huntId);
+    } catch (error) {
+        showToast('Failed to add journal entry', 'error');
+        console.error(error);
+    }
+}
+
+// Complete hunt
+async function completeHunt(huntId) {
+    if (!confirm('Mark this hunt as completed?')) return;
+    
+    const conclusion = prompt('Hunt conclusion:');
+    
+    try {
+        await API.fetch(`/hunts/${huntId}/complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ conclusion })
+        });
+        
+        showToast('Hunt completed successfully', 'success');
+        
+        // Close modal and reload lists
+        document.getElementById('hunt-detail-modal').style.display = 'none';
+        await loadActiveHunts();
+        await loadHuntStatistics();
+    } catch (error) {
+        showToast('Failed to complete hunt', 'error');
+        console.error(error);
+    }
+}
+
+// Build query from query builder inputs
+function buildQuery() {
+    const dataSource = document.getElementById('query-data-source')?.value || 'logs';
+    const timeRange = document.getElementById('query-time-range')?.value || '24h';
+    const conditions = [];
+    
+    // Get all condition rows
+    document.querySelectorAll('.query-condition-row').forEach(row => {
+        const field = row.querySelector('.condition-field')?.value;
+        const operator = row.querySelector('.condition-operator')?.value;
+        const value = row.querySelector('.condition-value')?.value;
+        
+        if (field && operator && value) {
+            conditions.push({ field, operator, value });
+        }
+    });
+    
+    // Build query string
+    let query = `source=${dataSource} timerange=${timeRange}`;
+    
+    if (conditions.length > 0) {
+        query += ' | where ';
+        query += conditions.map(c => {
+            if (c.operator === 'contains') {
+                return `${c.field} contains "${c.value}"`;
+            } else if (c.operator === 'equals') {
+                return `${c.field} == "${c.value}"`;
+            } else if (c.operator === 'not_equals') {
+                return `${c.field} != "${c.value}"`;
+            } else {
+                return `${c.field} ${c.operator} "${c.value}"`;
+            }
+        }).join(' and ');
+    }
+    
+    // Set query in textarea
+    const queryInput = document.getElementById('built-query-output');
+    if (queryInput) {
+        queryInput.value = query;
+    }
+    
+    return query;
+}
+
+// Create hunt detail modal
+function createHuntDetailModal() {
+    const modal = document.createElement('div');
+    modal.id = 'hunt-detail-modal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content large">
+            <div class="modal-body"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+    
+    return modal;
 }

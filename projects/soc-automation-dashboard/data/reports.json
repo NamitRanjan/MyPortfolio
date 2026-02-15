@@ -1,0 +1,850 @@
+[
+  {
+    "id": 1,
+    "type": "daily",
+    "generated_at": "2026-02-15T10:38:52.103586",
+    "period": {
+      "start": "2026-02-14T10:38:52.103586",
+      "end": "2026-02-15T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the daily reporting period. Overall threat landscape remains stable. Key metrics indicate improved security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 72,
+      "identify": 75,
+      "protect": 70,
+      "detect": 85,
+      "respond": 68,
+      "recover": 60
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "PR.DS-1",
+        "gap": "Data at rest encryption not fully implemented",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-11",
+        "gap": "Backup and recovery procedures need testing",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.7",
+        "gap": "Security awareness training completion at 65%",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 12,
+      "techniques_covered": 45,
+      "coverage_percentage": 65.5,
+      "critical_gaps": [
+        {
+          "tactic": "Persistence",
+          "technique": "T1547",
+          "name": "Boot or Logon Autostart Execution"
+        },
+        {
+          "tactic": "Defense Evasion",
+          "technique": "T1055",
+          "name": "Process Injection"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1250,
+        "previous": 1180,
+        "change_percent": 5.9
+      },
+      "incident_count": {
+        "current": 15,
+        "previous": 18,
+        "change_percent": -16.7
+      },
+      "mean_time_to_detect": {
+        "current": 45,
+        "previous": 52,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 125,
+        "previous": 145,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Prioritize implementation of data at rest encryption for sensitive systems",
+      "Complete security awareness training for remaining 35% of staff",
+      "Conduct tabletop exercise for ransomware response procedures",
+      "Review and update access control policies based on recent audit findings"
+    ]
+  },
+  {
+    "id": 2,
+    "type": "weekly",
+    "generated_at": "2026-02-12T10:38:52.103586",
+    "period": {
+      "start": "2026-02-05T10:38:52.103586",
+      "end": "2026-02-12T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the weekly reporting period. Overall threat landscape shows increased activity. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 73,
+      "identify": 76,
+      "protect": 71,
+      "detect": 86,
+      "respond": 69,
+      "recover": 61
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "RC.RP-1",
+        "gap": "Recovery plan testing overdue",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.17",
+        "gap": "Business continuity plan incomplete",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-14",
+        "gap": "Phishing simulation results below target",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 13,
+      "techniques_covered": 46,
+      "coverage_percentage": 66.5,
+      "critical_gaps": [
+        {
+          "tactic": "Lateral Movement",
+          "technique": "T1534",
+          "name": "Internal Spearphishing"
+        },
+        {
+          "tactic": "Collection",
+          "technique": "T1113",
+          "name": "Screen Capture"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1300,
+        "previous": 1225,
+        "change_percent": 6.9
+      },
+      "incident_count": {
+        "current": 16,
+        "previous": 19,
+        "change_percent": 11.1
+      },
+      "mean_time_to_detect": {
+        "current": 44,
+        "previous": 51,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 124,
+        "previous": 144,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Accelerate deployment of EDR to remaining endpoints",
+      "Schedule quarterly penetration test with focus on cloud infrastructure",
+      "Implement automated response playbooks for high-confidence detections",
+      "Enhance logging coverage for cloud-native applications"
+    ]
+  },
+  {
+    "id": 3,
+    "type": "monthly",
+    "generated_at": "2026-02-09T10:38:52.103586",
+    "period": {
+      "start": "2026-01-10T10:38:52.103586",
+      "end": "2026-02-09T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the monthly reporting period. Overall threat landscape remains stable. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 74,
+      "identify": 77,
+      "protect": 72,
+      "detect": 87,
+      "respond": 70,
+      "recover": 62
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "PR.DS-1",
+        "gap": "Data at rest encryption not fully implemented",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-11",
+        "gap": "Backup and recovery procedures need testing",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.7",
+        "gap": "Security awareness training completion at 65%",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 14,
+      "techniques_covered": 47,
+      "coverage_percentage": 67.5,
+      "critical_gaps": [
+        {
+          "tactic": "Persistence",
+          "technique": "T1547",
+          "name": "Boot or Logon Autostart Execution"
+        },
+        {
+          "tactic": "Defense Evasion",
+          "technique": "T1055",
+          "name": "Process Injection"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1350,
+        "previous": 1270,
+        "change_percent": 7.9
+      },
+      "incident_count": {
+        "current": 17,
+        "previous": 20,
+        "change_percent": -16.7
+      },
+      "mean_time_to_detect": {
+        "current": 43,
+        "previous": 50,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 123,
+        "previous": 143,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Prioritize implementation of data at rest encryption for sensitive systems",
+      "Complete security awareness training for remaining 35% of staff",
+      "Conduct tabletop exercise for ransomware response procedures",
+      "Review and update access control policies based on recent audit findings"
+    ]
+  },
+  {
+    "id": 4,
+    "type": "posture",
+    "generated_at": "2026-02-06T10:38:52.103586",
+    "period": {
+      "snapshot": "2026-02-06T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the posture reporting period. Overall threat landscape shows increased activity. Key metrics indicate improved security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 75,
+      "identify": 78,
+      "protect": 73,
+      "detect": 88,
+      "respond": 71,
+      "recover": 63
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "RC.RP-1",
+        "gap": "Recovery plan testing overdue",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.17",
+        "gap": "Business continuity plan incomplete",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-14",
+        "gap": "Phishing simulation results below target",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 12,
+      "techniques_covered": 48,
+      "coverage_percentage": 68.5,
+      "critical_gaps": [
+        {
+          "tactic": "Lateral Movement",
+          "technique": "T1534",
+          "name": "Internal Spearphishing"
+        },
+        {
+          "tactic": "Collection",
+          "technique": "T1113",
+          "name": "Screen Capture"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1400,
+        "previous": 1315,
+        "change_percent": 8.9
+      },
+      "incident_count": {
+        "current": 18,
+        "previous": 21,
+        "change_percent": 11.1
+      },
+      "mean_time_to_detect": {
+        "current": 42,
+        "previous": 49,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 122,
+        "previous": 142,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Accelerate deployment of EDR to remaining endpoints",
+      "Schedule quarterly penetration test with focus on cloud infrastructure",
+      "Implement automated response playbooks for high-confidence detections",
+      "Enhance logging coverage for cloud-native applications"
+    ]
+  },
+  {
+    "id": 5,
+    "type": "daily",
+    "generated_at": "2026-02-03T10:38:52.103586",
+    "period": {
+      "start": "2026-02-02T10:38:52.103586",
+      "end": "2026-02-03T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the daily reporting period. Overall threat landscape remains stable. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 76,
+      "identify": 79,
+      "protect": 74,
+      "detect": 89,
+      "respond": 72,
+      "recover": 64
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "PR.DS-1",
+        "gap": "Data at rest encryption not fully implemented",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-11",
+        "gap": "Backup and recovery procedures need testing",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.7",
+        "gap": "Security awareness training completion at 65%",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 13,
+      "techniques_covered": 49,
+      "coverage_percentage": 69.5,
+      "critical_gaps": [
+        {
+          "tactic": "Persistence",
+          "technique": "T1547",
+          "name": "Boot or Logon Autostart Execution"
+        },
+        {
+          "tactic": "Defense Evasion",
+          "technique": "T1055",
+          "name": "Process Injection"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1450,
+        "previous": 1360,
+        "change_percent": 9.9
+      },
+      "incident_count": {
+        "current": 19,
+        "previous": 22,
+        "change_percent": -16.7
+      },
+      "mean_time_to_detect": {
+        "current": 41,
+        "previous": 48,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 121,
+        "previous": 141,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Prioritize implementation of data at rest encryption for sensitive systems",
+      "Complete security awareness training for remaining 35% of staff",
+      "Conduct tabletop exercise for ransomware response procedures",
+      "Review and update access control policies based on recent audit findings"
+    ]
+  },
+  {
+    "id": 6,
+    "type": "weekly",
+    "generated_at": "2026-01-31T10:38:52.103586",
+    "period": {
+      "start": "2026-01-24T10:38:52.103586",
+      "end": "2026-01-31T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the weekly reporting period. Overall threat landscape shows increased activity. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 77,
+      "identify": 80,
+      "protect": 75,
+      "detect": 90,
+      "respond": 73,
+      "recover": 65
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "RC.RP-1",
+        "gap": "Recovery plan testing overdue",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.17",
+        "gap": "Business continuity plan incomplete",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-14",
+        "gap": "Phishing simulation results below target",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 14,
+      "techniques_covered": 50,
+      "coverage_percentage": 70.5,
+      "critical_gaps": [
+        {
+          "tactic": "Lateral Movement",
+          "technique": "T1534",
+          "name": "Internal Spearphishing"
+        },
+        {
+          "tactic": "Collection",
+          "technique": "T1113",
+          "name": "Screen Capture"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1500,
+        "previous": 1405,
+        "change_percent": 5.9
+      },
+      "incident_count": {
+        "current": 20,
+        "previous": 23,
+        "change_percent": 11.1
+      },
+      "mean_time_to_detect": {
+        "current": 40,
+        "previous": 47,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 120,
+        "previous": 140,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Accelerate deployment of EDR to remaining endpoints",
+      "Schedule quarterly penetration test with focus on cloud infrastructure",
+      "Implement automated response playbooks for high-confidence detections",
+      "Enhance logging coverage for cloud-native applications"
+    ]
+  },
+  {
+    "id": 7,
+    "type": "monthly",
+    "generated_at": "2026-01-28T10:38:52.103586",
+    "period": {
+      "start": "2025-12-29T10:38:52.103586",
+      "end": "2026-01-28T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the monthly reporting period. Overall threat landscape remains stable. Key metrics indicate improved security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 78,
+      "identify": 81,
+      "protect": 76,
+      "detect": 91,
+      "respond": 74,
+      "recover": 66
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "PR.DS-1",
+        "gap": "Data at rest encryption not fully implemented",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-11",
+        "gap": "Backup and recovery procedures need testing",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.7",
+        "gap": "Security awareness training completion at 65%",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 12,
+      "techniques_covered": 51,
+      "coverage_percentage": 71.5,
+      "critical_gaps": [
+        {
+          "tactic": "Persistence",
+          "technique": "T1547",
+          "name": "Boot or Logon Autostart Execution"
+        },
+        {
+          "tactic": "Defense Evasion",
+          "technique": "T1055",
+          "name": "Process Injection"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1550,
+        "previous": 1450,
+        "change_percent": 6.9
+      },
+      "incident_count": {
+        "current": 21,
+        "previous": 18,
+        "change_percent": -16.7
+      },
+      "mean_time_to_detect": {
+        "current": 39,
+        "previous": 46,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 119,
+        "previous": 139,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Prioritize implementation of data at rest encryption for sensitive systems",
+      "Complete security awareness training for remaining 35% of staff",
+      "Conduct tabletop exercise for ransomware response procedures",
+      "Review and update access control policies based on recent audit findings"
+    ]
+  },
+  {
+    "id": 8,
+    "type": "posture",
+    "generated_at": "2026-01-25T10:38:52.103586",
+    "period": {
+      "snapshot": "2026-01-25T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the posture reporting period. Overall threat landscape shows increased activity. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 79,
+      "identify": 82,
+      "protect": 77,
+      "detect": 92,
+      "respond": 75,
+      "recover": 67
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "RC.RP-1",
+        "gap": "Recovery plan testing overdue",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.17",
+        "gap": "Business continuity plan incomplete",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-14",
+        "gap": "Phishing simulation results below target",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 13,
+      "techniques_covered": 52,
+      "coverage_percentage": 72.5,
+      "critical_gaps": [
+        {
+          "tactic": "Lateral Movement",
+          "technique": "T1534",
+          "name": "Internal Spearphishing"
+        },
+        {
+          "tactic": "Collection",
+          "technique": "T1113",
+          "name": "Screen Capture"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1600,
+        "previous": 1495,
+        "change_percent": 7.9
+      },
+      "incident_count": {
+        "current": 22,
+        "previous": 19,
+        "change_percent": 11.1
+      },
+      "mean_time_to_detect": {
+        "current": 38,
+        "previous": 45,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 118,
+        "previous": 138,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Accelerate deployment of EDR to remaining endpoints",
+      "Schedule quarterly penetration test with focus on cloud infrastructure",
+      "Implement automated response playbooks for high-confidence detections",
+      "Enhance logging coverage for cloud-native applications"
+    ]
+  },
+  {
+    "id": 9,
+    "type": "daily",
+    "generated_at": "2026-01-22T10:38:52.103586",
+    "period": {
+      "start": "2026-01-21T10:38:52.103586",
+      "end": "2026-01-22T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the daily reporting period. Overall threat landscape remains stable. Key metrics indicate sustained security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 80,
+      "identify": 83,
+      "protect": 78,
+      "detect": 85,
+      "respond": 76,
+      "recover": 68
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "PR.DS-1",
+        "gap": "Data at rest encryption not fully implemented",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-11",
+        "gap": "Backup and recovery procedures need testing",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.7",
+        "gap": "Security awareness training completion at 65%",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 14,
+      "techniques_covered": 53,
+      "coverage_percentage": 73.5,
+      "critical_gaps": [
+        {
+          "tactic": "Persistence",
+          "technique": "T1547",
+          "name": "Boot or Logon Autostart Execution"
+        },
+        {
+          "tactic": "Defense Evasion",
+          "technique": "T1055",
+          "name": "Process Injection"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1650,
+        "previous": 1540,
+        "change_percent": 8.9
+      },
+      "incident_count": {
+        "current": 15,
+        "previous": 20,
+        "change_percent": -16.7
+      },
+      "mean_time_to_detect": {
+        "current": 37,
+        "previous": 52,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 117,
+        "previous": 137,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Prioritize implementation of data at rest encryption for sensitive systems",
+      "Complete security awareness training for remaining 35% of staff",
+      "Conduct tabletop exercise for ransomware response procedures",
+      "Review and update access control policies based on recent audit findings"
+    ]
+  },
+  {
+    "id": 10,
+    "type": "weekly",
+    "generated_at": "2026-01-19T10:38:52.103586",
+    "period": {
+      "start": "2026-01-12T10:38:52.103586",
+      "end": "2026-01-19T10:38:52.103586"
+    },
+    "executive_summary": "Security operations summary for the weekly reporting period. Overall threat landscape shows increased activity. Key metrics indicate improved security posture with notable achievements in threat detection and incident response.",
+    "posture_scores": {
+      "overall": 81,
+      "identify": 84,
+      "protect": 79,
+      "detect": 86,
+      "respond": 77,
+      "recover": 69
+    },
+    "top_gaps": [
+      {
+        "framework": "NIST_CSF",
+        "control": "RC.RP-1",
+        "gap": "Recovery plan testing overdue",
+        "priority": "high"
+      },
+      {
+        "framework": "ISO_27001",
+        "control": "A.17",
+        "gap": "Business continuity plan incomplete",
+        "priority": "high"
+      },
+      {
+        "framework": "CIS_CONTROLS",
+        "control": "CIS-14",
+        "gap": "Phishing simulation results below target",
+        "priority": "medium"
+      }
+    ],
+    "mitre_summary": {
+      "tactics_covered": 12,
+      "techniques_covered": 54,
+      "coverage_percentage": 74.5,
+      "critical_gaps": [
+        {
+          "tactic": "Lateral Movement",
+          "technique": "T1534",
+          "name": "Internal Spearphishing"
+        },
+        {
+          "tactic": "Collection",
+          "technique": "T1113",
+          "name": "Screen Capture"
+        }
+      ]
+    },
+    "trends": {
+      "alert_volume": {
+        "current": 1700,
+        "previous": 1585,
+        "change_percent": 9.9
+      },
+      "incident_count": {
+        "current": 16,
+        "previous": 21,
+        "change_percent": 11.1
+      },
+      "mean_time_to_detect": {
+        "current": 36,
+        "previous": 51,
+        "unit": "minutes",
+        "change_percent": -13.5
+      },
+      "mean_time_to_respond": {
+        "current": 116,
+        "previous": 136,
+        "unit": "minutes",
+        "change_percent": -13.8
+      }
+    },
+    "recommendations": [
+      "Accelerate deployment of EDR to remaining endpoints",
+      "Schedule quarterly penetration test with focus on cloud infrastructure",
+      "Implement automated response playbooks for high-confidence detections",
+      "Enhance logging coverage for cloud-native applications"
+    ]
+  }
+]

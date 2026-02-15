@@ -559,5 +559,38 @@
     "resource_id": null,
     "details": {},
     "ip_address": "127.0.0.1"
+  },
+  {
+    "id": 52,
+    "timestamp": "2026-02-15T11:00:15.846468Z",
+    "user_id": 1,
+    "username": "admin",
+    "action": "login",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {},
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": 53,
+    "timestamp": "2026-02-15T11:00:22.411973Z",
+    "user_id": 1,
+    "username": "admin",
+    "action": "login",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {},
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": 54,
+    "timestamp": "2026-02-15T11:00:27.895586Z",
+    "user_id": 1,
+    "username": "admin",
+    "action": "login",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {},
+    "ip_address": "127.0.0.1"
   }
 ]

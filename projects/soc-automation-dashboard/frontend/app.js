@@ -3087,7 +3087,7 @@ async function loadCompliancePosture() {
         }
         
         // Draw gauge chart
-        const canvas = document.getElementById('compliance-gauge');
+        const canvas = document.getElementById('compliance-gauge-chart') || document.getElementById('compliance-gauge');
         if (canvas) {
             drawPostureGauge(canvas, posture.overall_compliance);
         }
@@ -3152,50 +3152,43 @@ function drawPostureGauge(canvas, score) {
 async function loadFrameworkCards() {
     try {
         const frameworks = await API.fetch('/compliance/frameworks').then(r => r.json());
-        const container = document.getElementById('framework-cards');
-        
-        if (!container) return;
-        
-        container.innerHTML = '';
         
         if (frameworks.length === 0) {
-            container.innerHTML = '<div style="text-align: center; padding: 3rem; color: #a0aec0;">No frameworks configured</div>';
+            console.warn('No frameworks data available');
             return;
         }
         
+        // Update each framework card with data
         frameworks.forEach(framework => {
-            const card = document.createElement('div');
-            card.className = 'framework-card';
-            
+            const frameworkKey = framework.id.toLowerCase().replace(/_/g, '');
             const percentage = framework.compliance_percentage;
             const statusClass = percentage >= 80 ? 'success' : percentage >= 60 ? 'warning' : 'error';
             
-            card.innerHTML = `
-                <div class="framework-header">
-                    <h3>${framework.name}</h3>
-                    <span class="framework-score ${statusClass}">${percentage}%</span>
-                </div>
-                <div class="framework-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill ${statusClass}" style="width: ${percentage}%"></div>
-                    </div>
-                </div>
-                <div class="framework-stats">
-                    <div class="framework-stat">
-                        <span class="stat-label">Controls</span>
-                        <span class="stat-value">${framework.covered_controls}/${framework.total_controls}</span>
-                    </div>
-                    <div class="framework-stat">
-                        <span class="stat-label">Gaps</span>
-                        <span class="stat-value">${framework.total_controls - framework.covered_controls}</span>
-                    </div>
-                </div>
-                <button class="btn-secondary" onclick="viewFrameworkDetails('${framework.id}')">
-                    View Details
-                </button>
-            `;
+            // Update score value
+            const scoreEl = document.getElementById(`${frameworkKey}-score`);
+            if (scoreEl) {
+                scoreEl.textContent = percentage + '%';
+                scoreEl.className = `score-value ${statusClass}`;
+            }
             
-            container.appendChild(card);
+            // Update score bar
+            const barEl = document.getElementById(`${frameworkKey}-bar`);
+            if (barEl) {
+                barEl.style.width = percentage + '%';
+                barEl.className = `score-fill ${statusClass}`;
+            }
+            
+            // Update passed count
+            const passedEl = document.getElementById(`${frameworkKey}-passed`);
+            if (passedEl) {
+                passedEl.textContent = framework.covered_controls;
+            }
+            
+            // Update failed count
+            const failedEl = document.getElementById(`${frameworkKey}-failed`);
+            if (failedEl) {
+                failedEl.textContent = framework.total_controls - framework.covered_controls;
+            }
         });
     } catch (error) {
         console.error('Failed to load framework cards:', error);

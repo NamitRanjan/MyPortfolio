@@ -548,5 +548,16 @@
     "resource_id": 22,
     "details": {},
     "ip_address": "192.168.1.180"
+  },
+  {
+    "id": 51,
+    "timestamp": "2026-02-15T09:25:00.369847Z",
+    "user_id": 1,
+    "username": "admin",
+    "action": "login",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {},
+    "ip_address": "127.0.0.1"
   }
 ]

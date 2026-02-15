@@ -82,7 +82,13 @@ const state = {
 document.addEventListener('DOMContentLoaded', async () => {
     // Wait for mock data to be ready before rendering
     if (typeof MOCK_DATA_READY !== 'undefined') {
-        await MOCK_DATA_READY;
+        try {
+            await MOCK_DATA_READY;
+        } catch (error) {
+            console.error('Failed to load mock data, dashboard may not display correctly:', error);
+        }
+    } else {
+        console.warn('MOCK_DATA_READY is not defined - mock-api.js may not be loaded');
     }
 
     initNavigation();

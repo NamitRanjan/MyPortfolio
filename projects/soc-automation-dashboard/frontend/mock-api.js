@@ -336,12 +336,15 @@ const MOCK_DATA = {
 
 // Initialize mock data on page load
 // Expose the promise so app.js can wait for data to be ready before rendering.
-const MOCK_DATA_READY = new Promise((resolve) => {
+const MOCK_DATA_READY = new Promise((resolve, reject) => {
     document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing mock data');
         MOCK_DATA.init().then(() => {
             console.log('Mock data initialized successfully');
             resolve();
+        }).catch((error) => {
+            console.error('Failed to initialize mock data:', error);
+            reject(error);
         });
     });
 });

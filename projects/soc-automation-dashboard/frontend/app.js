@@ -1095,7 +1095,7 @@ async function handleAddNote(event, alertId) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 content,
-                note_type: noteType,
+                type: noteType,
                 tags
             })
         });

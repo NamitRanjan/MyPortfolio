@@ -300,6 +300,207 @@ incidents = generate_incidents(NUM_INCIDENTS)
 print(f"Creating {NUM_IOCS} IOCs...")
 iocs = generate_iocs(NUM_IOCS)
 
+# Generate users
+print("Generating users...")
+from werkzeug.security import generate_password_hash
+
+users = [
+    {
+        'id': 1,
+        'username': 'admin',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 'admin',
+        'display_name': 'SOC Admin',
+        'email': 'admin@soc.local'
+    },
+    {
+        'id': 2,
+        'username': 'sarah.chen',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 'soc_manager',
+        'display_name': 'Sarah Chen',
+        'email': 'sarah.chen@soc.local'
+    },
+    {
+        'id': 3,
+        'username': 'mike.ross',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 't3_analyst',
+        'display_name': 'Mike Ross',
+        'email': 'mike.ross@soc.local'
+    },
+    {
+        'id': 4,
+        'username': 'emily.zhang',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 't2_analyst',
+        'display_name': 'Emily Zhang',
+        'email': 'emily.zhang@soc.local'
+    },
+    {
+        'id': 5,
+        'username': 'jake.miller',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 't1_analyst',
+        'display_name': 'Jake Miller',
+        'email': 'jake.miller@soc.local'
+    },
+    {
+        'id': 6,
+        'username': 'viewer',
+        'password_hash': generate_password_hash('SOCdemo2026!'),
+        'role': 'read_only',
+        'display_name': 'SOC Viewer',
+        'email': 'viewer@soc.local'
+    }
+]
+
+# Generate case notes
+print("Generating case notes...")
+analysts = [
+    {'id': 3, 'name': 'Mike Ross'},
+    {'id': 4, 'name': 'Emily Zhang'},
+    {'id': 5, 'name': 'Jake Miller'}
+]
+
+note_templates = [
+    {
+        'content': 'Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.',
+        'type': 'investigation_note',
+        'tags': ['malware', 'powershell', 'triage']
+    },
+    {
+        'content': 'Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.',
+        'type': 'escalation_note',
+        'tags': ['c2', 'escalation', 'virustotal']
+    },
+    {
+        'content': 'Brute force attack blocked at firewall. Source IP added to blocklist. Monitoring for additional attempts.',
+        'type': 'investigation_note',
+        'tags': ['brute_force', 'blocked', 'firewall']
+    },
+    {
+        'content': 'Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.',
+        'type': 'investigation_note',
+        'tags': ['phishing', 'email', 'malware']
+    },
+    {
+        'content': 'Incident response team activated. Legal and PR teams notified. Recovery procedures initiated.',
+        'type': 'response_note',
+        'tags': ['incident_response', 'recovery']
+    }
+]
+
+case_notes = []
+for i, alert in enumerate(alerts[:15]):  # Add notes to first 15 alerts
+    num_notes = random.randint(1, 3)
+    for j in range(num_notes):
+        analyst = random.choice(analysts)
+        template = random.choice(note_templates)
+        note = {
+            'id': len(case_notes) + 1,
+            'alert_id': alert['id'],
+            'incident_id': None,
+            'author_id': analyst['id'],
+            'author_name': analyst['name'],
+            'content': template['content'],
+            'type': template['type'],
+            'created_at': (datetime.now() - timedelta(hours=random.randint(1, 48))).isoformat() + 'Z',
+            'updated_at': (datetime.now() - timedelta(hours=random.randint(0, 24))).isoformat() + 'Z',
+            'is_pinned': random.choice([True, False, False]),
+            'tags': template['tags']
+        }
+        case_notes.append(note)
+
+# Generate evidence
+print("Generating evidence...")
+evidence_templates = [
+    {
+        'type': 'file_hash',
+        'value': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        'hash_type': 'SHA-256',
+        'description': 'Suspicious file hash',
+        'tags': ['malware', 'file']
+    },
+    {
+        'type': 'ip_address',
+        'value': '185.220.101.45',
+        'hash_type': None,
+        'description': 'C2 server IP address',
+        'tags': ['c2', 'network']
+    },
+    {
+        'type': 'domain',
+        'value': 'malicious-domain.com',
+        'hash_type': None,
+        'description': 'Known malicious domain',
+        'tags': ['domain', 'c2']
+    },
+    {
+        'type': 'email',
+        'value': 'phishing@malicious.com',
+        'hash_type': None,
+        'description': 'Phishing email address',
+        'tags': ['phishing', 'email']
+    }
+]
+
+evidence_list = []
+for i, alert in enumerate(alerts[:20]):  # Add evidence to first 20 alerts
+    num_evidence = random.randint(1, 2)
+    for j in range(num_evidence):
+        analyst = random.choice(analysts)
+        template = random.choice(evidence_templates)
+        evidence = {
+            'id': len(evidence_list) + 1,
+            'alert_id': alert['id'],
+            'incident_id': None,
+            'type': template['type'],
+            'value': template['value'],
+            'hash_type': template['hash_type'],
+            'description': template['description'],
+            'collected_by_id': analyst['id'],
+            'collected_by_name': analyst['name'],
+            'collected_at': (datetime.now() - timedelta(hours=random.randint(1, 48))).isoformat() + 'Z',
+            'chain_of_custody': [
+                {
+                    'action': 'collected',
+                    'by': analyst['name'],
+                    'at': (datetime.now() - timedelta(hours=random.randint(1, 48))).isoformat() + 'Z',
+                    'notes': 'Extracted from security logs'
+                }
+            ],
+            'tags': template['tags'],
+            'status': random.choice(['verified', 'collected', 'analyzed'])
+        }
+        evidence_list.append(evidence)
+
+# Generate sample audit log
+print("Generating sample audit log...")
+actions = [
+    'login', 'logout', 'alert_investigated', 'alert_response_executed',
+    'playbook_executed', 'note_added', 'evidence_added'
+]
+
+audit_log = []
+for i in range(50):  # Generate 50 sample audit entries
+    user = random.choice(users)
+    action = random.choice(actions)
+    audit_log.append({
+        'id': i + 1,
+        'timestamp': (datetime.now() - timedelta(hours=random.randint(0, 72))).isoformat() + 'Z',
+        'user_id': user['id'],
+        'username': user['username'],
+        'action': action,
+        'resource_type': 'alert' if 'alert' in action else ('playbook' if 'playbook' in action else 'auth'),
+        'resource_id': random.randint(1, 50) if action != 'login' and action != 'logout' else None,
+        'details': {},
+        'ip_address': f'192.168.1.{random.randint(1, 255)}'
+    })
+
+# Sort audit log by timestamp descending
+audit_log.sort(key=lambda x: x['timestamp'], reverse=True)
+
 # Save to files
 with open('alerts.json', 'w') as f:
     json.dump(alerts, f, indent=2)
@@ -313,8 +514,24 @@ with open('incidents.json', 'w') as f:
 with open('iocs.json', 'w') as f:
     json.dump(iocs, f, indent=2)
 
+with open('users.json', 'w') as f:
+    json.dump(users, f, indent=2)
+
+with open('case_notes.json', 'w') as f:
+    json.dump(case_notes, f, indent=2)
+
+with open('evidence.json', 'w') as f:
+    json.dump(evidence_list, f, indent=2)
+
+with open('audit_log.json', 'w') as f:
+    json.dump(audit_log, f, indent=2)
+
 print("\nData generation complete!")
 print(f"- {len(alerts)} alerts")
 print(f"- {len(threats)} threats")
 print(f"- {len(incidents)} incidents")
 print(f"- {len(iocs)} IOCs")
+print(f"- {len(users)} users")
+print(f"- {len(case_notes)} case notes")
+print(f"- {len(evidence_list)} evidence items")
+print(f"- {len(audit_log)} audit log entries")

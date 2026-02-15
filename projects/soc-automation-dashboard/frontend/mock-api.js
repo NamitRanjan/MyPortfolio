@@ -1087,6 +1087,34 @@ const MOCK_DATA = {
         const frameworksData = this.complianceMappings.frameworks;
         const result = [];
         
+        // Demo data for frameworks without detailed controls
+        const demoFrameworks = {
+            'ISO_27001': {
+                name: 'ISO/IEC 27001:2013',
+                total_controls: 114,
+                covered_controls: 82,  // 72%
+                compliance_percentage: 72
+            },
+            'SOC_2': {
+                name: 'SOC 2 Trust Service Criteria',
+                total_controls: 64,
+                covered_controls: 56,  // 88%
+                compliance_percentage: 88
+            },
+            'CIS_CONTROLS': {
+                name: 'CIS Critical Security Controls',
+                total_controls: 153,
+                covered_controls: 98,  // 64%
+                compliance_percentage: 64
+            },
+            'MITRE_ATTACK': {
+                name: 'MITRE ATT&CK Framework',
+                total_controls: 188,
+                covered_controls: 143,  // 76%
+                compliance_percentage: 76
+            }
+        };
+        
         // Process each framework
         for (const [frameworkKey, frameworkData] of Object.entries(frameworksData)) {
             let totalControls = 0;
@@ -1102,13 +1130,25 @@ const MOCK_DATA = {
                 }
             }
             
-            result.push({
-                id: frameworkKey.toLowerCase(),
-                name: frameworkData.name || frameworkKey,
-                total_controls: totalControls,
-                covered_controls: coveredControls,
-                compliance_percentage: totalControls > 0 ? Math.round((coveredControls / totalControls) * 100) : 0
-            });
+            // If no controls found, use demo data
+            if (totalControls === 0 && demoFrameworks[frameworkKey]) {
+                const demo = demoFrameworks[frameworkKey];
+                result.push({
+                    id: frameworkKey.toLowerCase(),
+                    name: demo.name,
+                    total_controls: demo.total_controls,
+                    covered_controls: demo.covered_controls,
+                    compliance_percentage: demo.compliance_percentage
+                });
+            } else {
+                result.push({
+                    id: frameworkKey.toLowerCase(),
+                    name: frameworkData.name || frameworkKey,
+                    total_controls: totalControls,
+                    covered_controls: coveredControls,
+                    compliance_percentage: totalControls > 0 ? Math.round((coveredControls / totalControls) * 100) : 0
+                });
+            }
         }
         
         return result;

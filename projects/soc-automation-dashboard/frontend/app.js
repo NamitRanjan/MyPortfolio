@@ -3158,34 +3158,43 @@ async function loadFrameworkCards() {
             return;
         }
         
+        // Map framework IDs from API to HTML element IDs
+        const idMapping = {
+            'nist_csf': 'nist',
+            'iso_27001': 'iso',
+            'soc_2': 'soc2',
+            'cis_controls': 'cis',
+            'mitre_attack': 'mitre'
+        };
+        
         // Update each framework card with data
         frameworks.forEach(framework => {
-            const frameworkKey = framework.id.toLowerCase().replace(/_/g, '');
+            const htmlId = idMapping[framework.id] || framework.id.toLowerCase().replace(/_/g, '');
             const percentage = framework.compliance_percentage;
             const statusClass = percentage >= 80 ? 'success' : percentage >= 60 ? 'warning' : 'error';
             
             // Update score value
-            const scoreEl = document.getElementById(`${frameworkKey}-score`);
+            const scoreEl = document.getElementById(`${htmlId}-score`);
             if (scoreEl) {
                 scoreEl.textContent = percentage + '%';
                 scoreEl.className = `score-value ${statusClass}`;
             }
             
             // Update score bar
-            const barEl = document.getElementById(`${frameworkKey}-bar`);
+            const barEl = document.getElementById(`${htmlId}-bar`);
             if (barEl) {
                 barEl.style.width = percentage + '%';
                 barEl.className = `score-fill ${statusClass}`;
             }
             
             // Update passed count
-            const passedEl = document.getElementById(`${frameworkKey}-passed`);
+            const passedEl = document.getElementById(`${htmlId}-passed`);
             if (passedEl) {
                 passedEl.textContent = framework.covered_controls;
             }
             
             // Update failed count
-            const failedEl = document.getElementById(`${frameworkKey}-failed`);
+            const failedEl = document.getElementById(`${htmlId}-failed`);
             if (failedEl) {
                 failedEl.textContent = framework.total_controls - framework.covered_controls;
             }

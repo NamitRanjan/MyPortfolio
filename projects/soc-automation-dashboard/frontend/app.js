@@ -919,39 +919,451 @@ function showAlertDetails(alert) {
     
     document.getElementById('modal-title').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${alert.title}`;
     
+    // Create tabbed interface
     modalBody.innerHTML = `
-        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <span class="badge ${alert.severity}">${alert.severity}</span>
-            <span class="badge ${alert.status}">${alert.status}</span>
+        <div class="modal-tabs">
+            <button class="modal-tab active" data-tab="details">Details</button>
+            <button class="modal-tab" data-tab="notes">Notes</button>
+            <button class="modal-tab" data-tab="evidence">Evidence</button>
+            <button class="modal-tab" data-tab="sla">SLA</button>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">Description:</strong>
-            <p style="margin-top: 0.5rem; color: #a0aec0;">${alert.description}</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">Alert Details:</strong>
-            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                <div><i class="fas fa-server"></i> Host: <span style="color: #a0aec0;">${alert.host}</span></div>
-                <div><i class="fas fa-user"></i> User: <span style="color: #a0aec0;">${alert.user}</span></div>
-                <div><i class="fas fa-database"></i> Source: <span style="color: #a0aec0;">${alert.source}</span></div>
-                <div><i class="fas fa-exclamation-circle"></i> Risk Score: <span style="color: #a0aec0;">${alert.risk_score}/100</span></div>
+        <div class="tab-content active" id="details-tab">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <span class="badge ${alert.severity}">${alert.severity}</span>
+                <span class="badge ${alert.status}">${alert.status}</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">Description:</strong>
+                <p style="margin-top: 0.5rem; color: #a0aec0;">${alert.description}</p>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">Alert Details:</strong>
+                <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div><i class="fas fa-server"></i> Host: <span style="color: #a0aec0;">${alert.host}</span></div>
+                    <div><i class="fas fa-user"></i> User: <span style="color: #a0aec0;">${alert.user}</span></div>
+                    <div><i class="fas fa-database"></i> Source: <span style="color: #a0aec0;">${alert.source}</span></div>
+                    <div><i class="fas fa-exclamation-circle"></i> Risk Score: <span style="color: #a0aec0;">${alert.risk_score}/100</span></div>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">MITRE ATT&CK Tactics:</strong>
+                <div class="alert-indicators" style="margin-top: 0.5rem;">
+                    ${alert.mitre_tactics.map(tactic => `<span class="indicator-tag">${tactic}</span>`).join('')}
+                </div>
+            </div>
+            <div>
+                <strong style="color: #00a3e0;">Indicators:</strong>
+                <div class="alert-indicators" style="margin-top: 0.5rem;">
+                    ${alert.indicators.map(ind => `<span class="indicator-tag"><i class="fas fa-tag"></i> ${ind}</span>`).join('')}
+                </div>
             </div>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">MITRE ATT&CK Tactics:</strong>
-            <div class="alert-indicators" style="margin-top: 0.5rem;">
-                ${alert.mitre_tactics.map(tactic => `<span class="indicator-tag">${tactic}</span>`).join('')}
-            </div>
+        <div class="tab-content" id="notes-tab">
+            <div id="notes-content">Loading notes...</div>
         </div>
-        <div>
-            <strong style="color: #00a3e0;">Indicators:</strong>
-            <div class="alert-indicators" style="margin-top: 0.5rem;">
-                ${alert.indicators.map(ind => `<span class="indicator-tag"><i class="fas fa-tag"></i> ${ind}</span>`).join('')}
-            </div>
+        <div class="tab-content" id="evidence-tab">
+            <div id="evidence-content">Loading evidence...</div>
+        </div>
+        <div class="tab-content" id="sla-tab">
+            <div id="sla-content">Loading SLA data...</div>
         </div>
     `;
     
+    // Set up tab switching
+    const tabs = modalBody.querySelectorAll('.modal-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update active content
+            modalBody.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${targetTab}-tab`).classList.add('active');
+            
+            // Load content if not already loaded
+            if (targetTab === 'notes' && document.getElementById('notes-content').innerHTML === 'Loading notes...') {
+                loadNotes(alert.id);
+            } else if (targetTab === 'evidence' && document.getElementById('evidence-content').innerHTML === 'Loading evidence...') {
+                loadEvidence(alert.id);
+            } else if (targetTab === 'sla' && document.getElementById('sla-content').innerHTML === 'Loading SLA data...') {
+                loadSLA(alert.id);
+            }
+        });
+    });
+    
     modal.classList.add('active');
+}
+
+// Load notes for alert
+async function loadNotes(alertId) {
+    const notesContent = document.getElementById('notes-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/notes`);
+        const data = await response.json();
+        const notes = data.notes || [];
+        
+        const permissions = authState.user?.permissions || {};
+        const canAddNotes = permissions.add_notes || authState.user?.role === 'admin';
+        
+        let html = '<div style="max-height: 400px; overflow-y: auto;">';
+        
+        if (notes.length === 0) {
+            html += '<p style="color: #a0aec0; text-align: center; padding: 2rem;">No notes yet</p>';
+        } else {
+            notes.forEach(note => {
+                const pinnedClass = note.is_pinned ? ' pinned' : '';
+                const pinnedIcon = note.is_pinned ? '<i class="fas fa-thumbtack" style="color: #ffc107; margin-right: 0.5rem;"></i>' : '';
+                
+                html += `
+                    <div class="note-card${pinnedClass}">
+                        <div class="note-header">
+                            <div>
+                                ${pinnedIcon}
+                                <strong style="color: #00a3e0;">${note.author_name}</strong>
+                                <span class="badge ${note.note_type}" style="margin-left: 0.5rem; font-size: 0.75rem;">${note.note_type.replace('_', ' ')}</span>
+                            </div>
+                            <span style="color: #6c757d; font-size: 0.875rem;">${new Date(note.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="note-content">
+                            <p style="color: #a0aec0; margin: 0.5rem 0;">${note.content}</p>
+                            ${note.tags && note.tags.length > 0 ? `
+                                <div style="margin-top: 0.5rem;">
+                                    ${note.tags.map(tag => `<span class="indicator-tag" style="font-size: 0.75rem;"><i class="fas fa-tag"></i> ${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        // Add note form
+        if (canAddNotes) {
+            html += `
+                <div class="add-form" style="margin-top: 1rem;">
+                    <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Note</h4>
+                    <form id="add-note-form" onsubmit="return handleAddNote(event, ${alertId})">
+                        <textarea id="note-content" placeholder="Enter investigation note..." rows="4" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;"></textarea>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <select id="note-type" required style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                                <option value="">Select type...</option>
+                                <option value="investigation_note">Investigation Note</option>
+                                <option value="escalation_note">Escalation Note</option>
+                                <option value="response_note">Response Note</option>
+                            </select>
+                            <input type="text" id="note-tags" placeholder="Tags (comma-separated)" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Note</button>
+                    </form>
+                </div>
+            `;
+        }
+        
+        notesContent.innerHTML = html;
+    } catch (error) {
+        notesContent.innerHTML = '<p style="color: #dc3545;">Failed to load notes</p>';
+        console.error('Error loading notes:', error);
+    }
+}
+
+// Handle add note form submission
+async function handleAddNote(event, alertId) {
+    event.preventDefault();
+    
+    const content = document.getElementById('note-content').value;
+    const noteType = document.getElementById('note-type').value;
+    const tagsInput = document.getElementById('note-tags').value;
+    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+    
+    try {
+        await API.fetch(`/alerts/${alertId}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content,
+                note_type: noteType,
+                tags
+            })
+        });
+        
+        showToast('Note added successfully', 'success');
+        loadNotes(alertId);
+    } catch (error) {
+        showToast('Failed to add note', 'error');
+        console.error('Error adding note:', error);
+    }
+    
+    return false;
+}
+
+// Load evidence for alert
+async function loadEvidence(alertId) {
+    const evidenceContent = document.getElementById('evidence-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/evidence`);
+        const data = await response.json();
+        const evidenceItems = data.evidence || [];
+        
+        const permissions = authState.user?.permissions || {};
+        const canAddEvidence = permissions.add_evidence || authState.user?.role === 'admin';
+        
+        let html = '<div style="max-height: 400px; overflow-y: auto;">';
+        
+        if (evidenceItems.length === 0) {
+            html += '<p style="color: #a0aec0; text-align: center; padding: 2rem;">No evidence collected yet</p>';
+        } else {
+            evidenceItems.forEach(evidence => {
+                const typeIcons = {
+                    'file_hash': 'fa-file-code',
+                    'ip_address': 'fa-network-wired',
+                    'domain': 'fa-globe',
+                    'url': 'fa-link',
+                    'email': 'fa-envelope'
+                };
+                const icon = typeIcons[evidence.evidence_type] || 'fa-database';
+                
+                html += `
+                    <div class="evidence-item">
+                        <div class="evidence-header">
+                            <div>
+                                <i class="fas ${icon}" style="color: #00a3e0; margin-right: 0.5rem;"></i>
+                                <strong style="color: #00a3e0;">${evidence.evidence_type.replace('_', ' ').toUpperCase()}</strong>
+                                <span class="badge ${evidence.status}" style="margin-left: 0.5rem; font-size: 0.75rem;">${evidence.status}</span>
+                            </div>
+                        </div>
+                        <div class="evidence-value" style="font-family: 'Courier New', monospace; color: #ffc107; margin: 0.5rem 0; padding: 0.5rem; background: #0d1117; border-radius: 4px;">
+                            ${evidence.value}
+                            ${evidence.hash_type ? `<span style="color: #6c757d; font-size: 0.875rem;"> (${evidence.hash_type})</span>` : ''}
+                        </div>
+                        ${evidence.description ? `
+                            <p style="color: #a0aec0; margin: 0.5rem 0;">${evidence.description}</p>
+                        ` : ''}
+                        ${evidence.chain_of_custody && evidence.chain_of_custody.length > 0 ? `
+                            <div style="margin-top: 0.75rem; padding-left: 1rem; border-left: 2px solid #2d3548;">
+                                <strong style="color: #6c757d; font-size: 0.875rem;">Chain of Custody:</strong>
+                                ${evidence.chain_of_custody.map(entry => `
+                                    <div style="margin-top: 0.25rem; font-size: 0.875rem; color: #a0aec0;">
+                                        <i class="fas fa-chevron-right" style="font-size: 0.5rem; margin-right: 0.25rem;"></i>
+                                        ${entry.action} by ${entry.user} at ${new Date(entry.timestamp).toLocaleString()}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 0.75rem; font-size: 0.875rem; color: #6c757d;">
+                            Collected by <strong>${evidence.collected_by}</strong> at ${new Date(evidence.collected_at).toLocaleString()}
+                        </div>
+                        ${evidence.tags && evidence.tags.length > 0 ? `
+                            <div style="margin-top: 0.5rem;">
+                                ${evidence.tags.map(tag => `<span class="indicator-tag" style="font-size: 0.75rem;"><i class="fas fa-tag"></i> ${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        // Add evidence form
+        if (canAddEvidence) {
+            html += `
+                <div class="add-form" style="margin-top: 1rem;">
+                    <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Evidence</h4>
+                    <form id="add-evidence-form" onsubmit="return handleAddEvidence(event, ${alertId})">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <select id="evidence-type" required onchange="toggleHashType()" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                                <option value="">Select type...</option>
+                                <option value="file_hash">File Hash</option>
+                                <option value="ip_address">IP Address</option>
+                                <option value="domain">Domain</option>
+                                <option value="url">URL</option>
+                                <option value="email">Email</option>
+                            </select>
+                            <select id="hash-type" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px; display: none;">
+                                <option value="">Select hash type...</option>
+                                <option value="md5">MD5</option>
+                                <option value="sha1">SHA1</option>
+                                <option value="sha256">SHA256</option>
+                            </select>
+                        </div>
+                        <input type="text" id="evidence-value" placeholder="Evidence value" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px; font-family: 'Courier New', monospace;">
+                        <textarea id="evidence-description" placeholder="Description (optional)" rows="2" style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;"></textarea>
+                        <input type="text" id="evidence-tags" placeholder="Tags (comma-separated)" style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                        <button type="submit" class="btn btn-primary">Add Evidence</button>
+                    </form>
+                </div>
+            `;
+        }
+        
+        evidenceContent.innerHTML = html;
+    } catch (error) {
+        evidenceContent.innerHTML = '<p style="color: #dc3545;">Failed to load evidence</p>';
+        console.error('Error loading evidence:', error);
+    }
+}
+
+// Toggle hash type field visibility
+function toggleHashType() {
+    const evidenceType = document.getElementById('evidence-type').value;
+    const hashTypeField = document.getElementById('hash-type');
+    if (hashTypeField) {
+        hashTypeField.style.display = evidenceType === 'file_hash' ? 'block' : 'none';
+        hashTypeField.required = evidenceType === 'file_hash';
+    }
+}
+
+// Handle add evidence form submission
+async function handleAddEvidence(event, alertId) {
+    event.preventDefault();
+    
+    const evidenceType = document.getElementById('evidence-type').value;
+    const value = document.getElementById('evidence-value').value;
+    const description = document.getElementById('evidence-description').value;
+    const tagsInput = document.getElementById('evidence-tags').value;
+    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+    
+    const payload = {
+        evidence_type: evidenceType,
+        value,
+        description,
+        tags
+    };
+    
+    if (evidenceType === 'file_hash') {
+        const hashType = document.getElementById('hash-type').value;
+        if (!hashType) {
+            showToast('Please select hash type', 'error');
+            return false;
+        }
+        payload.hash_type = hashType;
+    }
+    
+    try {
+        await API.fetch(`/alerts/${alertId}/evidence`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        showToast('Evidence added successfully', 'success');
+        loadEvidence(alertId);
+    } catch (error) {
+        showToast('Failed to add evidence', 'error');
+        console.error('Error adding evidence:', error);
+    }
+    
+    return false;
+}
+
+// Load SLA data for alert
+async function loadSLA(alertId) {
+    const slaContent = document.getElementById('sla-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/sla`);
+        const data = await response.json();
+        const sla = data.sla || {};
+        
+        // Calculate percentage
+        const percentage = sla.sla_target_minutes > 0 
+            ? Math.min(100, (sla.elapsed_minutes / sla.sla_target_minutes) * 100)
+            : 0;
+        
+        // Determine status and color
+        let statusColor = '#28a745'; // green
+        let statusText = 'Normal';
+        if (sla.status === 'breached') {
+            statusColor = '#dc3545'; // red
+            statusText = 'BREACHED';
+        } else if (sla.status === 'warning') {
+            statusColor = '#ffc107'; // yellow
+            statusText = 'Warning';
+        }
+        
+        // Format remaining time
+        let remainingText = '';
+        if (sla.status === 'breached') {
+            remainingText = `<span style="color: #dc3545; font-weight: bold;">BREACHED</span>`;
+        } else if (sla.remaining_minutes !== undefined) {
+            const hours = Math.floor(sla.remaining_minutes / 60);
+            const minutes = Math.floor(sla.remaining_minutes % 60);
+            remainingText = `${hours}h ${minutes}m remaining`;
+        }
+        
+        const html = `
+            <div class="sla-timer">
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="color: #00a3e0; margin: 0;">SLA Status: <span style="color: ${statusColor};">${statusText}</span></h4>
+                        <span style="color: #a0aec0;">${remainingText}</span>
+                    </div>
+                    <div class="sla-progress">
+                        <div class="sla-progress-bar" style="width: ${percentage}%; background-color: ${statusColor};"></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div style="padding: 1rem; background: rgba(0, 163, 224, 0.1); border-radius: 8px;">
+                        <div style="color: #6c757d; font-size: 0.875rem; margin-bottom: 0.25rem;">Time Elapsed</div>
+                        <div style="color: #00a3e0; font-size: 1.5rem; font-weight: bold;">
+                            ${Math.floor(sla.elapsed_minutes / 60)}h ${Math.floor(sla.elapsed_minutes % 60)}m
+                        </div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0, 163, 224, 0.1); border-radius: 8px;">
+                        <div style="color: #6c757d; font-size: 0.875rem; margin-bottom: 0.25rem;">SLA Target</div>
+                        <div style="color: #00a3e0; font-size: 1.5rem; font-weight: bold;">
+                            ${Math.floor(sla.sla_target_minutes / 60)}h ${Math.floor(sla.sla_target_minutes % 60)}m
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 1rem; background: rgba(45, 53, 72, 0.5); border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.875rem;">
+                        <div>
+                            <span style="color: #6c757d;">Alert Created:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.alert_created_at).toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <span style="color: #6c757d;">SLA Deadline:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.sla_deadline).toLocaleString()}</div>
+                        </div>
+                        ${sla.first_response_at ? `
+                            <div>
+                                <span style="color: #6c757d;">First Response:</span>
+                                <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.first_response_at).toLocaleString()}</div>
+                            </div>
+                        ` : ''}
+                        ${sla.resolved_at ? `
+                            <div>
+                                <span style="color: #6c757d;">Resolved:</span>
+                                <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.resolved_at).toLocaleString()}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                ${sla.sla_violations && sla.sla_violations.length > 0 ? `
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(220, 53, 69, 0.1); border-left: 3px solid #dc3545; border-radius: 8px;">
+                        <strong style="color: #dc3545;">SLA Violations:</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #a0aec0;">
+                            ${sla.sla_violations.map(violation => `<li>${violation}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        slaContent.innerHTML = html;
+    } catch (error) {
+        slaContent.innerHTML = '<p style="color: #dc3545;">Failed to load SLA data</p>';
+        console.error('Error loading SLA:', error);
+    }
 }
 
 async function investigateAlert() {

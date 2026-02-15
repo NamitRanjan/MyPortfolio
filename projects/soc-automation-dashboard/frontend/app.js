@@ -79,7 +79,12 @@ const state = {
 };
 
 // Initialize Dashboard
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Wait for mock data to be ready before rendering
+    if (typeof MOCK_DATA_READY !== 'undefined') {
+        await MOCK_DATA_READY;
+    }
+
     initNavigation();
     loadDashboard();
     startRealTimeUpdates();

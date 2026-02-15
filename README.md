@@ -12,11 +12,15 @@ Cybersecurity practitioner with hands-on experience designing SOC labs, tuning S
 
 ## Core Competencies
 
-- **Security Operations (SOC):** Alert triage, case management, incident escalation, post-incident review.
-- **Detection Engineering:** Rule creation and tuning for Sigma/KQL/Splunk SPL, false-positive reduction, ATT&CK mapping.
-- **Threat Monitoring:** Endpoint and network telemetry analysis with Defender, Sysmon, Zeek, and Suricata.
-- **SOAR & Automation:** Playbook design using Shuffle/TheHive to cut manual response steps.
-- **Cloud Security:** Microsoft Azure security fundamentals, cloud-hosted firewall and workload telemetry.
+| Skill                                         | Associated Project         |
+|-----------------------------------------------|----------------------------|
+| SIEM Implementation and Log Analysis          | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
+| Network Traffic Monitoring and Attack Detection | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
+| Security Automation with Shuffle SOAR         | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab|
+| Incident Response Planning and Execution      | <a href="https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9">SOC Home Lab|
+| Case Management with TheHive                  | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)">SOC Automation Lab|
+| Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure|
+| Full-Stack SOC Automation Dashboard           | <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">SOC Automation Dashboard</a>
 
 ---
 
@@ -87,28 +91,17 @@ Created endpoint-focused detection and response workflows using Microsoft Defend
 ---
 
 ## Certifications
+<div>
+   <img src="https://img.shields.io/badge/-ISC(2)%20CC-4D4D4D?&style=for-the-badge&logo=CompTIA&logoColor=white" />
+   <img src="https://img.shields.io/badge/-Azure%20AZ--900-000000?&style=for-the-badge&logo=Azure&logoColor=black" />
+   <img src="https://img.shields.io/badge/-Google_Cybersecurity_Certificate-4285F4?&style=for-the-badge&logo=Google&logoColor=blue" />
+  <img src="https://img.shields.io/badge/-IITK_Cyber_Security_and_Cyber_Defense-4D4D4D?&style=for-the-badge&logo=IITK&logoColor=white" />
+</div>
 
-- ISC2 Certified in Cybersecurity (CC)
-- Microsoft Azure Fundamentals (AZ-900)
-- Google Cybersecurity Professional Certificate
-- IIT Kanpur: Cyber Security & Cyber Defense
-
----
-
-## Portfolio Structure
-
-```text
-.
-├── README.md
-└── projects
-    ├── azure-fortinet-cloud-security.md
-    ├── endpoint-detection-response.md
-    ├── soc-detection-lab.md
-    └── soar-automation-pipeline.md
-```
-
----
-
-## Contact
-
-- LinkedIn: [namit-ranjan-cybersecurity](https://linkedin.com/in/namit-ranjan-cybersecurity)
+## Projects
+- <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">**SOC Automation Dashboard** - Production-ready full-stack security operations platform</a>
+- <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>
+- SOC Automation Project with Wazuh, TheHive and Shuffle
+- Exploring Cybersecurity in the Cloud with Fortinet and Azure
+- SOC Home Lab with Lima Charlie as an EDR
+- Microsoft Windows Defender and Firewall for Beginners

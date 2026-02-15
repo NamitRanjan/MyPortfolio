@@ -29,6 +29,13 @@ const MOCK_DATA = {
     oncallSchedule: {},
     webhookConfig: [],
     
+    // Phase 3: Compliance and hunting
+    complianceMappings: [],
+    reports: [],
+    hunts: [],
+    huntLibrary: [],
+    huntMetrics: {},
+    
     // Flag to indicate if data is ready
     ready: false,
     
@@ -36,7 +43,7 @@ const MOCK_DATA = {
     async init() {
         try {
             // Load all data files
-            const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence, correlations, notifications, escalationPolicies, oncallSchedule, webhookConfig] = await Promise.all([
+            const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence, correlations, notifications, escalationPolicies, oncallSchedule, webhookConfig, complianceMappings, reports, hunts, huntLibrary, huntMetrics] = await Promise.all([
                 fetch('./data/alerts.json').then(r => r.json()).catch(() => []),
                 fetch('./data/threats.json').then(r => r.json()).catch(() => []),
                 fetch('./data/incidents.json').then(r => r.json()).catch(() => []),
@@ -49,7 +56,12 @@ const MOCK_DATA = {
                 fetch('./data/notifications.json').then(r => r.json()).catch(() => []),
                 fetch('./data/escalation_policies.json').then(r => r.json()).catch(() => []),
                 fetch('./data/oncall_schedule.json').then(r => r.json()).catch(() => ({})),
-                fetch('./data/webhook_config.json').then(r => r.json()).catch(() => [])
+                fetch('./data/webhook_config.json').then(r => r.json()).catch(() => []),
+                fetch('./data/compliance_mappings.json').then(r => r.json()).catch(() => []),
+                fetch('./data/reports.json').then(r => r.json()).catch(() => []),
+                fetch('./data/hunts.json').then(r => r.json()).catch(() => []),
+                fetch('./data/hunt_library.json').then(r => r.json()).catch(() => []),
+                fetch('./data/hunt_metrics.json').then(r => r.json()).catch(() => ({}))
             ]);
             
             this.alerts = alerts;
@@ -66,6 +78,11 @@ const MOCK_DATA = {
             this.escalationPolicies = escalationPolicies;
             this.oncallSchedule = oncallSchedule;
             this.webhookConfig = webhookConfig;
+            this.complianceMappings = complianceMappings;
+            this.reports = reports;
+            this.hunts = hunts;
+            this.huntLibrary = huntLibrary;
+            this.huntMetrics = huntMetrics;
             
             // Calculate stats
             const activeAlerts = alerts.filter(a => a.status === 'active');
@@ -1040,6 +1057,331 @@ const MOCK_DATA = {
             return { success: true, webhook };
         }
         return { success: false, error: 'Webhook not found' };
+    },
+    
+    // ===== COMPLIANCE METHODS =====
+    
+    getComplianceFrameworks() {
+        // Extract unique frameworks from compliance mappings
+        const frameworks = new Set();
+        this.complianceMappings.forEach(mapping => {
+            frameworks.add(mapping.framework);
+        });
+        
+        return Array.from(frameworks).map(framework => {
+            const mappings = this.complianceMappings.filter(m => m.framework === framework);
+            return {
+                id: framework.toLowerCase().replace(/\s+/g, '_'),
+                name: framework,
+                total_controls: mappings.length,
+                covered_controls: mappings.filter(m => m.coverage_status === 'covered').length,
+                compliance_percentage: Math.round((mappings.filter(m => m.coverage_status === 'covered').length / mappings.length) * 100)
+            };
+        });
+    },
+    
+    getCompliancePosture() {
+        const frameworks = this.getComplianceFrameworks();
+        const totalControls = frameworks.reduce((sum, f) => sum + f.total_controls, 0);
+        const coveredControls = frameworks.reduce((sum, f) => sum + f.covered_controls, 0);
+        
+        return {
+            overall_compliance: totalControls > 0 ? Math.round((coveredControls / totalControls) * 100) : 0,
+            frameworks: frameworks,
+            total_controls: totalControls,
+            covered_controls: coveredControls,
+            gap_controls: totalControls - coveredControls,
+            last_updated: new Date().toISOString()
+        };
+    },
+    
+    getComplianceCoverage(frameworkId) {
+        const framework = frameworkId.toUpperCase().replace(/_/g, ' ');
+        const mappings = this.complianceMappings.filter(m => m.framework === framework);
+        
+        return {
+            framework_id: frameworkId,
+            framework_name: framework,
+            controls: mappings.map(m => ({
+                control_id: m.control_id,
+                control_name: m.control_name,
+                mitre_techniques: m.mitre_techniques || [],
+                coverage_status: m.coverage_status,
+                detection_rules: m.detection_rules || [],
+                gaps: m.gaps || []
+            })),
+            total_controls: mappings.length,
+            covered_controls: mappings.filter(m => m.coverage_status === 'covered').length,
+            partial_controls: mappings.filter(m => m.coverage_status === 'partial').length,
+            gap_controls: mappings.filter(m => m.coverage_status === 'gap').length
+        };
+    },
+    
+    getComplianceGaps() {
+        const gaps = this.complianceMappings
+            .filter(m => m.coverage_status === 'gap' || m.coverage_status === 'partial')
+            .map(m => ({
+                framework: m.framework,
+                control_id: m.control_id,
+                control_name: m.control_name,
+                coverage_status: m.coverage_status,
+                mitre_techniques: m.mitre_techniques || [],
+                gaps: m.gaps || [],
+                priority: m.coverage_status === 'gap' ? 'high' : 'medium'
+            }));
+        
+        return {
+            total_gaps: gaps.length,
+            critical_gaps: gaps.filter(g => g.priority === 'high').length,
+            gaps: gaps
+        };
+    },
+    
+    getMitreHeatmap() {
+        // Generate MITRE ATT&CK heatmap based on alerts and coverage
+        const techniqueCount = {};
+        const techniqueCoverage = {};
+        
+        // Count alerts per technique
+        this.alerts.forEach(alert => {
+            if (alert.mitre_tactics) {
+                alert.mitre_tactics.forEach(technique => {
+                    techniqueCount[technique] = (techniqueCount[technique] || 0) + 1;
+                });
+            }
+        });
+        
+        // Check coverage from compliance mappings
+        this.complianceMappings.forEach(mapping => {
+            if (mapping.mitre_techniques) {
+                mapping.mitre_techniques.forEach(technique => {
+                    if (!techniqueCoverage[technique] || mapping.coverage_status === 'covered') {
+                        techniqueCoverage[technique] = mapping.coverage_status;
+                    }
+                });
+            }
+        });
+        
+        // Build heatmap data
+        const heatmap = Object.keys({...techniqueCount, ...techniqueCoverage}).map(technique => ({
+            technique: technique,
+            alert_count: techniqueCount[technique] || 0,
+            coverage: techniqueCoverage[technique] || 'gap',
+            score: (techniqueCount[technique] || 0) * (techniqueCoverage[technique] === 'covered' ? 0.5 : 1)
+        }));
+        
+        return {
+            heatmap: heatmap.sort((a, b) => b.score - a.score),
+            total_techniques: heatmap.length,
+            covered_techniques: heatmap.filter(h => h.coverage === 'covered').length,
+            gap_techniques: heatmap.filter(h => h.coverage === 'gap').length
+        };
+    },
+    
+    getReports() {
+        return this.reports.map(report => ({
+            ...report,
+            generated_at: report.generated_at || new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+        }));
+    },
+    
+    generateReport(reportType, params = {}) {
+        const reportId = this.reports.length + 1;
+        const newReport = {
+            id: reportId,
+            type: reportType,
+            name: `${reportType.replace(/_/g, ' ').toUpperCase()} Report`,
+            status: 'generating',
+            generated_at: new Date().toISOString(),
+            generated_by: 'system',
+            format: params.format || 'pdf',
+            parameters: params
+        };
+        
+        this.reports.push(newReport);
+        
+        // Simulate async generation
+        setTimeout(() => {
+            const report = this.reports.find(r => r.id === reportId);
+            if (report) {
+                report.status = 'completed';
+                report.file_path = `/reports/${reportType}_${reportId}.${params.format || 'pdf'}`;
+                report.file_size = Math.floor(Math.random() * 5000000) + 100000; // Random size 100KB-5MB
+            }
+        }, 2000);
+        
+        return { success: true, report: newReport };
+    },
+    
+    // ===== THREAT HUNTING METHODS =====
+    
+    getHunts(filters = {}) {
+        let filtered = [...this.hunts];
+        
+        if (filters.status) {
+            filtered = filtered.filter(h => h.status === filters.status);
+        }
+        if (filters.priority) {
+            filtered = filtered.filter(h => h.priority === filters.priority);
+        }
+        if (filters.hunter) {
+            filtered = filtered.filter(h => h.hunter === filters.hunter);
+        }
+        
+        return filtered;
+    },
+    
+    createHunt(huntData) {
+        const huntId = Math.max(...this.hunts.map(h => h.id), 0) + 1;
+        const newHunt = {
+            id: huntId,
+            name: huntData.name,
+            description: huntData.description || '',
+            hypothesis: huntData.hypothesis || '',
+            status: 'planning',
+            priority: huntData.priority || 'medium',
+            hunter: huntData.hunter || 'system',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            findings: [],
+            journal_entries: [],
+            queries: [],
+            data_sources: huntData.data_sources || [],
+            mitre_tactics: huntData.mitre_tactics || [],
+            tags: huntData.tags || []
+        };
+        
+        this.hunts.push(newHunt);
+        return { success: true, hunt: newHunt };
+    },
+    
+    getHunt(huntId) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { error: 'Hunt not found' };
+        }
+        return hunt;
+    },
+    
+    updateHuntQuery(huntId, queryData) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { success: false, error: 'Hunt not found' };
+        }
+        
+        if (!hunt.queries) hunt.queries = [];
+        
+        const queryId = hunt.queries.length + 1;
+        const newQuery = {
+            id: queryId,
+            query: queryData.query,
+            data_source: queryData.data_source || 'siem',
+            executed_at: new Date().toISOString(),
+            results_count: Math.floor(Math.random() * 100),
+            status: 'completed'
+        };
+        
+        hunt.queries.push(newQuery);
+        hunt.updated_at = new Date().toISOString();
+        
+        return { success: true, query: newQuery };
+    },
+    
+    getHuntFindings(huntId) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { error: 'Hunt not found' };
+        }
+        return hunt.findings || [];
+    },
+    
+    addHuntFinding(huntId, findingData) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { success: false, error: 'Hunt not found' };
+        }
+        
+        if (!hunt.findings) hunt.findings = [];
+        
+        const findingId = hunt.findings.length + 1;
+        const newFinding = {
+            id: findingId,
+            title: findingData.title,
+            description: findingData.description || '',
+            severity: findingData.severity || 'medium',
+            confidence: findingData.confidence || 'medium',
+            indicators: findingData.indicators || [],
+            mitre_techniques: findingData.mitre_techniques || [],
+            created_at: new Date().toISOString(),
+            created_by: findingData.created_by || 'system'
+        };
+        
+        hunt.findings.push(newFinding);
+        hunt.updated_at = new Date().toISOString();
+        
+        return { success: true, finding: newFinding };
+    },
+    
+    getHuntJournal(huntId) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { error: 'Hunt not found' };
+        }
+        return hunt.journal_entries || [];
+    },
+    
+    addHuntJournalEntry(huntId, entryData) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { success: false, error: 'Hunt not found' };
+        }
+        
+        if (!hunt.journal_entries) hunt.journal_entries = [];
+        
+        const entryId = hunt.journal_entries.length + 1;
+        const newEntry = {
+            id: entryId,
+            entry: entryData.entry,
+            entry_type: entryData.entry_type || 'note',
+            created_at: new Date().toISOString(),
+            created_by: entryData.created_by || 'system',
+            attachments: entryData.attachments || []
+        };
+        
+        hunt.journal_entries.push(newEntry);
+        hunt.updated_at = new Date().toISOString();
+        
+        return { success: true, entry: newEntry };
+    },
+    
+    getHuntLibrary() {
+        return this.huntLibrary;
+    },
+    
+    getHuntMetrics() {
+        return {
+            total_hunts: this.hunts.length,
+            active_hunts: this.hunts.filter(h => h.status === 'active').length,
+            completed_hunts: this.hunts.filter(h => h.status === 'completed').length,
+            total_findings: this.hunts.reduce((sum, h) => sum + (h.findings?.length || 0), 0),
+            high_severity_findings: this.hunts.reduce((sum, h) => 
+                sum + (h.findings?.filter(f => f.severity === 'high' || f.severity === 'critical').length || 0), 0),
+            ...this.huntMetrics
+        };
+    },
+    
+    completeHunt(huntId, completionData = {}) {
+        const hunt = this.hunts.find(h => h.id === parseInt(huntId));
+        if (!hunt) {
+            return { success: false, error: 'Hunt not found' };
+        }
+        
+        hunt.status = 'completed';
+        hunt.completed_at = new Date().toISOString();
+        hunt.completion_notes = completionData.notes || '';
+        hunt.updated_at = new Date().toISOString();
+        
+        return { success: true, hunt: hunt };
     }
 };
 

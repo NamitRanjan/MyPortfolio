@@ -198,6 +198,67 @@ const API = {
             return MOCK_DATA.getWebhooks();
         }
         
+        // Phase 3: Compliance endpoints
+        if (endpoint.startsWith('/compliance')) {
+            if (endpoint.includes('/frameworks')) return MOCK_DATA.getComplianceFrameworks();
+            if (endpoint.includes('/posture')) return MOCK_DATA.getCompliancePosture();
+            if (endpoint.includes('/coverage/')) {
+                const framework = endpoint.match(/\/coverage\/([^/?]+)/)[1];
+                return MOCK_DATA.getComplianceCoverage(framework);
+            }
+            if (endpoint.includes('/gaps')) return MOCK_DATA.getComplianceGaps();
+        }
+        if (endpoint === '/mitre/heatmap') return MOCK_DATA.getMitreHeatmap();
+        if (endpoint.startsWith('/reports')) {
+            if (endpoint.includes('/generate') && options.method === 'POST') {
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.generateReport(body.report_type, body.parameters);
+            }
+            return MOCK_DATA.getReports();
+        }
+        
+        // Phase 3: Threat hunting endpoints
+        if (endpoint.startsWith('/hunts')) {
+            if (endpoint === '/hunts' && options.method === 'POST') {
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.createHunt(body);
+            }
+            if (endpoint.match(/\/hunts\/\d+$/)) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                return MOCK_DATA.getHunt(huntId);
+            }
+            if (endpoint.includes('/query') && options.method === 'PUT') {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.updateHuntQuery(huntId, body);
+            }
+            if (endpoint.includes('/findings')) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                if (options.method === 'POST') {
+                    const body = options.body ? JSON.parse(options.body) : {};
+                    return MOCK_DATA.addHuntFinding(huntId, body);
+                }
+                return MOCK_DATA.getHuntFindings(huntId);
+            }
+            if (endpoint.includes('/journal')) {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                if (options.method === 'POST') {
+                    const body = options.body ? JSON.parse(options.body) : {};
+                    return MOCK_DATA.addHuntJournalEntry(huntId, body);
+                }
+                return MOCK_DATA.getHuntJournal(huntId);
+            }
+            if (endpoint.includes('/complete') && options.method === 'PUT') {
+                const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.completeHunt(huntId, body);
+            }
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getHunts(Object.fromEntries(params));
+        }
+        if (endpoint === '/hunt-library') return MOCK_DATA.getHuntLibrary();
+        if (endpoint === '/hunt-metrics') return MOCK_DATA.getHuntMetrics();
+        
         return {};
     }
 };

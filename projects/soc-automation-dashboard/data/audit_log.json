@@ -20,5 +20,29 @@
     "resource_id": null,
     "details": {},
     "ip_address": "127.0.0.1"
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-02-15T08:38:26.879558Z",
+    "user_id": 1,
+    "username": "admin",
+    "action": "login",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {},
+    "ip_address": "127.0.0.1"
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-02-15T08:38:26.982117Z",
+    "user_id": null,
+    "username": "admin",
+    "action": "login_failed",
+    "resource_type": "auth",
+    "resource_id": null,
+    "details": {
+      "reason": "invalid_credentials"
+    },
+    "ip_address": "127.0.0.1"
   }
 ]

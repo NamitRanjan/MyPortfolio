@@ -789,9 +789,7 @@ function showThreatDetails(threat) {
     document.getElementById('modal-title').innerHTML = `<i class="fas fa-bug"></i> ${threat.name}`;
     
     // Update button texts for threat context
-    document.getElementById('investigate-btn').textContent = 'Investigate';
     document.getElementById('investigate-btn').innerHTML = '<i class="fas fa-search"></i> Investigate';
-    document.getElementById('respond-btn').textContent = 'Block Threat';
     document.getElementById('respond-btn').innerHTML = '<i class="fas fa-ban"></i> Block Threat';
     
     modalBody.innerHTML = `
@@ -847,9 +845,7 @@ function showIncidentDetails(incident) {
     document.getElementById('modal-title').innerHTML = `<i class="fas fa-fire"></i> ${incident.title}`;
     
     // Update button texts for incident context
-    document.getElementById('investigate-btn').textContent = 'Escalate';
     document.getElementById('investigate-btn').innerHTML = '<i class="fas fa-level-up-alt"></i> Escalate';
-    document.getElementById('respond-btn').textContent = 'Update Status';
     document.getElementById('respond-btn').innerHTML = '<i class="fas fa-edit"></i> Update Status';
     
     // Generate incident timeline entries

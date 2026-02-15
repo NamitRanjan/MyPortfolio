@@ -23,6 +23,10 @@ from audit import log_action, filter_audit_log
 from correlation_engine import CorrelationEngine
 from notification_engine import NotificationEngine
 
+# Import compliance and hunting engines
+from compliance_engine import ComplianceEngine
+from hunting_engine import HuntingEngine
+
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
@@ -132,6 +136,10 @@ alerts_data, threats_data, incidents_data, iocs_data, team_data = load_data()
 correlation_engine = CorrelationEngine(time_window_hours=4)
 data_dir = os.path.join(os.path.dirname(__file__), '../data')
 notification_engine = NotificationEngine(data_dir=data_dir)
+
+# Initialize compliance and hunting engines
+compliance_engine = ComplianceEngine(data_dir=data_dir)
+hunting_engine = HuntingEngine(data_dir=data_dir)
 
 # Playbook steps configuration
 PLAYBOOK_STEPS = {
@@ -1693,6 +1701,322 @@ def toggle_webhook(webhook_id):
             })
     
     return jsonify({'success': True, 'webhook': webhook})
+
+# ============= COMPLIANCE & EXECUTIVE REPORTING ENDPOINTS =============
+
+@app.route('/api/compliance/frameworks')
+@requires_role('view_alerts')
+def get_compliance_frameworks():
+    """Get list of all supported compliance frameworks"""
+    frameworks = compliance_engine.get_frameworks()
+    return jsonify(frameworks)
+
+@app.route('/api/compliance/posture')
+@requires_role('view_alerts')
+def get_compliance_posture():
+    """Get overall compliance posture score across all frameworks"""
+    # Load playbook data for coverage analysis
+    playbooks = [
+        {'id': 1, 'name': 'Malware Detection Response'},
+        {'id': 2, 'name': 'Phishing Email Investigation'},
+        {'id': 3, 'name': 'Brute Force Attack Mitigation'},
+        {'id': 4, 'name': 'Data Exfiltration Prevention'},
+        {'id': 5, 'name': 'Insider Threat Investigation'}
+    ]
+    
+    posture = compliance_engine.calculate_posture(alerts_data, playbooks, iocs_data)
+    return jsonify(posture)
+
+@app.route('/api/compliance/coverage/<framework_id>')
+@requires_role('view_alerts')
+def get_compliance_coverage(framework_id):
+    """Get detailed coverage matrix for a specific framework"""
+    playbooks = [
+        {'id': 1, 'name': 'Malware Detection Response'},
+        {'id': 2, 'name': 'Phishing Email Investigation'},
+        {'id': 3, 'name': 'Brute Force Attack Mitigation'},
+        {'id': 4, 'name': 'Data Exfiltration Prevention'},
+        {'id': 5, 'name': 'Insider Threat Investigation'}
+    ]
+    
+    coverage = compliance_engine.get_coverage_matrix(framework_id, alerts_data, playbooks, iocs_data)
+    return jsonify(coverage)
+
+@app.route('/api/compliance/gaps')
+@requires_role('view_alerts')
+def get_compliance_gaps():
+    """Get coverage gap analysis across all frameworks"""
+    playbooks = [
+        {'id': 1, 'name': 'Malware Detection Response'},
+        {'id': 2, 'name': 'Phishing Email Investigation'},
+        {'id': 3, 'name': 'Brute Force Attack Mitigation'},
+        {'id': 4, 'name': 'Data Exfiltration Prevention'},
+        {'id': 5, 'name': 'Insider Threat Investigation'}
+    ]
+    
+    gaps = compliance_engine.get_gaps(alerts_data, playbooks, iocs_data)
+    return jsonify(gaps)
+
+@app.route('/api/mitre/heatmap')
+@requires_role('view_alerts')
+def get_mitre_heatmap():
+    """Get MITRE ATT&CK heatmap showing tactics x techniques coverage"""
+    playbooks = [
+        {'id': 1, 'name': 'Malware Detection Response'},
+        {'id': 2, 'name': 'Phishing Email Investigation'},
+        {'id': 3, 'name': 'Brute Force Attack Mitigation'},
+        {'id': 4, 'name': 'Data Exfiltration Prevention'},
+        {'id': 5, 'name': 'Insider Threat Investigation'}
+    ]
+    
+    heatmap = compliance_engine.get_mitre_heatmap(alerts_data, playbooks, iocs_data)
+    return jsonify(heatmap)
+
+@app.route('/api/reports')
+@requires_role('view_alerts')
+def get_reports():
+    """Get list of all generated reports"""
+    reports_file = os.path.join(data_dir, 'reports.json')
+    try:
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+        return jsonify(reports)
+    except FileNotFoundError:
+        return jsonify([])
+
+@app.route('/api/reports/generate', methods=['POST'])
+@requires_role('t2_analyst')
+def generate_report():
+    """Generate a new compliance report on-demand"""
+    data = request.get_json()
+    report_type = data.get('type', 'daily')
+    
+    if report_type not in ['daily', 'weekly', 'monthly', 'posture']:
+        return jsonify({'error': 'Invalid report type'}), 400
+    
+    playbooks = [
+        {'id': 1, 'name': 'Malware Detection Response'},
+        {'id': 2, 'name': 'Phishing Email Investigation'},
+        {'id': 3, 'name': 'Brute Force Attack Mitigation'},
+        {'id': 4, 'name': 'Data Exfiltration Prevention'},
+        {'id': 5, 'name': 'Insider Threat Investigation'}
+    ]
+    
+    report = compliance_engine.generate_report(report_type, alerts_data, playbooks, iocs_data, incidents_data)
+    
+    # Save report to file
+    reports_file = os.path.join(data_dir, 'reports.json')
+    try:
+        with open(reports_file, 'r') as f:
+            reports = json.load(f)
+    except FileNotFoundError:
+        reports = []
+    
+    reports.insert(0, report)  # Add to beginning of list
+    reports = reports[:50]  # Keep only last 50 reports
+    
+    with open(reports_file, 'w') as f:
+        json.dump(reports, f, indent=2)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'generated_report', 'report', report['id'], data)
+    
+    return jsonify(report)
+
+# ============= THREAT HUNTING ENDPOINTS =============
+
+@app.route('/api/hunts')
+@requires_role('view_alerts')
+def get_hunts():
+    """Get all threat hunts, optionally filtered by status"""
+    status = request.args.get('status')
+    hunts = hunting_engine.get_all_hunts(status)
+    return jsonify(hunts)
+
+@app.route('/api/hunts', methods=['POST'])
+@requires_role('t2_analyst')
+def create_hunt():
+    """Start a new hunt from hunt library"""
+    data = request.get_json()
+    hunt_package_id = data.get('hunt_package_id')
+    
+    if not hunt_package_id:
+        return jsonify({'error': 'hunt_package_id required'}), 400
+    
+    # Get user info
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    hunt = hunting_engine.create_hunt(hunt_package_id, user['id'], user['username'])
+    
+    if 'error' in hunt:
+        return jsonify(hunt), 404
+    
+    # Log action
+    log_action(user['id'], user['username'], 'started_hunt', 'hunt', hunt['id'], data)
+    
+    return jsonify(hunt)
+
+@app.route('/api/hunts/<int:hunt_id>')
+@requires_role('view_alerts')
+def get_hunt(hunt_id):
+    """Get hunt details including query, findings, and journal"""
+    hunt = hunting_engine.get_hunt_by_id(hunt_id)
+    
+    if not hunt:
+        return jsonify({'error': 'Hunt not found'}), 404
+    
+    return jsonify(hunt)
+
+@app.route('/api/hunts/<int:hunt_id>/query', methods=['PUT'])
+@requires_role('t2_analyst')
+def update_hunt_query(hunt_id):
+    """Edit and run hunt query"""
+    data = request.get_json()
+    query = data.get('query')
+    
+    if not query:
+        return jsonify({'error': 'query required'}), 400
+    
+    # Get user info
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    result = hunting_engine.update_hunt_query(hunt_id, query, user['username'])
+    
+    if 'error' in result:
+        return jsonify(result), 404
+    
+    # Log action
+    log_action(user['id'], user['username'], 'updated_hunt_query', 'hunt', hunt_id, data)
+    
+    return jsonify(result)
+
+@app.route('/api/hunts/<int:hunt_id>/findings')
+@requires_role('view_alerts')
+def get_hunt_findings(hunt_id):
+    """Get findings for a hunt"""
+    findings = hunting_engine.get_findings(hunt_id)
+    return jsonify(findings)
+
+@app.route('/api/hunts/<int:hunt_id>/findings', methods=['POST'])
+@requires_role('t2_analyst')
+def add_hunt_finding(hunt_id):
+    """Add a finding to a hunt"""
+    data = request.get_json()
+    
+    required_fields = ['title', 'description', 'severity']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'{field} required'}), 400
+    
+    # Get user info
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    finding = hunting_engine.add_finding(hunt_id, data, user['username'])
+    
+    if 'error' in finding:
+        return jsonify(finding), 404
+    
+    # Log action
+    log_action(user['id'], user['username'], 'added_hunt_finding', 'hunt', hunt_id, data)
+    
+    return jsonify(finding)
+
+@app.route('/api/hunts/<int:hunt_id>/journal')
+@requires_role('view_alerts')
+def get_hunt_journal(hunt_id):
+    """Get hunt journal timeline"""
+    journal = hunting_engine.get_journal(hunt_id)
+    return jsonify(journal)
+
+@app.route('/api/hunts/<int:hunt_id>/journal', methods=['POST'])
+@requires_role('t2_analyst')
+def add_hunt_journal_entry(hunt_id):
+    """Add an entry to the hunt journal"""
+    data = request.get_json()
+    
+    entry_type = data.get('entry_type', 'observation')
+    content = data.get('content')
+    
+    if not content:
+        return jsonify({'error': 'content required'}), 400
+    
+    # Get user info
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    entry = hunting_engine.add_journal_entry(hunt_id, user['username'], entry_type, content)
+    
+    if 'error' in entry:
+        return jsonify(entry), 404
+    
+    return jsonify(entry)
+
+@app.route('/api/hunt-library')
+@requires_role('view_alerts')
+def get_hunt_library():
+    """Get available hunt packages"""
+    library = hunting_engine.get_hunt_library()
+    return jsonify(library)
+
+@app.route('/api/hunt-metrics')
+@requires_role('view_alerts')
+def get_hunt_metrics():
+    """Get hunt statistics and tracking"""
+    metrics = hunting_engine.get_hunt_metrics()
+    return jsonify(metrics)
+
+@app.route('/api/hunts/<int:hunt_id>/complete', methods=['PUT'])
+@requires_role('t2_analyst')
+def complete_hunt(hunt_id):
+    """Mark a hunt as completed"""
+    data = request.get_json()
+    summary = data.get('summary', '')
+    
+    # Get user info
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    hunt = hunting_engine.complete_hunt(hunt_id, user['username'], summary)
+    
+    if 'error' in hunt:
+        return jsonify(hunt), 404
+    
+    # Log action
+    log_action(user['id'], user['username'], 'completed_hunt', 'hunt', hunt_id, data)
+    
+    return jsonify(hunt)
 
 if __name__ == '__main__':
     import os

@@ -201,7 +201,7 @@ class HuntingEngine:
                     'timestamp': datetime.now().isoformat(),
                     'host': 'WKSTN-1092',
                     'process': 'rundll32.exe',
-                    'command_line': 'rundll32.exe javascript:"\..\mshtml,RunHTMLApplication"',
+                    'command_line': 'rundll32.exe javascript:"\\..\\mshtml,RunHTMLApplication"',
                     'user': 'admin_temp',
                     'suspicious_score': 92
                 }

@@ -15,6 +15,15 @@ from werkzeug.security import check_password_hash
 SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'soc-dashboard-secret-key-change-in-production')
 TOKEN_EXPIRY_HOURS = 8  # Match SOC shift duration
 
+# Security check: Warn if default secret key is used
+if SECRET_KEY == 'soc-dashboard-secret-key-change-in-production':
+    import warnings
+    warnings.warn(
+        "Using default JWT secret key! Set JWT_SECRET_KEY environment variable in production.",
+        RuntimeWarning,
+        stacklevel=2
+    )
+
 # Token blacklist (in-memory for now, use Redis in production)
 token_blacklist = set()
 

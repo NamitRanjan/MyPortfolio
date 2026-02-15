@@ -6,7 +6,7 @@ A production-ready Flask application for security operations automation
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import random
 import os
@@ -14,7 +14,8 @@ import os
 # Import authentication and audit modules
 from auth import (
     authenticate, generate_token, verify_token, invalidate_token,
-    requires_auth, requires_role, get_token_from_request, get_user_by_id
+    requires_auth, requires_role, get_token_from_request, get_user_by_id,
+    load_users
 )
 from audit import log_action, filter_audit_log
 
@@ -195,12 +196,10 @@ def change_password():
     user = get_user_by_id(user_payload['user_id'])
     
     # Verify current password
-    from werkzeug.security import check_password_hash
     if not check_password_hash(user['password_hash'], current_password):
         return jsonify({'error': 'Current password is incorrect'}), 401
     
     # Update password in data file
-    from auth import load_users
     users = load_users()
     for u in users:
         if u['id'] == user['id']:
@@ -1044,9 +1043,9 @@ def get_alert_sla(alert_id):
     sla_minutes = sla_times.get(severity, 240)
     
     # Calculate time elapsed
-    timestamp = alert.get('timestamp', datetime.utcnow().isoformat())
+    timestamp = alert.get('timestamp', datetime.now().isoformat())
     alert_time = datetime.fromisoformat(timestamp.replace('Z', ''))
-    elapsed = (datetime.utcnow() - alert_time).total_seconds() / 60
+    elapsed = (datetime.now() - alert_time).total_seconds() / 60
     
     remaining = sla_minutes - elapsed
     is_breached = remaining < 0

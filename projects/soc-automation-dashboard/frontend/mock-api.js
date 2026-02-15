@@ -12,6 +12,12 @@ const MOCK_DATA = {
     iocs: [],
     team: [],
     
+    // Authentication and workbench data
+    users: [],
+    caseNotes: [],
+    evidence: [],
+    auditLog: [],
+    
     // Threat intel
     threatFeeds: [],
     recentThreats: [],
@@ -23,12 +29,15 @@ const MOCK_DATA = {
     async init() {
         try {
             // Load all data files
-            const [alerts, threats, incidents, iocs, team] = await Promise.all([
+            const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence] = await Promise.all([
                 fetch('./data/alerts.json').then(r => r.json()).catch(() => []),
                 fetch('./data/threats.json').then(r => r.json()).catch(() => []),
                 fetch('./data/incidents.json').then(r => r.json()).catch(() => []),
                 fetch('./data/iocs.json').then(r => r.json()).catch(() => []),
-                fetch('./data/team.json').then(r => r.json()).catch(() => [])
+                fetch('./data/team.json').then(r => r.json()).catch(() => []),
+                fetch('./data/users.json').then(r => r.json()).catch(() => []),
+                fetch('./data/case_notes.json').then(r => r.json()).catch(() => []),
+                fetch('./data/evidence.json').then(r => r.json()).catch(() => [])
             ]);
             
             this.alerts = alerts;
@@ -36,6 +45,10 @@ const MOCK_DATA = {
             this.incidents = incidents;
             this.iocs = iocs;
             this.team = team;
+            this.users = users;
+            this.caseNotes = caseNotes;
+            this.evidence = evidence;
+            this.auditLog = []; // Start empty, will populate on actions
             
             // Calculate stats
             const activeAlerts = alerts.filter(a => a.status === 'active');
@@ -404,6 +417,196 @@ const MOCK_DATA = {
             status: 'executed',
             actions_taken: actionsMap[action] || [],
             timestamp: new Date().toISOString()
+        };
+    },
+    
+    // Authentication methods
+    mockLogin(username, password) {
+        const user = this.users.find(u => u.username === username);
+        if (!user || password !== 'SOCdemo2026!') {
+            return null;
+        }
+        
+        // Generate mock token
+        const token = 'mock_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
+        
+        // Log action
+        this.addAuditEntry(user.id, user.username, 'login', 'auth', null, {});
+        
+        return {
+            token: token,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.role,
+                display_name: user.display_name,
+                email: user.email
+            }
+        };
+    },
+    
+    mockLogout(username) {
+        // Log action
+        this.addAuditEntry(null, username, 'logout', 'auth', null, {});
+        return { message: 'Logged out successfully' };
+    },
+    
+    mockGetCurrentUser(username) {
+        const user = this.users.find(u => u.username === username);
+        if (!user) return null;
+        
+        return {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            display_name: user.display_name,
+            email: user.email
+        };
+    },
+    
+    // Case Notes methods
+    getAlertNotes(alertId) {
+        return this.caseNotes.filter(n => n.alert_id === alertId);
+    },
+    
+    getIncidentNotes(incidentId) {
+        return this.caseNotes.filter(n => n.incident_id === incidentId);
+    },
+    
+    addNote(note) {
+        const newId = Math.max(...this.caseNotes.map(n => n.id), 0) + 1;
+        const newNote = {
+            id: newId,
+            ...note,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        this.caseNotes.push(newNote);
+        
+        // Log action
+        this.addAuditEntry(note.author_id, note.author_name, 'note_added', 
+                          note.alert_id ? 'alert' : 'incident', 
+                          note.alert_id || note.incident_id,
+                          { note_type: note.type });
+        
+        return newNote;
+    },
+    
+    // Evidence methods
+    getAlertEvidence(alertId) {
+        return this.evidence.filter(e => e.alert_id === alertId);
+    },
+    
+    getIncidentEvidence(incidentId) {
+        return this.evidence.filter(e => e.incident_id === incidentId);
+    },
+    
+    addEvidence(evidence) {
+        const newId = Math.max(...this.evidence.map(e => e.id), 0) + 1;
+        const newEvidence = {
+            id: newId,
+            ...evidence,
+            collected_at: new Date().toISOString(),
+            chain_of_custody: [
+                {
+                    action: 'collected',
+                    by: evidence.collected_by_name,
+                    at: new Date().toISOString(),
+                    notes: evidence.initial_notes || 'Evidence collected'
+                }
+            ],
+            status: 'collected'
+        };
+        this.evidence.push(newEvidence);
+        
+        // Log action
+        this.addAuditEntry(evidence.collected_by_id, evidence.collected_by_name, 'evidence_added',
+                          evidence.alert_id ? 'alert' : 'incident',
+                          evidence.alert_id || evidence.incident_id,
+                          { evidence_type: evidence.type });
+        
+        return newEvidence;
+    },
+    
+    // Audit Log methods
+    addAuditEntry(userId, username, action, resourceType, resourceId, details) {
+        const newId = Math.max(...this.auditLog.map(e => e.id), 0) + 1;
+        const entry = {
+            id: newId,
+            timestamp: new Date().toISOString(),
+            user_id: userId,
+            username: username,
+            action: action,
+            resource_type: resourceType,
+            resource_id: resourceId,
+            details: details,
+            ip_address: '127.0.0.1'
+        };
+        this.auditLog.push(entry);
+        return entry;
+    },
+    
+    getAuditLog(filters = {}) {
+        let filtered = [...this.auditLog];
+        
+        if (filters.user_id) {
+            filtered = filtered.filter(e => e.user_id === filters.user_id);
+        }
+        if (filters.action) {
+            filtered = filtered.filter(e => e.action === filters.action);
+        }
+        if (filters.resource_type) {
+            filtered = filtered.filter(e => e.resource_type === filters.resource_type);
+        }
+        
+        // Sort by timestamp descending
+        filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Paginate
+        const page = filters.page || 1;
+        const perPage = filters.per_page || 50;
+        const start = (page - 1) * perPage;
+        const end = start + perPage;
+        const paginated = filtered.slice(start, end);
+        
+        return {
+            entries: paginated,
+            total: filtered.length,
+            page: page,
+            per_page: perPage,
+            total_pages: Math.ceil(filtered.length / perPage)
+        };
+    },
+    
+    // SLA calculation
+    getAlertSLA(alertId) {
+        const alert = this.alerts.find(a => a.id === alertId);
+        if (!alert) return null;
+        
+        const slaMinutes = {
+            'critical': 15,
+            'high': 60,
+            'medium': 240,
+            'low': 1440
+        };
+        
+        const severity = alert.severity || 'medium';
+        const sla = slaMinutes[severity] || 240;
+        
+        const alertTime = new Date(alert.timestamp);
+        const elapsed = (Date.now() - alertTime.getTime()) / (1000 * 60);
+        const remaining = sla - elapsed;
+        const percentage = Math.min(100, (elapsed / sla) * 100);
+        
+        return {
+            alert_id: alertId,
+            severity: severity,
+            sla_minutes: sla,
+            elapsed_minutes: Math.floor(elapsed),
+            remaining_minutes: Math.floor(remaining),
+            is_breached: remaining < 0,
+            percentage: Math.round(percentage * 100) / 100,
+            status: remaining < 0 ? 'breached' : (percentage > 75 ? 'warning' : 'normal')
         };
     }
 };

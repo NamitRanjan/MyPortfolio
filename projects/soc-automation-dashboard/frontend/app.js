@@ -10,9 +10,30 @@ const API_BASE = isGitHubPages ? null : 'http://localhost:5000/api';
 // API wrapper that uses mock data when backend unavailable
 const API = {
     async fetch(endpoint, options = {}) {
+        // Add Authorization header if token exists
+        if (authState.token && (!options.headers || !options.headers.Authorization)) {
+            options.headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${authState.token}`
+            };
+        }
+        
         if (API_BASE && !isGitHubPages) {
             try {
                 const response = await window.fetch(`${API_BASE}${endpoint}`, options);
+                
+                // Handle 401 Unauthorized
+                if (response.status === 401) {
+                    console.log('Unauthorized - clearing token and showing login');
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('user_info');
+                    authState.token = null;
+                    authState.user = null;
+                    authState.isAuthenticated = false;
+                    showLoginScreen();
+                    return { ok: false, status: 401, json: async () => ({ error: 'Unauthorized' }) };
+                }
+                
                 if (response.ok) {
                     return response;
                 }
@@ -32,6 +53,38 @@ const API = {
     
     mockResponse(endpoint, options) {
         // Parse endpoint and return appropriate mock data
+        if (endpoint === '/auth/login') {
+            const body = options.body ? JSON.parse(options.body) : {};
+            // Use crypto.getRandomValues for better security in mock mode
+            const randomValues = new Uint32Array(4);
+            crypto.getRandomValues(randomValues);
+            const token = 'mock-' + Array.from(randomValues).map(v => v.toString(16)).join('-');
+            return {
+                token,
+                user: {
+                    id: 1,
+                    username: body.username || 'demo',
+                    display_name: body.username === 'admin' ? 'Admin User' : 'Demo Analyst',
+                    role: body.username === 'admin' ? 'admin' : 't1_analyst',
+                    permissions: {
+                        investigate: true,
+                        respond: body.username === 'admin' || body.username === 't3_analyst',
+                        manage_playbooks: body.username === 'admin' || body.username === 'soc_manager'
+                    }
+                }
+            };
+        }
+        if (endpoint === '/auth/logout') return { success: true };
+        if (endpoint === '/auth/validate') {
+            return {
+                valid: true,
+                user: authState.user || { username: 'demo', display_name: 'Demo User', role: 'admin' }
+            };
+        }
+        if (endpoint.startsWith('/audit-log')) {
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getAuditLogs ? MOCK_DATA.getAuditLogs(Object.fromEntries(params)) : { logs: [], total: 0 };
+        }
         if (endpoint === '/dashboard/stats') return MOCK_DATA.getDashboardStats();
         if (endpoint.startsWith('/alerts')) {
             if (endpoint.includes('/investigate')) {
@@ -77,6 +130,226 @@ const API = {
     }
 };
 
+// Authentication State Management
+const authState = {
+    token: null,
+    user: null,
+    isAuthenticated: false
+};
+
+// Check for stored token on load
+function checkAuth() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+        authState.token = token;
+        authState.isAuthenticated = true;
+        
+        // Try to get user info from token or make API call
+        const userInfo = localStorage.getItem('user_info');
+        if (userInfo) {
+            try {
+                authState.user = JSON.parse(userInfo);
+                updateUIForAuthenticatedUser();
+            } catch (e) {
+                console.error('Failed to parse user info:', e);
+                showLoginScreen();
+            }
+        } else {
+            // In production, validate token with backend
+            if (!isGitHubPages) {
+                validateToken().then(valid => {
+                    if (!valid) showLoginScreen();
+                });
+            } else {
+                // Mock mode - use stored user or default
+                authState.user = { display_name: 'Demo User', role: 'admin' };
+                updateUIForAuthenticatedUser();
+            }
+        }
+    } else {
+        showLoginScreen();
+    }
+}
+
+async function validateToken() {
+    try {
+        const response = await window.fetch(`${API_BASE}/auth/validate`, {
+            headers: { 'Authorization': `Bearer ${authState.token}` }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            authState.user = data.user;
+            localStorage.setItem('user_info', JSON.stringify(data.user));
+            updateUIForAuthenticatedUser();
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Token validation failed:', error);
+        return false;
+    }
+}
+
+function showLoginScreen() {
+    authState.isAuthenticated = false;
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) {
+        loginOverlay.style.display = 'flex';
+    }
+}
+
+function hideLoginScreen() {
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) {
+        loginOverlay.style.display = 'none';
+    }
+}
+
+function updateUIForAuthenticatedUser() {
+    hideLoginScreen();
+    
+    if (!authState.user) return;
+    
+    // Update user display
+    const displayName = document.getElementById('user-display-name');
+    if (displayName) {
+        displayName.textContent = authState.user.display_name || authState.user.username || 'User';
+    }
+    
+    // Update role badge
+    const roleBadge = document.getElementById('user-role-badge');
+    if (roleBadge) {
+        const role = authState.user.role || 'analyst';
+        roleBadge.textContent = role.replace('_', ' ').toUpperCase();
+        roleBadge.className = 'role-badge ' + role;
+    }
+    
+    // Show logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.style.display = 'block';
+    }
+    
+    // Role-based UI updates
+    updateRoleBasedUI();
+}
+
+function updateRoleBasedUI() {
+    if (!authState.user) return;
+    
+    const role = authState.user.role;
+    
+    // Show/hide audit log nav (only admin and soc_manager)
+    const auditLogNav = document.getElementById('audit-log-nav');
+    if (auditLogNav) {
+        auditLogNav.style.display = (role === 'admin' || role === 'soc_manager') ? 'block' : 'none';
+    }
+    
+    // Check permissions for investigate and respond buttons
+    const permissions = authState.user.permissions || {};
+    
+    // Show/hide investigate button
+    const investigateBtns = document.querySelectorAll('.investigate-btn, #investigate-btn');
+    investigateBtns.forEach(btn => {
+        if (permissions.investigate === false) {
+            btn.style.display = 'none';
+        }
+    });
+    
+    // Show/hide respond button
+    const respondBtns = document.querySelectorAll('.respond-btn, #respond-btn');
+    respondBtns.forEach(btn => {
+        if (permissions.respond === false) {
+            btn.style.display = 'none';
+        }
+    });
+}
+
+// Login Handler
+function initAuthHandlers() {
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username')?.value;
+            const password = document.getElementById('password')?.value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (!username && !password) {
+                if (errorDiv) errorDiv.textContent = 'Please enter username and password';
+                return;
+            }
+            if (!username) {
+                if (errorDiv) errorDiv.textContent = 'Please enter username';
+                return;
+            }
+            if (!password) {
+                if (errorDiv) errorDiv.textContent = 'Please enter password';
+                return;
+            }
+            
+            try {
+                const response = await API.fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    // Store token and user info
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    
+                    authState.token = data.token;
+                    authState.user = data.user;
+                    authState.isAuthenticated = true;
+                    
+                    // Update UI
+                    updateUIForAuthenticatedUser();
+                    
+                    // Clear form
+                    loginForm.reset();
+                    if (errorDiv) errorDiv.textContent = '';
+                    
+                    // Load dashboard
+                    loadDashboard();
+                } else {
+                    if (errorDiv) errorDiv.textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                if (errorDiv) errorDiv.textContent = 'Login failed. Please try again.';
+            }
+        });
+    }
+    
+    // Logout Handler
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                // Call logout endpoint
+                await API.fetch('/auth/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            // Clear local state
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            authState.token = null;
+            authState.user = null;
+            authState.isAuthenticated = false;
+            
+            // Show login screen
+            showLoginScreen();
+        });
+    }
+}
+
 // State Management
 const state = {
     alerts: [],
@@ -102,9 +375,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('MOCK_DATA_READY is not defined - mock-api.js may not be loaded');
     }
 
+    // Initialize authentication
+    initAuthHandlers();
+    checkAuth();
+    
     initNavigation();
-    loadDashboard();
-    startRealTimeUpdates();
+    
+    // Only load dashboard if authenticated
+    if (authState.isAuthenticated) {
+        loadDashboard();
+        startRealTimeUpdates();
+    }
+    
     initFilters();
     initModal();
 });
@@ -126,13 +408,13 @@ function switchPage(page) {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
-    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
     
     // Update pages
     document.querySelectorAll('.page').forEach(p => {
         p.classList.remove('active');
     });
-    document.getElementById(`${page}-page`).classList.add('active');
+    document.getElementById(`${page}-page`)?.classList.add('active');
     
     // Load page data
     switch(page) {
@@ -156,6 +438,9 @@ function switchPage(page) {
             break;
         case 'threat-intel':
             loadThreatIntel();
+            break;
+        case 'audit-log':
+            loadAuditLog();
             break;
     }
 }
@@ -634,39 +919,455 @@ function showAlertDetails(alert) {
     
     document.getElementById('modal-title').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${alert.title}`;
     
+    // Create tabbed interface
     modalBody.innerHTML = `
-        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <span class="badge ${alert.severity}">${alert.severity}</span>
-            <span class="badge ${alert.status}">${alert.status}</span>
+        <div class="modal-tabs">
+            <button class="modal-tab active" data-tab="details">Details</button>
+            <button class="modal-tab" data-tab="notes">Notes</button>
+            <button class="modal-tab" data-tab="evidence">Evidence</button>
+            <button class="modal-tab" data-tab="sla">SLA</button>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">Description:</strong>
-            <p style="margin-top: 0.5rem; color: #a0aec0;">${alert.description}</p>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">Alert Details:</strong>
-            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                <div><i class="fas fa-server"></i> Host: <span style="color: #a0aec0;">${alert.host}</span></div>
-                <div><i class="fas fa-user"></i> User: <span style="color: #a0aec0;">${alert.user}</span></div>
-                <div><i class="fas fa-database"></i> Source: <span style="color: #a0aec0;">${alert.source}</span></div>
-                <div><i class="fas fa-exclamation-circle"></i> Risk Score: <span style="color: #a0aec0;">${alert.risk_score}/100</span></div>
+        <div class="tab-content active" id="details-tab">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <span class="badge ${alert.severity}">${alert.severity}</span>
+                <span class="badge ${alert.status}">${alert.status}</span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">Description:</strong>
+                <p style="margin-top: 0.5rem; color: #a0aec0;">${alert.description}</p>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">Alert Details:</strong>
+                <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div><i class="fas fa-server"></i> Host: <span style="color: #a0aec0;">${alert.host}</span></div>
+                    <div><i class="fas fa-user"></i> User: <span style="color: #a0aec0;">${alert.user}</span></div>
+                    <div><i class="fas fa-database"></i> Source: <span style="color: #a0aec0;">${alert.source}</span></div>
+                    <div><i class="fas fa-exclamation-circle"></i> Risk Score: <span style="color: #a0aec0;">${alert.risk_score}/100</span></div>
+                </div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #00a3e0;">MITRE ATT&CK Tactics:</strong>
+                <div class="alert-indicators" style="margin-top: 0.5rem;">
+                    ${alert.mitre_tactics.map(tactic => `<span class="indicator-tag">${tactic}</span>`).join('')}
+                </div>
+            </div>
+            <div>
+                <strong style="color: #00a3e0;">Indicators:</strong>
+                <div class="alert-indicators" style="margin-top: 0.5rem;">
+                    ${alert.indicators.map(ind => `<span class="indicator-tag"><i class="fas fa-tag"></i> ${ind}</span>`).join('')}
+                </div>
             </div>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <strong style="color: #00a3e0;">MITRE ATT&CK Tactics:</strong>
-            <div class="alert-indicators" style="margin-top: 0.5rem;">
-                ${alert.mitre_tactics.map(tactic => `<span class="indicator-tag">${tactic}</span>`).join('')}
-            </div>
+        <div class="tab-content" id="notes-tab">
+            <div id="notes-content">Loading notes...</div>
         </div>
-        <div>
-            <strong style="color: #00a3e0;">Indicators:</strong>
-            <div class="alert-indicators" style="margin-top: 0.5rem;">
-                ${alert.indicators.map(ind => `<span class="indicator-tag"><i class="fas fa-tag"></i> ${ind}</span>`).join('')}
-            </div>
+        <div class="tab-content" id="evidence-tab">
+            <div id="evidence-content">Loading evidence...</div>
+        </div>
+        <div class="tab-content" id="sla-tab">
+            <div id="sla-content">Loading SLA data...</div>
         </div>
     `;
     
+    // Set up tab switching
+    const tabs = modalBody.querySelectorAll('.modal-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update active content
+            modalBody.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${targetTab}-tab`).classList.add('active');
+            
+            // Load content if not already loaded
+            if (targetTab === 'notes' && document.getElementById('notes-content').innerHTML === 'Loading notes...') {
+                loadNotes(alert.id);
+            } else if (targetTab === 'evidence' && document.getElementById('evidence-content').innerHTML === 'Loading evidence...') {
+                loadEvidence(alert.id);
+            } else if (targetTab === 'sla' && document.getElementById('sla-content').innerHTML === 'Loading SLA data...') {
+                loadSLA(alert.id);
+            }
+        });
+    });
+    
     modal.classList.add('active');
+}
+
+// Load notes for alert
+async function loadNotes(alertId) {
+    const notesContent = document.getElementById('notes-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/notes`);
+        const notes = await response.json();
+        
+        const permissions = authState.user?.permissions || {};
+        const canAddNotes = permissions.add_notes || authState.user?.role === 'admin';
+        
+        let html = '<div style="max-height: 400px; overflow-y: auto;">';
+        
+        if (notes.length === 0) {
+            html += '<p style="color: #a0aec0; text-align: center; padding: 2rem;">No notes yet</p>';
+        } else {
+            notes.forEach(note => {
+                const pinnedClass = note.is_pinned ? ' pinned' : '';
+                const pinnedIcon = note.is_pinned ? '<i class="fas fa-thumbtack" style="color: #ffc107; margin-right: 0.5rem;"></i>' : '';
+                
+                html += `
+                    <div class="note-card${pinnedClass}">
+                        <div class="note-header">
+                            <div>
+                                ${pinnedIcon}
+                                <strong style="color: #00a3e0;">${note.author_name}</strong>
+                                <span class="badge ${note.type}" style="margin-left: 0.5rem; font-size: 0.75rem;">${note.type.replace('_', ' ')}</span>
+                            </div>
+                            <span style="color: #6c757d; font-size: 0.875rem;">${new Date(note.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="note-content">
+                            <p style="color: #a0aec0; margin: 0.5rem 0;">${note.content}</p>
+                            ${note.tags && note.tags.length > 0 ? `
+                                <div style="margin-top: 0.5rem;">
+                                    ${note.tags.map(tag => `<span class="indicator-tag" style="font-size: 0.75rem;"><i class="fas fa-tag"></i> ${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        // Add note form
+        if (canAddNotes) {
+            html += `
+                <div class="add-form" style="margin-top: 1rem;">
+                    <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Note</h4>
+                    <form id="add-note-form">
+                        <textarea id="note-content" placeholder="Enter investigation note..." rows="4" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;"></textarea>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <select id="note-type" required style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                                <option value="">Select type...</option>
+                                <option value="investigation_note">Investigation Note</option>
+                                <option value="escalation_note">Escalation Note</option>
+                                <option value="response_note">Response Note</option>
+                            </select>
+                            <input type="text" id="note-tags" placeholder="Tags (comma-separated)" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Note</button>
+                    </form>
+                </div>
+            `;
+        }
+        
+        notesContent.innerHTML = html;
+        
+        // Attach event listener for add note form
+        if (canAddNotes) {
+            const form = document.getElementById('add-note-form');
+            if (form) {
+                form.addEventListener('submit', (event) => handleAddNote(event, alertId));
+            }
+        }
+    } catch (error) {
+        notesContent.innerHTML = '<p style="color: #dc3545;">Failed to load notes</p>';
+        console.error('Error loading notes:', error);
+    }
+}
+
+// Handle add note form submission
+async function handleAddNote(event, alertId) {
+    event.preventDefault();
+    
+    const content = document.getElementById('note-content').value;
+    const noteType = document.getElementById('note-type').value;
+    const tagsInput = document.getElementById('note-tags').value;
+    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+    
+    try {
+        await API.fetch(`/alerts/${alertId}/notes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                content,
+                type: noteType,
+                tags
+            })
+        });
+        
+        showToast('Note added successfully', 'success');
+        loadNotes(alertId);
+    } catch (error) {
+        showToast('Failed to add note', 'error');
+        console.error('Error adding note:', error);
+    }
+    
+    return false;
+}
+
+// Load evidence for alert
+async function loadEvidence(alertId) {
+    const evidenceContent = document.getElementById('evidence-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/evidence`);
+        const evidenceItems = await response.json();
+        
+        const permissions = authState.user?.permissions || {};
+        const canAddEvidence = permissions.add_evidence || authState.user?.role === 'admin';
+        
+        let html = '<div style="max-height: 400px; overflow-y: auto;">';
+        
+        if (evidenceItems.length === 0) {
+            html += '<p style="color: #a0aec0; text-align: center; padding: 2rem;">No evidence collected yet</p>';
+        } else {
+            evidenceItems.forEach(evidence => {
+                const typeIcons = {
+                    'file_hash': 'fa-file-code',
+                    'ip_address': 'fa-network-wired',
+                    'domain': 'fa-globe',
+                    'url': 'fa-link',
+                    'email': 'fa-envelope'
+                };
+                const icon = typeIcons[evidence.type] || 'fa-database';
+                
+                html += `
+                    <div class="evidence-item">
+                        <div class="evidence-header">
+                            <div>
+                                <i class="fas ${icon}" style="color: #00a3e0; margin-right: 0.5rem;"></i>
+                                <strong style="color: #00a3e0;">${evidence.type.replace('_', ' ').toUpperCase()}</strong>
+                                <span class="badge ${evidence.status}" style="margin-left: 0.5rem; font-size: 0.75rem;">${evidence.status}</span>
+                            </div>
+                        </div>
+                        <div class="evidence-value" style="font-family: 'Courier New', monospace; color: #ffc107; margin: 0.5rem 0; padding: 0.5rem; background: #0d1117; border-radius: 4px;">
+                            ${evidence.value}
+                            ${evidence.hash_type ? `<span style="color: #6c757d; font-size: 0.875rem;"> (${evidence.hash_type})</span>` : ''}
+                        </div>
+                        ${evidence.description ? `
+                            <p style="color: #a0aec0; margin: 0.5rem 0;">${evidence.description}</p>
+                        ` : ''}
+                        ${evidence.chain_of_custody && evidence.chain_of_custody.length > 0 ? `
+                            <div style="margin-top: 0.75rem; padding-left: 1rem; border-left: 2px solid #2d3548;">
+                                <strong style="color: #6c757d; font-size: 0.875rem;">Chain of Custody:</strong>
+                                ${evidence.chain_of_custody.map(entry => `
+                                    <div style="margin-top: 0.25rem; font-size: 0.875rem; color: #a0aec0;">
+                                        <i class="fas fa-chevron-right" style="font-size: 0.5rem; margin-right: 0.25rem;"></i>
+                                        ${entry.action} by ${entry.by} at ${new Date(entry.at).toLocaleString()}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top: 0.75rem; font-size: 0.875rem; color: #6c757d;">
+                            Collected by <strong>${evidence.collected_by_name}</strong> at ${new Date(evidence.collected_at).toLocaleString()}
+                        </div>
+                        ${evidence.tags && evidence.tags.length > 0 ? `
+                            <div style="margin-top: 0.5rem;">
+                                ${evidence.tags.map(tag => `<span class="indicator-tag" style="font-size: 0.75rem;"><i class="fas fa-tag"></i> ${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        // Add evidence form
+        if (canAddEvidence) {
+            html += `
+                <div class="add-form" style="margin-top: 1rem;">
+                    <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Evidence</h4>
+                    <form id="add-evidence-form">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                            <select id="evidence-type" required style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                                <option value="">Select type...</option>
+                                <option value="file_hash">File Hash</option>
+                                <option value="ip_address">IP Address</option>
+                                <option value="domain">Domain</option>
+                                <option value="url">URL</option>
+                                <option value="email">Email</option>
+                            </select>
+                            <select id="hash-type" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px; display: none;">
+                                <option value="">Select hash type...</option>
+                                <option value="md5">MD5</option>
+                                <option value="sha1">SHA1</option>
+                                <option value="sha256">SHA256</option>
+                            </select>
+                        </div>
+                        <input type="text" id="evidence-value" placeholder="Evidence value" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px; font-family: 'Courier New', monospace;">
+                        <textarea id="evidence-description" placeholder="Description (optional)" rows="2" style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;"></textarea>
+                        <input type="text" id="evidence-tags" placeholder="Tags (comma-separated)" style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                        <button type="submit" class="btn btn-primary">Add Evidence</button>
+                    </form>
+                </div>
+            `;
+        }
+        
+        evidenceContent.innerHTML = html;
+        
+        // Attach event listeners for add evidence form
+        if (canAddEvidence) {
+            const form = document.getElementById('add-evidence-form');
+            if (form) {
+                form.addEventListener('submit', (event) => handleAddEvidence(event, alertId));
+            }
+            
+            const typeSelect = document.getElementById('evidence-type');
+            if (typeSelect) {
+                typeSelect.addEventListener('change', toggleHashType);
+            }
+        }
+    } catch (error) {
+        evidenceContent.innerHTML = '<p style="color: #dc3545;">Failed to load evidence</p>';
+        console.error('Error loading evidence:', error);
+    }
+}
+
+// Toggle hash type field visibility
+function toggleHashType() {
+    const evidenceType = document.getElementById('evidence-type').value;
+    const hashTypeField = document.getElementById('hash-type');
+    if (hashTypeField) {
+        hashTypeField.style.display = evidenceType === 'file_hash' ? 'block' : 'none';
+        hashTypeField.required = evidenceType === 'file_hash';
+    }
+}
+
+// Handle add evidence form submission
+async function handleAddEvidence(event, alertId) {
+    event.preventDefault();
+    
+    const evidenceType = document.getElementById('evidence-type').value;
+    const value = document.getElementById('evidence-value').value;
+    const description = document.getElementById('evidence-description').value;
+    const tagsInput = document.getElementById('evidence-tags').value;
+    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+    
+    const payload = {
+        type: evidenceType,
+        value,
+        description,
+        tags
+    };
+    
+    if (evidenceType === 'file_hash') {
+        const hashType = document.getElementById('hash-type').value;
+        if (!hashType) {
+            showToast('Please select hash type', 'error');
+            return false;
+        }
+        payload.hash_type = hashType;
+    }
+    
+    try {
+        await API.fetch(`/alerts/${alertId}/evidence`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        showToast('Evidence added successfully', 'success');
+        loadEvidence(alertId);
+    } catch (error) {
+        showToast('Failed to add evidence', 'error');
+        console.error('Error adding evidence:', error);
+    }
+    
+    return false;
+}
+
+// Load SLA data for alert
+async function loadSLA(alertId) {
+    const slaContent = document.getElementById('sla-content');
+    try {
+        const response = await API.fetch(`/alerts/${alertId}/sla`);
+        const sla = await response.json();
+        
+        // Calculate percentage (already provided by backend)
+        const percentage = sla.percentage || 0;
+        
+        // Determine status and color
+        let statusColor = '#28a745'; // green
+        let statusText = 'Normal';
+        if (sla.status === 'breached') {
+            statusColor = '#dc3545'; // red
+            statusText = 'BREACHED';
+        } else if (sla.status === 'warning') {
+            statusColor = '#ffc107'; // yellow
+            statusText = 'Warning';
+        }
+        
+        // Format remaining time
+        let remainingText = '';
+        if (sla.is_breached) {
+            remainingText = `<span style="color: #dc3545; font-weight: bold;">BREACHED</span>`;
+        } else if (sla.remaining_minutes !== undefined) {
+            const hours = Math.floor(Math.abs(sla.remaining_minutes) / 60);
+            const minutes = Math.floor(Math.abs(sla.remaining_minutes) % 60);
+            remainingText = `${hours}h ${minutes}m remaining`;
+        }
+        
+        const html = `
+            <div class="sla-timer">
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="color: #00a3e0; margin: 0;">SLA Status: <span style="color: ${statusColor};">${statusText}</span></h4>
+                        <span style="color: #a0aec0;">${remainingText}</span>
+                    </div>
+                    <div class="sla-progress">
+                        <div class="sla-progress-bar" style="width: ${percentage}%; background-color: ${statusColor};"></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div style="padding: 1rem; background: rgba(0, 163, 224, 0.1); border-radius: 8px;">
+                        <div style="color: #6c757d; font-size: 0.875rem; margin-bottom: 0.25rem;">Time Elapsed</div>
+                        <div style="color: #00a3e0; font-size: 1.5rem; font-weight: bold;">
+                            ${Math.floor(sla.elapsed_minutes / 60)}h ${Math.floor(sla.elapsed_minutes % 60)}m
+                        </div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(0, 163, 224, 0.1); border-radius: 8px;">
+                        <div style="color: #6c757d; font-size: 0.875rem; margin-bottom: 0.25rem;">SLA Target</div>
+                        <div style="color: #00a3e0; font-size: 1.5rem; font-weight: bold;">
+                            ${Math.floor(sla.sla_minutes / 60)}h ${Math.floor(sla.sla_minutes % 60)}m
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="padding: 1rem; background: rgba(45, 53, 72, 0.5); border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.875rem;">
+                        <div>
+                            <span style="color: #6c757d;">Severity Level:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem; text-transform: uppercase;">${sla.severity}</div>
+                        </div>
+                        <div>
+                            <span style="color: #6c757d;">Alert ID:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem;">#${sla.alert_id}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${sla.is_breached ? `
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(220, 53, 69, 0.1); border-left: 3px solid #dc3545; border-radius: 8px;">
+                        <strong style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> SLA Breach</strong>
+                        <p style="margin-top: 0.5rem; color: #a0aec0;">
+                            This alert has exceeded its SLA target by ${Math.floor(Math.abs(sla.remaining_minutes) / 60)} hours and ${Math.floor(Math.abs(sla.remaining_minutes) % 60)} minutes.
+                        </p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        
+        slaContent.innerHTML = html;
+    } catch (error) {
+        slaContent.innerHTML = '<p style="color: #dc3545;">Failed to load SLA data</p>';
+        console.error('Error loading SLA:', error);
+    }
 }
 
 async function investigateAlert() {
@@ -1306,7 +2007,103 @@ function initTeamFilters() {
     }
 }
 
+// Audit Log Functionality
+async function loadAuditLog(filters = {}) {
+    showLoading();
+    try {
+        // Build query string
+        const params = new URLSearchParams(filters);
+        const response = await API.fetch(`/audit-log?${params.toString()}`);
+        const data = await response.json();
+        
+        // Handle both array and object responses
+        const logs = Array.isArray(data) ? data : (data.logs || []);
+        renderAuditLog(logs);
+    } catch (error) {
+        showToast('Failed to load audit logs', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderAuditLog(logs) {
+    const tbody = document.getElementById('audit-log-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a0aec0;">No audit logs found</td></tr>';
+        return;
+    }
+    
+    logs.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${formatTime(log.timestamp)}</td>
+            <td>${log.user || 'System'}</td>
+            <td><span class="badge ${getActionClass(log.action)}">${log.action}</span></td>
+            <td>${log.resource || '-'}</td>
+            <td>${log.details || '-'}</td>
+            <td>${log.ip_address || '-'}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getActionClass(action) {
+    const actionLower = (action || '').toLowerCase();
+    if (actionLower.includes('delete') || actionLower.includes('remove')) return 'critical';
+    if (actionLower.includes('create') || actionLower.includes('add')) return 'low';
+    if (actionLower.includes('update') || actionLower.includes('modify')) return 'medium';
+    if (actionLower.includes('login') || actionLower.includes('logout')) return 'info';
+    return 'info';
+}
+
+function initAuditLogFilters() {
+    const applyBtn = document.getElementById('audit-filter-apply');
+    const resetBtn = document.getElementById('audit-filter-reset');
+    
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            const filters = {};
+            
+            const userFilter = document.getElementById('audit-filter-user')?.value;
+            if (userFilter) filters.user = userFilter;
+            
+            const actionFilter = document.getElementById('audit-filter-action')?.value;
+            if (actionFilter) filters.action = actionFilter;
+            
+            const dateFromFilter = document.getElementById('audit-filter-date-from')?.value;
+            if (dateFromFilter) filters.date_from = dateFromFilter;
+            
+            const dateToFilter = document.getElementById('audit-filter-date-to')?.value;
+            if (dateToFilter) filters.date_to = dateToFilter;
+            
+            loadAuditLog(filters);
+        });
+    }
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            const userInput = document.getElementById('audit-filter-user');
+            const actionSelect = document.getElementById('audit-filter-action');
+            const dateFromInput = document.getElementById('audit-filter-date-from');
+            const dateToInput = document.getElementById('audit-filter-date-to');
+            
+            if (userInput) userInput.value = '';
+            if (actionSelect) actionSelect.value = '';
+            if (dateFromInput) dateFromInput.value = '';
+            if (dateToInput) dateToInput.value = '';
+            
+            loadAuditLog();
+        });
+    }
+}
+
 // Initialize filters on load
 document.addEventListener('DOMContentLoaded', () => {
     initTeamFilters();
+    initAuditLogFilters();
 });

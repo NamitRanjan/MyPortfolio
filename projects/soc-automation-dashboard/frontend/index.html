@@ -37,10 +37,17 @@
                 <a href="#threat-intel" class="nav-item" data-page="threat-intel">
                     <i class="fas fa-shield-alt"></i> Threat Intel
                 </a>
+                <a href="#audit-log" class="nav-item" data-page="audit-log" id="audit-log-nav" style="display: none;">
+                    <i class="fas fa-clipboard-list"></i> Audit Log
+                </a>
             </nav>
-            <div class="user-info">
+            <div class="user-info" id="user-info">
                 <i class="fas fa-user-circle"></i>
-                <span>SOC Analyst</span>
+                <span id="user-display-name">SOC Analyst</span>
+                <span id="user-role-badge" class="role-badge"></span>
+                <button id="logout-btn" class="logout-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
     </header>
@@ -220,6 +227,88 @@
                 </button>
                 <button class="btn btn-secondary modal-close">Close</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>SOC Automation Platform</h2>
+                <p>Secure Authentication Required</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                </div>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            <div class="login-info">
+                <p><strong>Demo Credentials:</strong></p>
+                <ul>
+                    <li><code>admin</code> / <code>SOCdemo2026!</code> - Full access</li>
+                    <li><code>sarah.chen</code> / <code>SOCdemo2026!</code> - SOC Manager</li>
+                    <li><code>mike.ross</code> / <code>SOCdemo2026!</code> - T3 Analyst</li>
+                    <li><code>emily.zhang</code> / <code>SOCdemo2026!</code> - T2 Analyst</li>
+                    <li><code>jake.miller</code> / <code>SOCdemo2026!</code> - T1 Analyst</li>
+                    <li><code>viewer</code> / <code>SOCdemo2026!</code> - Read-only</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Page -->
+    <div id="audit-log-page" class="page" style="display: none;">
+        <div class="page-header">
+            <h2><i class="fas fa-clipboard-list"></i> Audit Log</h2>
+            <p>Security audit trail and activity log</p>
+        </div>
+        
+        <div class="filter-bar">
+            <input type="text" id="audit-filter-user" placeholder="Filter by user...">
+            <select id="audit-filter-action">
+                <option value="">All Actions</option>
+                <option value="login">Login</option>
+                <option value="logout">Logout</option>
+                <option value="alert_investigated">Alert Investigated</option>
+                <option value="alert_response_executed">Response Executed</option>
+                <option value="playbook_executed">Playbook Executed</option>
+                <option value="note_added">Note Added</option>
+                <option value="evidence_added">Evidence Added</option>
+            </select>
+            <button id="audit-filter-apply" class="btn btn-primary">Apply Filters</button>
+            <button id="audit-filter-reset" class="btn btn-secondary">Reset</button>
+        </div>
+        
+        <div class="data-table">
+            <table id="audit-log-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Resource</th>
+                        <th>Details</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody id="audit-log-tbody">
+                    <!-- Audit log entries will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination" id="audit-pagination">
+            <!-- Pagination controls will be inserted here -->
         </div>
     </div>
 

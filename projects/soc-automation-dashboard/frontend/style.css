@@ -1163,3 +1163,620 @@ body {
     color: var(--text-secondary);
     font-size: 0.9rem;
 }
+
+/* ============= Authentication & Login ============= */
+
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.login-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 3rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--primary-color);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-header i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.login-header h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.login-form {
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.login-error {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.login-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-info {
+    background: rgba(0, 102, 204, 0.1);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.login-info p {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-weight: bold;
+}
+
+.login-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.login-info li {
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.login-info code {
+    background: var(--dark-bg);
+    color: var(--secondary-color);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+.logout-btn {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logout-btn:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+.role-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
+}
+
+.role-badge.admin {
+    background: var(--critical-color);
+}
+
+.role-badge.soc_manager {
+    background: var(--danger-color);
+}
+
+.role-badge.t3_analyst {
+    background: var(--warning-color);
+    color: var(--dark-bg);
+}
+
+.role-badge.t2_analyst {
+    background: var(--secondary-color);
+}
+
+.role-badge.t1_analyst {
+    background: var(--success-color);
+}
+
+.role-badge.read_only {
+    background: var(--text-secondary);
+}
+
+/* ============= Audit Log Page ============= */
+
+.filter-bar {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-bar input,
+.filter-bar select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.data-table {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.data-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: var(--header-bg);
+}
+
+.data-table th {
+    padding: 1rem;
+    text-align: left;
+    color: var(--primary-color);
+    font-weight: bold;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.data-table tbody tr:hover {
+    background: rgba(0, 102, 204, 0.05);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.pagination button {
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination .page-info {
+    color: var(--text-secondary);
+    margin: 0 1rem;
+}
+
+/* ============= Case Notes & Evidence ============= */
+
+.notes-section,
+.evidence-section {
+    margin-top: 1.5rem;
+}
+
+.note-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.note-card.pinned {
+    border-left-color: var(--warning-color);
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.note-author {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.note-timestamp {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.note-content {
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.note-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.note-tag {
+    background: rgba(0, 102, 204, 0.2);
+    color: var(--secondary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.note-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.note-type-badge.investigation_note {
+    background: rgba(0, 163, 224, 0.2);
+    color: var(--secondary-color);
+}
+
+.note-type-badge.escalation_note {
+    background: rgba(255, 193, 7, 0.2);
+    color: var(--warning-color);
+}
+
+.note-type-badge.response_note {
+    background: rgba(40, 167, 69, 0.2);
+    color: var(--success-color);
+}
+
+.evidence-item {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--success-color);
+}
+
+.evidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.evidence-type {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.evidence-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.evidence-status.verified {
+    background: rgba(40, 167, 69, 0.2);
+    color: var(--success-color);
+}
+
+.evidence-status.collected {
+    background: rgba(0, 163, 224, 0.2);
+    color: var(--secondary-color);
+}
+
+.evidence-status.analyzed {
+    background: rgba(255, 193, 7, 0.2);
+    color: var(--warning-color);
+}
+
+.evidence-value {
+    font-family: 'Courier New', monospace;
+    background: var(--dark-bg);
+    padding: 0.5rem;
+    border-radius: 6px;
+    margin: 0.75rem 0;
+    color: var(--secondary-color);
+    word-break: break-all;
+}
+
+.chain-of-custody {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.chain-of-custody-title {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.custody-entry {
+    padding: 0.75rem;
+    background: rgba(0, 102, 204, 0.05);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.custody-action {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.custody-meta {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* ============= SLA Timer ============= */
+
+.sla-timer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+
+.sla-progress {
+    flex: 1;
+    height: 8px;
+    background: var(--dark-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.sla-progress-bar {
+    height: 100%;
+    transition: all 0.3s;
+}
+
+.sla-progress-bar.normal {
+    background: var(--success-color);
+}
+
+.sla-progress-bar.warning {
+    background: var(--warning-color);
+}
+
+.sla-progress-bar.breached {
+    background: var(--danger-color);
+}
+
+.sla-time {
+    font-weight: bold;
+    min-width: 100px;
+    text-align: right;
+}
+
+.sla-time.normal {
+    color: var(--success-color);
+}
+
+.sla-time.warning {
+    color: var(--warning-color);
+}
+
+.sla-time.breached {
+    color: var(--danger-color);
+}
+
+/* ============= Modal Tabs ============= */
+
+.modal-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-tab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.modal-tab:hover {
+    color: var(--primary-color);
+}
+
+.modal-tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ============= Add Note/Evidence Forms ============= */
+
+.add-form {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.add-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.add-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.add-form select {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+

@@ -1,0 +1,190 @@
+[
+  {
+    "id": 1,
+    "alert_id": 1,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hash_type": "SHA-256",
+    "description": "Suspicious PowerShell script hash",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-15T09:35:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-15T09:35:00Z",
+        "notes": "Extracted from endpoint WKSTN-1247"
+      }
+    ],
+    "tags": ["malware", "script"],
+    "status": "verified"
+  },
+  {
+    "id": 2,
+    "alert_id": 1,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "185.220.101.45",
+    "hash_type": null,
+    "description": "C2 server IP address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-15T10:16:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-15T10:16:00Z",
+        "notes": "Extracted from network logs"
+      },
+      {
+        "action": "verified",
+        "by": "Mike Ross",
+        "at": "2026-02-15T10:20:00Z",
+        "notes": "Confirmed via VirusTotal and threat intel feeds"
+      }
+    ],
+    "tags": ["c2", "apt28", "network"],
+    "status": "verified"
+  },
+  {
+    "id": 3,
+    "alert_id": 2,
+    "incident_id": null,
+    "type": "ip_address",
+    "value": "203.0.113.42",
+    "hash_type": null,
+    "description": "Source IP of brute force attack",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-15T08:46:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-15T08:46:00Z",
+        "notes": "Extracted from authentication logs"
+      }
+    ],
+    "tags": ["brute_force", "authentication"],
+    "status": "verified"
+  },
+  {
+    "id": 4,
+    "alert_id": 3,
+    "incident_id": 1,
+    "type": "file_hash",
+    "value": "7a6d4d8f9c3b2e1a5f8d7c6b4a3e2d1c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4",
+    "hash_type": "SHA-256",
+    "description": "LockBit 3.0 ransomware executable",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T14:50:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-14T14:50:00Z",
+        "notes": "Quarantined from infected system SRV-DB01"
+      },
+      {
+        "action": "analyzed",
+        "by": "Mike Ross",
+        "at": "2026-02-14T15:15:00Z",
+        "notes": "Submitted to malware sandbox for analysis"
+      }
+    ],
+    "tags": ["ransomware", "lockbit", "malware"],
+    "status": "analyzed"
+  },
+  {
+    "id": 5,
+    "alert_id": 3,
+    "incident_id": 1,
+    "type": "domain",
+    "value": "lockbit3ransom.onion",
+    "hash_type": null,
+    "description": "Ransomware payment portal domain",
+    "collected_by_id": 3,
+    "collected_by_name": "Mike Ross",
+    "collected_at": "2026-02-14T15:00:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Mike Ross",
+        "at": "2026-02-14T15:00:00Z",
+        "notes": "Extracted from ransom note"
+      }
+    ],
+    "tags": ["ransomware", "tor", "c2"],
+    "status": "verified"
+  },
+  {
+    "id": 6,
+    "alert_id": 5,
+    "incident_id": null,
+    "type": "email",
+    "value": "noreply@microsoft-security.com",
+    "hash_type": null,
+    "description": "Spoofed sender email address",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-15T07:22:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-15T07:22:00Z",
+        "notes": "Extracted from email headers"
+      }
+    ],
+    "tags": ["phishing", "email", "spoofing"],
+    "status": "verified"
+  },
+  {
+    "id": 7,
+    "alert_id": 5,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e3d4",
+    "hash_type": "MD5",
+    "description": "Emotet loader attachment hash",
+    "collected_by_id": 4,
+    "collected_by_name": "Emily Zhang",
+    "collected_at": "2026-02-15T07:25:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Emily Zhang",
+        "at": "2026-02-15T07:25:00Z",
+        "notes": "Extracted malicious attachment from quarantine"
+      }
+    ],
+    "tags": ["emotet", "malware", "attachment"],
+    "status": "verified"
+  },
+  {
+    "id": 8,
+    "alert_id": 7,
+    "incident_id": null,
+    "type": "file_hash",
+    "value": "8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9",
+    "hash_type": "SHA-256",
+    "description": "Mimikatz executable hash",
+    "collected_by_id": 5,
+    "collected_by_name": "Jake Miller",
+    "collected_at": "2026-02-15T06:12:00Z",
+    "chain_of_custody": [
+      {
+        "action": "collected",
+        "by": "Jake Miller",
+        "at": "2026-02-15T06:12:00Z",
+        "notes": "Collected from domain controller DC01"
+      }
+    ],
+    "tags": ["mimikatz", "credential_theft"],
+    "status": "verified"
+  }
+]

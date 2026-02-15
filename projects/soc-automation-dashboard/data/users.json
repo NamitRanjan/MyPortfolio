@@ -2,7 +2,7 @@
   {
     "id": 1,
     "username": "admin",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$GwRFAC4LzPoR5M3y$745399681659adf2069f1552db8f613e14b8b2ddb8b7d656265dfed088f929826eff8d01a934770aa605eaeb64c82f0dbc0a8957fa97140be385cf59315586c2",
     "role": "admin",
     "display_name": "SOC Admin",
     "email": "admin@soc.local"
@@ -10,7 +10,7 @@
   {
     "id": 2,
     "username": "sarah.chen",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$05nZuMy93aJcf7kt$cb0f641c2e6032529c6511bee9363dce9dc7ad7e775dbfb0eecb53429f7277e694bcefea40c2f513dc4b80ee4a08c156a5da41e68af0d8aab91b2fcdb7648c4d",
     "role": "soc_manager",
     "display_name": "Sarah Chen",
     "email": "sarah.chen@soc.local"
@@ -18,7 +18,7 @@
   {
     "id": 3,
     "username": "mike.ross",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$0n2yKHyYdPirJ8R5$823f5db92f8d3309362dffbe579c0328079a47096ac19b98762f1f076f767b092c3c7928d5f40087430d598827ae09b1fed3e5e9d5a70ead79d36fb5e2553264",
     "role": "t3_analyst",
     "display_name": "Mike Ross",
     "email": "mike.ross@soc.local"
@@ -26,7 +26,7 @@
   {
     "id": 4,
     "username": "emily.zhang",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$GywdTc67SurM3z6r$c9833d2e6b340ce33cb78c1d7a3e528e33d602fda3c6a2fbc9254bf40f1c748f7fb614a01d5587894314f62e04eafe0898dd2d5ced184214b5862b4a2f6d6f93",
     "role": "t2_analyst",
     "display_name": "Emily Zhang",
     "email": "emily.zhang@soc.local"
@@ -34,7 +34,7 @@
   {
     "id": 5,
     "username": "jake.miller",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$2Pg5fGP6MUnqDP1r$742f2e3d8cf709af13f2379d1fa946778cdc7a540cb839259e783ae4af011f660b15fe0d517050ddfa922169bb51ff70843e9397119ecd6d0c9d387ab80063c8",
     "role": "t1_analyst",
     "display_name": "Jake Miller",
     "email": "jake.miller@soc.local"
@@ -42,7 +42,7 @@
   {
     "id": 6,
     "username": "viewer",
-    "password_hash": "scrypt:32768:8:1$UZjC2ZRDD6TgKB5D$e30e07c1ed789e1f3404bea1410149ca4640839b3b290cd6bcfbf07e47b0defeaddb08e733b5ff203bb9d19abd3f13fb47f33b597b61d307ddd8f7e412c5bd40",
+    "password_hash": "scrypt:32768:8:1$puRiufWUxo4PVcbU$63e59569b737048bf9395059438147173db3ca1987c69a5040bca78ce84284d62b8a9238da39ff6b0ab575eca1543f0478bd6eb036d4e1e2ef59ef616a6cc667",
     "role": "read_only",
     "display_name": "SOC Viewer",
     "email": "viewer@soc.local"

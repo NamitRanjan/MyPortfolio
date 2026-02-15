@@ -19,6 +19,10 @@ from auth import (
 )
 from audit import log_action, filter_audit_log
 
+# Import correlation and notification engines
+from correlation_engine import CorrelationEngine
+from notification_engine import NotificationEngine
+
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
@@ -57,7 +61,77 @@ def save_evidence(evidence):
     with open(os.path.join(data_dir, 'evidence.json'), 'w') as f:
         json.dump(evidence, f, indent=2)
 
+def load_correlations():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    try:
+        with open(os.path.join(data_dir, 'correlations.json'), 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_correlations(correlations):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'correlations.json'), 'w') as f:
+        json.dump(correlations, f, indent=2)
+
+def load_notifications():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    try:
+        with open(os.path.join(data_dir, 'notifications.json'), 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_notifications(notifications):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'notifications.json'), 'w') as f:
+        json.dump(notifications, f, indent=2)
+
+def load_escalation_policies():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    try:
+        with open(os.path.join(data_dir, 'escalation_policies.json'), 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_escalation_policies(policies):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'escalation_policies.json'), 'w') as f:
+        json.dump(policies, f, indent=2)
+
+def load_oncall_schedule():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    try:
+        with open(os.path.join(data_dir, 'oncall_schedule.json'), 'r') as f:
+            return json.load(f)
+    except:
+        return {}
+
+def save_oncall_schedule(schedule):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'oncall_schedule.json'), 'w') as f:
+        json.dump(schedule, f, indent=2)
+
+def load_webhook_config():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    try:
+        with open(os.path.join(data_dir, 'webhook_config.json'), 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_webhook_config(webhooks):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'webhook_config.json'), 'w') as f:
+        json.dump(webhooks, f, indent=2)
+
 alerts_data, threats_data, incidents_data, iocs_data, team_data = load_data()
+
+# Initialize correlation and notification engines
+correlation_engine = CorrelationEngine(time_window_hours=4)
+data_dir = os.path.join(os.path.dirname(__file__), '../data')
+notification_engine = NotificationEngine(data_dir=data_dir)
 
 # Playbook steps configuration
 PLAYBOOK_STEPS = {
@@ -1063,6 +1137,562 @@ def get_alert_sla(alert_id):
         'percentage': round(percentage, 2),
         'status': 'breached' if is_breached else ('warning' if percentage > 75 else 'normal')
     })
+
+# ===== CORRELATION ENGINE ENDPOINTS =====
+
+@app.route('/api/correlations')
+@requires_role('view_alerts')
+def get_correlations():
+    """Get all correlation groups with optional filters"""
+    correlations = load_correlations()
+    
+    # Apply filters
+    status = request.args.get('status')
+    risk_level = request.args.get('risk_level')
+    min_score = request.args.get('min_score', type=int)
+    
+    if status:
+        correlations = [c for c in correlations if c.get('status') == status]
+    if risk_level:
+        correlations = [c for c in correlations if c.get('risk_level') == risk_level]
+    if min_score:
+        correlations = [c for c in correlations if c.get('correlation_score', 0) >= min_score]
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'viewed_correlations', 'correlation', None, {})
+    
+    return jsonify(correlations)
+
+@app.route('/api/correlations/<int:correlation_id>')
+@requires_role('view_alerts')
+def get_correlation_detail(correlation_id):
+    """Get detailed correlation group with full kill chain and alert details"""
+    correlations = load_correlations()
+    correlation = next((c for c in correlations if c['id'] == correlation_id), None)
+    
+    if not correlation:
+        return jsonify({'error': 'Correlation not found'}), 404
+    
+    # Enrich with full alert details
+    alert_ids = correlation.get('alert_ids', [])
+    alerts = [a for a in alerts_data if a['id'] in alert_ids]
+    correlation['alerts'] = alerts
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'viewed_correlation', 'correlation', correlation_id, {})
+    
+    return jsonify(correlation)
+
+@app.route('/api/correlations/analyze', methods=['POST'])
+@requires_role('investigate_alerts')
+def analyze_correlations():
+    """Trigger correlation analysis on current alerts"""
+    # Get all active alerts
+    active_alerts = [a for a in alerts_data if a.get('status') in ['active', 'monitoring']]
+    
+    # Run correlation analysis
+    groups = correlation_engine.group_alerts(active_alerts)
+    
+    # Create correlation objects
+    correlations = []
+    for i, group in enumerate(groups):
+        correlation = correlation_engine.create_correlation_group(i + 1, group)
+        correlations.append(correlation)
+    
+    # Save correlations
+    save_correlations(correlations)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'analyzed_correlations', 'correlation', None, {
+                'groups_found': len(correlations)
+            })
+    
+    return jsonify({
+        'success': True,
+        'groups_found': len(correlations),
+        'correlations': correlations
+    })
+
+@app.route('/api/correlations/stats')
+@requires_role('view_alerts')
+def get_correlation_stats():
+    """Get correlation statistics"""
+    correlations = load_correlations()
+    
+    if not correlations:
+        return jsonify({
+            'total_groups': 0,
+            'average_score': 0,
+            'deduplication_rate': 0,
+            'alerts_correlated': 0,
+            'alerts_uncorrelated': len(alerts_data)
+        })
+    
+    # Calculate stats
+    total_groups = len(correlations)
+    avg_score = sum(c.get('correlation_score', 0) for c in correlations) / total_groups if total_groups > 0 else 0
+    
+    # Get all correlated alert IDs
+    correlated_alert_ids = set()
+    for c in correlations:
+        correlated_alert_ids.update(c.get('alert_ids', []))
+    
+    alerts_correlated = len(correlated_alert_ids)
+    alerts_uncorrelated = len(alerts_data) - alerts_correlated
+    
+    # De-duplication analysis
+    duplicates = correlation_engine.find_duplicates(alerts_data)
+    total_duplicates = sum(d['count'] - 1 for d in duplicates)
+    deduplication_rate = (total_duplicates / len(alerts_data) * 100) if len(alerts_data) > 0 else 0
+    
+    return jsonify({
+        'total_groups': total_groups,
+        'average_score': round(avg_score, 1),
+        'deduplication_rate': round(deduplication_rate, 1),
+        'alerts_correlated': alerts_correlated,
+        'alerts_uncorrelated': alerts_uncorrelated,
+        'by_risk_level': {
+            'critical': len([c for c in correlations if c.get('risk_level') == 'critical']),
+            'high': len([c for c in correlations if c.get('risk_level') == 'high']),
+            'medium': len([c for c in correlations if c.get('risk_level') == 'medium']),
+            'low': len([c for c in correlations if c.get('risk_level') == 'low'])
+        }
+    })
+
+@app.route('/api/alerts/<int:alert_id>/related')
+@requires_role('view_alerts')
+def get_related_alerts(alert_id):
+    """Get related alerts for a specific alert with similarity scores"""
+    alert = next((a for a in alerts_data if a['id'] == alert_id), None)
+    if not alert:
+        return jsonify({'error': 'Alert not found'}), 404
+    
+    # Find related alerts
+    related = correlation_engine.find_related_alerts(alert, alerts_data, top_n=10)
+    
+    # Format response
+    related_alerts = []
+    for item in related:
+        related_alerts.append({
+            'alert': item['alert'],
+            'similarity_score': item['similarity']['similarity_score'],
+            'entity_similarity': item['similarity']['entity_similarity'],
+            'time_proximity': item['similarity']['time_proximity'],
+            'shared_entities': item['similarity']['shared_entities']
+        })
+    
+    return jsonify({
+        'alert_id': alert_id,
+        'related_alerts': related_alerts
+    })
+
+@app.route('/api/alerts/<int:alert_id>/kill-chain')
+@requires_role('view_alerts')
+def get_alert_kill_chain(alert_id):
+    """Get the kill chain context for an alert"""
+    # Find correlation group containing this alert
+    correlations = load_correlations()
+    correlation = next((c for c in correlations if alert_id in c.get('alert_ids', [])), None)
+    
+    if not correlation:
+        return jsonify({
+            'alert_id': alert_id,
+            'in_correlation': False,
+            'kill_chain_position': None
+        })
+    
+    # Find position in kill chain
+    kill_chain_item = next((k for k in correlation.get('kill_chain', []) if k['alert_id'] == alert_id), None)
+    
+    return jsonify({
+        'alert_id': alert_id,
+        'in_correlation': True,
+        'correlation_id': correlation['id'],
+        'correlation_name': correlation['name'],
+        'kill_chain_position': kill_chain_item,
+        'kill_chain_coverage': correlation.get('kill_chain_coverage'),
+        'risk_level': correlation.get('risk_level')
+    })
+
+@app.route('/api/alerts/duplicates')
+@requires_role('view_alerts')
+def get_duplicate_alerts():
+    """List all identified duplicate alert groups"""
+    duplicates = correlation_engine.find_duplicates(alerts_data, time_threshold_minutes=30)
+    
+    # Enrich with alert details
+    for dup_group in duplicates:
+        primary_id = dup_group['primary_alert_id']
+        dup_group['primary_alert'] = next((a for a in alerts_data if a['id'] == primary_id), None)
+        dup_group['duplicate_alerts'] = [
+            next((a for a in alerts_data if a['id'] == dup_id), None)
+            for dup_id in dup_group['duplicate_alert_ids']
+        ]
+    
+    return jsonify({
+        'duplicate_groups': duplicates,
+        'total_duplicates': sum(d['count'] - 1 for d in duplicates)
+    })
+
+@app.route('/api/alerts/deduplicate', methods=['POST'])
+@requires_role('investigate_alerts')
+def deduplicate_alerts():
+    """Run de-duplication analysis"""
+    duplicates = correlation_engine.find_duplicates(alerts_data)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'deduplication_analysis', 'alert', None, {
+                'groups_found': len(duplicates)
+            })
+    
+    return jsonify({
+        'success': True,
+        'duplicate_groups': duplicates,
+        'total_duplicates': sum(d['count'] - 1 for d in duplicates),
+        'deduplication_rate': round((sum(d['count'] - 1 for d in duplicates) / len(alerts_data) * 100), 1) if len(alerts_data) > 0 else 0
+    })
+
+# ===== NOTIFICATION ENGINE ENDPOINTS =====
+
+@app.route('/api/notifications')
+@requires_role('view_alerts')
+def get_notifications():
+    """Get current user's notifications with optional filters"""
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    notifications = load_notifications()
+    
+    # Filter by user
+    user_notifications = [n for n in notifications if n.get('user_id') == user['id']]
+    
+    # Apply filters
+    read_status = request.args.get('read')
+    notification_type = request.args.get('type')
+    severity = request.args.get('severity')
+    
+    if read_status is not None:
+        is_read = read_status.lower() == 'true'
+        user_notifications = [n for n in user_notifications if n.get('read') == is_read]
+    if notification_type:
+        user_notifications = [n for n in user_notifications if n.get('type') == notification_type]
+    if severity:
+        user_notifications = [n for n in user_notifications if n.get('severity') == severity]
+    
+    return jsonify(user_notifications)
+
+@app.route('/api/notifications/count')
+@requires_role('view_alerts')
+def get_notification_count():
+    """Get unread notification count for current user"""
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    notifications = load_notifications()
+    unread_count = len([n for n in notifications if n.get('user_id') == user['id'] and not n.get('read')])
+    
+    return jsonify({'unread_count': unread_count})
+
+@app.route('/api/notifications/<int:notification_id>/read', methods=['PUT'])
+@requires_role('view_alerts')
+def mark_notification_read(notification_id):
+    """Mark notification as read"""
+    notifications = load_notifications()
+    notification = next((n for n in notifications if n['id'] == notification_id), None)
+    
+    if not notification:
+        return jsonify({'error': 'Notification not found'}), 404
+    
+    notification['read'] = True
+    save_notifications(notifications)
+    
+    return jsonify({'success': True, 'notification': notification})
+
+@app.route('/api/notifications/read-all', methods=['PUT'])
+@requires_role('view_alerts')
+def mark_all_notifications_read():
+    """Mark all notifications as read for current user"""
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    notifications = load_notifications()
+    
+    # Mark all user's notifications as read
+    for n in notifications:
+        if n.get('user_id') == user['id']:
+            n['read'] = True
+    
+    save_notifications(notifications)
+    
+    return jsonify({'success': True, 'message': 'All notifications marked as read'})
+
+@app.route('/api/notifications/test', methods=['POST'])
+@requires_role('admin')
+def send_test_notification():
+    """Send a test notification (admin only)"""
+    token = get_token_from_request()
+    if not token:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user = verify_token(token)
+    if not user:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    # Create test notification
+    notification = notification_engine.create_notification(
+        user_id=user['id'],
+        notification_type='system_alert',
+        title='Test Notification',
+        message='This is a test notification from the SOC Automation Platform',
+        severity='medium',
+        resource_type='system',
+        resource_id=None
+    )
+    
+    # Add to notifications
+    notifications = load_notifications()
+    notifications.insert(0, notification)
+    save_notifications(notifications)
+    
+    return jsonify({'success': True, 'notification': notification})
+
+# ===== ESCALATION POLICY ENDPOINTS =====
+
+@app.route('/api/escalation-policies')
+@requires_role('view_alerts')
+def get_escalation_policies():
+    """List all escalation policies"""
+    policies = load_escalation_policies()
+    return jsonify(policies)
+
+@app.route('/api/escalation-policies/<int:policy_id>')
+@requires_role('view_alerts')
+def get_escalation_policy(policy_id):
+    """Get policy details"""
+    policies = load_escalation_policies()
+    policy = next((p for p in policies if p['id'] == policy_id), None)
+    
+    if not policy:
+        return jsonify({'error': 'Policy not found'}), 404
+    
+    return jsonify(policy)
+
+@app.route('/api/escalation-policies/<int:policy_id>', methods=['PUT'])
+@requires_role('soc_manager')
+def update_escalation_policy(policy_id):
+    """Update an escalation policy (soc_manager+ only)"""
+    policies = load_escalation_policies()
+    policy = next((p for p in policies if p['id'] == policy_id), None)
+    
+    if not policy:
+        return jsonify({'error': 'Policy not found'}), 404
+    
+    data = request.get_json()
+    
+    # Update allowed fields
+    if 'name' in data:
+        policy['name'] = data['name']
+    if 'description' in data:
+        policy['description'] = data['description']
+    if 'enabled' in data:
+        policy['enabled'] = data['enabled']
+    if 'levels' in data:
+        policy['levels'] = data['levels']
+    
+    save_escalation_policies(policies)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'updated_escalation_policy', 'escalation_policy', policy_id, data)
+    
+    return jsonify({'success': True, 'policy': policy})
+
+@app.route('/api/escalation-policies/<int:policy_id>/toggle', methods=['PUT'])
+@requires_role('soc_manager')
+def toggle_escalation_policy(policy_id):
+    """Enable/disable an escalation policy"""
+    policies = load_escalation_policies()
+    policy = next((p for p in policies if p['id'] == policy_id), None)
+    
+    if not policy:
+        return jsonify({'error': 'Policy not found'}), 404
+    
+    policy['enabled'] = not policy.get('enabled', True)
+    save_escalation_policies(policies)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'toggled_escalation_policy', 'escalation_policy', policy_id, {
+                'enabled': policy['enabled']
+            })
+    
+    return jsonify({'success': True, 'policy': policy})
+
+@app.route('/api/alerts/<int:alert_id>/escalation-status')
+@requires_role('view_alerts')
+def get_alert_escalation_status(alert_id):
+    """Get current escalation level and timeline for an alert"""
+    alert = next((a for a in alerts_data if a['id'] == alert_id), None)
+    if not alert:
+        return jsonify({'error': 'Alert not found'}), 404
+    
+    # Calculate alert age
+    timestamp = alert.get('timestamp', datetime.now().isoformat())
+    alert_time = datetime.fromisoformat(timestamp.replace('Z', ''))
+    alert_age_minutes = (datetime.now() - alert_time).total_seconds() / 60
+    
+    # Get escalation status
+    escalation_status = notification_engine.calculate_escalation_level(alert, alert_age_minutes)
+    
+    return jsonify({
+        'alert_id': alert_id,
+        'alert_age_minutes': int(alert_age_minutes),
+        'escalation': escalation_status
+    })
+
+# ===== ON-CALL ENDPOINTS =====
+
+@app.route('/api/oncall')
+@requires_role('view_alerts')
+def get_current_oncall():
+    """Get current on-call rotation"""
+    schedule = load_oncall_schedule()
+    return jsonify(schedule.get('current_oncall', {}))
+
+@app.route('/api/oncall/schedule')
+@requires_role('view_alerts')
+def get_oncall_schedule():
+    """Get full rotation schedule"""
+    schedule = load_oncall_schedule()
+    return jsonify(schedule)
+
+@app.route('/api/oncall/override', methods=['PUT'])
+@requires_role('soc_manager')
+def set_oncall_override():
+    """Set a temporary on-call override (soc_manager+ only)"""
+    data = request.get_json()
+    
+    required_fields = ['primary_user_id', 'secondary_user_id', 'start', 'end', 'reason']
+    if not all(field in data for field in required_fields):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    schedule = load_oncall_schedule()
+    schedule['override'] = {
+        'primary_user_id': data['primary_user_id'],
+        'secondary_user_id': data['secondary_user_id'],
+        'start': data['start'],
+        'end': data['end'],
+        'reason': data['reason'],
+        'set_by': 'system',
+        'set_at': datetime.now().isoformat() + 'Z'
+    }
+    
+    save_oncall_schedule(schedule)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'set_oncall_override', 'oncall', None, data)
+    
+    return jsonify({'success': True, 'schedule': schedule})
+
+# ===== WEBHOOK ENDPOINTS =====
+
+@app.route('/api/webhooks')
+@requires_role('admin')
+def get_webhooks():
+    """List configured webhooks (admin only)"""
+    webhooks = load_webhook_config()
+    return jsonify(webhooks)
+
+@app.route('/api/webhooks/<int:webhook_id>/test', methods=['POST'])
+@requires_role('admin')
+def test_webhook(webhook_id):
+    """Send test webhook (returns simulated success)"""
+    webhooks = load_webhook_config()
+    webhook = next((w for w in webhooks if w['id'] == webhook_id), None)
+    
+    if not webhook:
+        return jsonify({'error': 'Webhook not found'}), 404
+    
+    # Simulate webhook trigger
+    result = notification_engine.simulate_webhook_trigger(
+        webhook,
+        'test',
+        {'message': 'This is a test webhook'}
+    )
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'tested_webhook', 'webhook', webhook_id, result)
+    
+    return jsonify(result)
+
+@app.route('/api/webhooks/<int:webhook_id>/toggle', methods=['PUT'])
+@requires_role('admin')
+def toggle_webhook(webhook_id):
+    """Enable/disable a webhook"""
+    webhooks = load_webhook_config()
+    webhook = next((w for w in webhooks if w['id'] == webhook_id), None)
+    
+    if not webhook:
+        return jsonify({'error': 'Webhook not found'}), 404
+    
+    webhook['enabled'] = not webhook.get('enabled', True)
+    save_webhook_config(webhooks)
+    
+    # Log action
+    token = get_token_from_request()
+    if token:
+        user = verify_token(token)
+        if user:
+            log_action(user['id'], user['username'], 'toggled_webhook', 'webhook', webhook_id, {
+                'enabled': webhook['enabled']
+            })
+    
+    return jsonify({'success': True, 'webhook': webhook})
 
 if __name__ == '__main__':
     import os

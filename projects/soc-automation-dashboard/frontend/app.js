@@ -126,6 +126,78 @@ const API = {
         if (endpoint === '/threat-intel/feeds') return MOCK_DATA.getThreatFeeds();
         if (endpoint === '/threat-intel/recent') return MOCK_DATA.getRecentThreats();
         
+        // Phase 2: Correlation endpoints
+        if (endpoint.startsWith('/correlations')) {
+            if (endpoint.includes('/stats')) return MOCK_DATA.getCorrelationStats();
+            if (endpoint.includes('/analyze')) return MOCK_DATA.analyzeCorrelations();
+            if (endpoint.match(/\/correlations\/\d+$/)) {
+                const correlationId = parseInt(endpoint.match(/\/correlations\/(\d+)/)[1]);
+                return MOCK_DATA.getCorrelationDetail(correlationId);
+            }
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getCorrelations(Object.fromEntries(params));
+        }
+        if (endpoint.startsWith('/alerts/') && endpoint.includes('/related')) {
+            const alertId = parseInt(endpoint.match(/\/alerts\/(\d+)/)[1]);
+            return MOCK_DATA.getRelatedAlerts(alertId);
+        }
+        if (endpoint.startsWith('/alerts/') && endpoint.includes('/kill-chain')) {
+            const alertId = parseInt(endpoint.match(/\/alerts\/(\d+)/)[1]);
+            return MOCK_DATA.getAlertKillChain(alertId);
+        }
+        if (endpoint.includes('/duplicates')) return MOCK_DATA.getDuplicateAlerts();
+        if (endpoint.includes('/deduplicate')) return MOCK_DATA.deduplicateAlerts();
+        
+        // Phase 2: Notification endpoints
+        if (endpoint.startsWith('/notifications')) {
+            if (endpoint.includes('/count')) return MOCK_DATA.getNotificationCount(authState.user?.id);
+            if (endpoint.includes('/read-all')) return MOCK_DATA.markAllNotificationsRead(authState.user?.id);
+            if (endpoint.includes('/test')) return MOCK_DATA.sendTestNotification(authState.user?.id);
+            if (endpoint.match(/\/notifications\/\d+\/read$/)) {
+                const notificationId = parseInt(endpoint.match(/\/notifications\/(\d+)/)[1]);
+                return MOCK_DATA.markNotificationRead(notificationId);
+            }
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            const filters = Object.fromEntries(params);
+            filters.user_id = authState.user?.id;
+            return MOCK_DATA.getNotifications(filters);
+        }
+        
+        // Phase 2: Escalation endpoints
+        if (endpoint.startsWith('/escalation-policies')) {
+            if (endpoint.includes('/toggle')) {
+                const policyId = parseInt(endpoint.match(/\/escalation-policies\/(\d+)/)[1]);
+                return MOCK_DATA.toggleEscalationPolicy(policyId);
+            }
+            if (endpoint.match(/\/escalation-policies\/\d+$/)) {
+                const policyId = parseInt(endpoint.match(/\/escalation-policies\/(\d+)/)[1]);
+                return MOCK_DATA.getEscalationPolicy(policyId);
+            }
+            return MOCK_DATA.getEscalationPolicies();
+        }
+        if (endpoint.includes('/escalation-status')) {
+            const alertId = parseInt(endpoint.match(/\/alerts\/(\d+)/)[1]);
+            return MOCK_DATA.getAlertEscalationStatus(alertId);
+        }
+        
+        // Phase 2: On-call endpoints
+        if (endpoint === '/oncall') return MOCK_DATA.getCurrentOncall();
+        if (endpoint === '/oncall/schedule') return MOCK_DATA.getOncallSchedule();
+        if (endpoint === '/oncall/override') return MOCK_DATA.setOncallOverride(options.body ? JSON.parse(options.body) : {});
+        
+        // Phase 2: Webhook endpoints
+        if (endpoint.startsWith('/webhooks')) {
+            if (endpoint.includes('/test')) {
+                const webhookId = parseInt(endpoint.match(/\/webhooks\/(\d+)/)[1]);
+                return MOCK_DATA.testWebhook(webhookId);
+            }
+            if (endpoint.includes('/toggle')) {
+                const webhookId = parseInt(endpoint.match(/\/webhooks\/(\d+)/)[1]);
+                return MOCK_DATA.toggleWebhook(webhookId);
+            }
+            return MOCK_DATA.getWebhooks();
+        }
+        
         return {};
     }
 };
@@ -230,6 +302,15 @@ function updateUIForAuthenticatedUser() {
         logoutBtn.style.display = 'block';
     }
     
+    // Show notification bell
+    const notificationContainer = document.getElementById('notification-bell-container');
+    if (notificationContainer) {
+        notificationContainer.style.display = 'block';
+    }
+    
+    // Start notification polling
+    startNotificationPolling();
+    
     // Role-based UI updates
     updateRoleBasedUI();
 }
@@ -243,6 +324,12 @@ function updateRoleBasedUI() {
     const auditLogNav = document.getElementById('audit-log-nav');
     if (auditLogNav) {
         auditLogNav.style.display = (role === 'admin' || role === 'soc_manager') ? 'block' : 'none';
+    }
+    
+    // Show/hide settings nav (only admin and soc_manager)
+    const settingsNav = document.getElementById('settings-nav');
+    if (settingsNav) {
+        settingsNav.style.display = (role === 'admin' || role === 'soc_manager') ? 'block' : 'none';
     }
     
     // Check permissions for investigate and respond buttons
@@ -438,6 +525,15 @@ function switchPage(page) {
             break;
         case 'threat-intel':
             loadThreatIntel();
+            break;
+        case 'correlations':
+            loadCorrelations();
+            break;
+        case 'notifications':
+            loadNotifications();
+            break;
+        case 'settings':
+            loadSettings();
             break;
         case 'audit-log':
             loadAuditLog();
@@ -2106,4 +2202,739 @@ function initAuditLogFilters() {
 document.addEventListener('DOMContentLoaded', () => {
     initTeamFilters();
     initAuditLogFilters();
+    initNotificationBell();
+    
+    // Start notification polling if authenticated
+    if (authState.isAuthenticated) {
+        startNotificationPolling();
+    }
 });
+// ===== PHASE 2: CORRELATION ENGINE FUNCTIONS =====
+
+// Load correlations page
+async function loadCorrelations() {
+    showLoading();
+    try {
+        const [correlations, stats] = await Promise.all([
+            API.fetch('/correlations').then(r => r.json()),
+            API.fetch('/correlations/stats').then(r => r.json())
+        ]);
+        
+        renderCorrelationStats(stats);
+        renderCorrelations(correlations);
+        initCorrelationHandlers();
+    } catch (error) {
+        showToast('Failed to load correlations', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Render correlation statistics
+function renderCorrelationStats(stats) {
+    const container = document.getElementById('correlation-stats');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="stat-card info">
+            <div class="stat-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">${stats.total_groups || 0}</div>
+                <div class="stat-label">Correlation Groups</div>
+            </div>
+        </div>
+        <div class="stat-card primary">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">${stats.average_score || 0}</div>
+                <div class="stat-label">Avg Correlation Score</div>
+            </div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-icon"><i class="fas fa-link"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">${stats.alerts_correlated || 0}</div>
+                <div class="stat-label">Alerts Correlated</div>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon"><i class="fas fa-compress"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">${stats.deduplication_rate || 0}%</div>
+                <div class="stat-label">De-duplication Rate</div>
+            </div>
+        </div>
+    `;
+}
+
+// Render correlations grid
+function renderCorrelations(correlations) {
+    const container = document.getElementById('correlations-grid');
+    if (!container) return;
+    
+    if (!correlations || correlations.length === 0) {
+        container.innerHTML = '<p>No correlation groups found.</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    correlations.forEach(correlation => {
+        const card = document.createElement('div');
+        card.className = `correlation-card ${correlation.risk_level}`;
+        card.onclick = () => showCorrelationDetail(correlation.id);
+        
+        const entities = correlation.shared_entities || {};
+        const entityTags = [];
+        if (entities.hosts && entities.hosts.length) entityTags.push(...entities.hosts.slice(0, 2));
+        if (entities.users && entities.users.length) entityTags.push(...entities.users.slice(0, 2));
+        
+        card.innerHTML = `
+            <div class="correlation-card-header">
+                <div>
+                    <div class="correlation-card-title">${correlation.name}</div>
+                    <span class="badge ${correlation.risk_level}">${correlation.risk_level.toUpperCase()}</span>
+                </div>
+                <div class="correlation-score-badge">${correlation.correlation_score}</div>
+            </div>
+            <div class="correlation-card-description">${correlation.description}</div>
+            <div class="correlation-card-stats">
+                <div class="correlation-stat">
+                    <div class="correlation-stat-value">${correlation.alert_ids.length}</div>
+                    <div class="correlation-stat-label">Alerts</div>
+                </div>
+                <div class="correlation-stat">
+                    <div class="correlation-stat-value">${correlation.kill_chain_coverage}/${correlation.total_kill_chain_stages}</div>
+                    <div class="correlation-stat-label">Kill Chain</div>
+                </div>
+            </div>
+            <div class="correlation-entities">
+                ${entityTags.map(tag => `<span class="entity-tag">${tag}</span>`).join('')}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Show correlation detail modal
+async function showCorrelationDetail(correlationId) {
+    showLoading();
+    try {
+        const correlation = await API.fetch(`/correlations/${correlationId}`).then(r => r.json());
+        
+        const modal = document.getElementById('correlation-modal');
+        const title = document.getElementById('correlation-modal-title');
+        const body = document.getElementById('correlation-modal-body');
+        
+        if (!modal || !title || !body) return;
+        
+        title.textContent = correlation.name;
+        
+        body.innerHTML = `
+            <div class="correlation-detail">
+                <div class="detail-section">
+                    <h4>Risk Assessment</h4>
+                    <p><strong>Risk Level:</strong> <span class="badge ${correlation.risk_level}">${correlation.risk_level.toUpperCase()}</span></p>
+                    <p><strong>Correlation Score:</strong> ${correlation.correlation_score}/100</p>
+                    <p><strong>Status:</strong> <span class="badge ${correlation.status === 'active' ? 'warning' : 'info'}">${correlation.status.toUpperCase()}</span></p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Description</h4>
+                    <p>${correlation.description}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Recommended Action</h4>
+                    <p>${correlation.recommended_action}</p>
+                </div>
+                
+                ${renderKillChainTimeline(correlation.kill_chain)}
+                
+                <div class="detail-section">
+                    <h4>Shared Entities</h4>
+                    <div class="correlation-entities">
+                        ${Object.entries(correlation.shared_entities || {}).map(([key, values]) => 
+                            values.length ? `<div><strong>${key}:</strong> ${values.map(v => `<span class="entity-tag">${v}</span>`).join('')}</div>` : ''
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Correlated Alerts (${correlation.alert_ids.length})</h4>
+                    <div class="correlated-alerts-list">
+                        ${correlation.alerts ? correlation.alerts.map(alert => `
+                            <div class="correlated-alert-item ${alert.severity}" onclick="event.stopPropagation(); showAlertDetails(${JSON.stringify(alert).replace(/"/g, '&quot;')})">
+                                <div><strong>${alert.title}</strong></div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                                    ${alert.host} • ${alert.user} • ${formatTime(alert.timestamp)}
+                                </div>
+                            </div>
+                        `).join('') : '<p>Loading alerts...</p>'}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+    } catch (error) {
+        showToast('Failed to load correlation details', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Render kill chain timeline
+function renderKillChainTimeline(killChain) {
+    if (!killChain || killChain.length === 0) {
+        return '';
+    }
+    
+    const stages = ['Initial Access', 'Execution', 'Persistence', 'Privilege Escalation', 
+                    'Defense Evasion', 'Credential Access', 'Discovery', 'Lateral Movement', 
+                    'Collection', 'Command and Control', 'Exfiltration', 'Impact'];
+    
+    const activeStages = new Set(killChain.map(k => k.stage));
+    
+    return `
+        <div class="detail-section">
+            <h4 class="kill-chain-timeline-title">Kill Chain Timeline</h4>
+            <div class="kill-chain-timeline">
+                <div class="kill-chain-stages">
+                    <div class="kill-chain-line"></div>
+                    ${stages.slice(0, 8).map(stage => `
+                        <div class="kill-chain-stage ${activeStages.has(stage) ? 'active' : ''}">
+                            <div class="kill-chain-node">${activeStages.has(stage) ? '✓' : ''}</div>
+                            <div class="kill-chain-label">${stage}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize correlation handlers
+function initCorrelationHandlers() {
+    const analyzeBtn = document.getElementById('analyze-correlations-btn');
+    if (analyzeBtn) {
+        analyzeBtn.onclick = async () => {
+            showLoading();
+            try {
+                await API.fetch('/correlations/analyze', { method: 'POST' });
+                showToast('Correlation analysis completed', 'success');
+                loadCorrelations();
+            } catch (error) {
+                showToast('Failed to analyze correlations', 'error');
+                console.error(error);
+            } finally {
+                hideLoading();
+            }
+        };
+    }
+}
+
+// ===== PHASE 2: NOTIFICATION ENGINE FUNCTIONS =====
+
+// Notification polling interval
+let notificationPollInterval = null;
+
+// Start notification polling
+function startNotificationPolling() {
+    if (notificationPollInterval) return;
+    
+    // Poll every 30 seconds
+    notificationPollInterval = setInterval(async () => {
+        if (authState.isAuthenticated) {
+            await updateNotificationBadge();
+        }
+    }, 30000);
+    
+    // Initial update
+    updateNotificationBadge();
+}
+
+// Stop notification polling
+function stopNotificationPolling() {
+    if (notificationPollInterval) {
+        clearInterval(notificationPollInterval);
+        notificationPollInterval = null;
+    }
+}
+
+// Update notification badge count
+async function updateNotificationBadge() {
+    try {
+        const data = await API.fetch('/notifications/count').then(r => r.json());
+        const badge = document.getElementById('notification-badge');
+        const bell = document.getElementById('notification-bell');
+        
+        if (badge && bell) {
+            if (data.unread_count > 0) {
+                badge.textContent = data.unread_count;
+                badge.style.display = 'flex';
+                bell.classList.add('has-notifications');
+            } else {
+                badge.style.display = 'none';
+                bell.classList.remove('has-notifications');
+            }
+        }
+    } catch (error) {
+        console.error('Failed to update notification count:', error);
+    }
+}
+
+// Initialize notification bell
+function initNotificationBell() {
+    const bell = document.getElementById('notification-bell');
+    const dropdown = document.getElementById('notification-dropdown');
+    const container = document.getElementById('notification-bell-container');
+    
+    if (!bell || !dropdown || !container) return;
+    
+    // Show container when authenticated
+    if (authState.isAuthenticated) {
+        container.style.display = 'block';
+    }
+    
+    // Toggle dropdown
+    bell.onclick = (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) {
+            loadNotificationDropdown();
+        }
+    };
+    
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+    
+    // Mark all read button
+    const markAllReadBtn = document.getElementById('mark-all-read-btn');
+    if (markAllReadBtn) {
+        markAllReadBtn.onclick = async () => {
+            try {
+                await API.fetch('/notifications/read-all', { method: 'PUT' });
+                showToast('All notifications marked as read', 'success');
+                updateNotificationBadge();
+                loadNotificationDropdown();
+            } catch (error) {
+                showToast('Failed to mark notifications as read', 'error');
+                console.error(error);
+            }
+        };
+    }
+}
+
+// Load notifications for dropdown
+async function loadNotificationDropdown() {
+    try {
+        const notifications = await API.fetch('/notifications?read=false').then(r => r.json());
+        const listContainer = document.getElementById('notification-dropdown-list');
+        
+        if (!listContainer) return;
+        
+        if (!notifications || notifications.length === 0) {
+            listContainer.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-secondary);">No new notifications</div>';
+            return;
+        }
+        
+        listContainer.innerHTML = '';
+        
+        notifications.slice(0, 10).forEach(notification => {
+            const item = document.createElement('div');
+            item.className = `notification-item ${notification.read ? '' : 'unread'}`;
+            
+            const icon = getNotificationIcon(notification.type);
+            const timeAgo = getTimeAgo(notification.created_at);
+            
+            item.innerHTML = `
+                <div class="notification-item-header">
+                    <i class="${icon} notification-item-icon ${notification.severity}"></i>
+                    <div class="notification-item-title">${notification.title}</div>
+                    <span class="notification-item-time">${timeAgo}</span>
+                </div>
+                <div class="notification-item-message">${notification.message}</div>
+            `;
+            
+            item.onclick = () => markNotificationRead(notification.id);
+            
+            listContainer.appendChild(item);
+        });
+    } catch (error) {
+        console.error('Failed to load notifications:', error);
+    }
+}
+
+// Get notification icon based on type
+function getNotificationIcon(type) {
+    const icons = {
+        'alert_assigned': 'fas fa-user-check',
+        'alert_escalated': 'fas fa-exclamation-triangle',
+        'sla_breach': 'fas fa-clock',
+        'playbook_completed': 'fas fa-check-circle',
+        'correlation_detected': 'fas fa-project-diagram',
+        'system_alert': 'fas fa-info-circle'
+    };
+    return icons[type] || 'fas fa-bell';
+}
+
+// Get time ago string
+function getTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diff = Math.floor((now - time) / 1000); // seconds
+    
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return `${Math.floor(diff / 86400)}d ago`;
+}
+
+// Mark notification as read
+async function markNotificationRead(notificationId) {
+    try {
+        await API.fetch(`/notifications/${notificationId}/read`, { method: 'PUT' });
+        updateNotificationBadge();
+        loadNotificationDropdown();
+    } catch (error) {
+        console.error('Failed to mark notification as read:', error);
+    }
+}
+
+// Load notifications page
+async function loadNotifications() {
+    showLoading();
+    try {
+        const notifications = await API.fetch('/notifications').then(r => r.json());
+        renderNotificationsPage(notifications);
+        initNotificationFilters();
+    } catch (error) {
+        showToast('Failed to load notifications', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Render notifications page
+function renderNotificationsPage(notifications) {
+    const container = document.getElementById('notifications-list');
+    if (!container) return;
+    
+    if (!notifications || notifications.length === 0) {
+        container.innerHTML = '<p>No notifications found.</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    notifications.forEach(notification => {
+        const card = document.createElement('div');
+        card.className = `notification-card ${notification.severity} ${notification.read ? '' : 'unread'}`;
+        
+        const icon = getNotificationIcon(notification.type);
+        const timeAgo = getTimeAgo(notification.created_at);
+        
+        card.innerHTML = `
+            ${!notification.read ? '<div class="notification-unread-indicator"></div>' : ''}
+            <div class="notification-card-header">
+                <i class="${icon} notification-type-icon ${notification.severity}"></i>
+                <div style="flex: 1;">
+                    <div class="notification-card-title">${notification.title}</div>
+                </div>
+            </div>
+            <div class="notification-card-content">
+                <div class="notification-card-message">${notification.message}</div>
+                <div class="notification-card-meta">
+                    <span>${timeAgo}</span>
+                    <span class="badge ${notification.severity}">${notification.severity}</span>
+                </div>
+            </div>
+        `;
+        
+        if (!notification.read) {
+            card.onclick = () => markNotificationRead(notification.id);
+        }
+        
+        container.appendChild(card);
+    });
+}
+
+// Initialize notification filters
+function initNotificationFilters() {
+    const typeFilter = document.getElementById('notification-type-filter');
+    const severityFilter = document.getElementById('notification-severity-filter');
+    const readFilter = document.getElementById('notification-read-filter');
+    
+    const applyFilters = () => {
+        const params = new URLSearchParams();
+        if (typeFilter?.value) params.set('type', typeFilter.value);
+        if (severityFilter?.value) params.set('severity', severityFilter.value);
+        if (readFilter?.value) params.set('read', readFilter.value);
+        
+        API.fetch(`/notifications?${params.toString()}`)
+            .then(r => r.json())
+            .then(notifications => renderNotificationsPage(notifications))
+            .catch(error => {
+                showToast('Failed to filter notifications', 'error');
+                console.error(error);
+            });
+    };
+    
+    if (typeFilter) typeFilter.onchange = applyFilters;
+    if (severityFilter) severityFilter.onchange = applyFilters;
+    if (readFilter) readFilter.onchange = applyFilters;
+}
+
+// ===== PHASE 2: SETTINGS PAGE FUNCTIONS =====
+
+// Load settings page
+async function loadSettings() {
+    showLoading();
+    try {
+        await loadEscalationPolicies();
+        initSettingsTabs();
+    } catch (error) {
+        showToast('Failed to load settings', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Initialize settings tabs
+function initSettingsTabs() {
+    const tabs = document.querySelectorAll('.settings-tab');
+    tabs.forEach(tab => {
+        tab.onclick = async () => {
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update active content
+            document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
+            const tabName = tab.dataset.tab;
+            const content = document.getElementById(`${tabName}-tab`);
+            if (content) content.classList.add('active');
+            
+            // Load tab data
+            if (tabName === 'escalation') {
+                await loadEscalationPolicies();
+            } else if (tabName === 'oncall') {
+                await loadOnCallSchedule();
+            } else if (tabName === 'webhooks') {
+                await loadWebhooks();
+            }
+        };
+    });
+}
+
+// Load escalation policies
+async function loadEscalationPolicies() {
+    try {
+        const policies = await API.fetch('/escalation-policies').then(r => r.json());
+        renderEscalationPolicies(policies);
+    } catch (error) {
+        console.error('Failed to load escalation policies:', error);
+    }
+}
+
+// Render escalation policies
+function renderEscalationPolicies(policies) {
+    const container = document.getElementById('escalation-policies-list');
+    if (!container) return;
+    
+    if (!policies || policies.length === 0) {
+        container.innerHTML = '<p>No escalation policies found.</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    policies.forEach(policy => {
+        const card = document.createElement('div');
+        card.className = 'escalation-policy-card';
+        
+        card.innerHTML = `
+            <div class="escalation-policy-header">
+                <div>
+                    <div class="escalation-policy-title">${policy.name}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">${policy.description}</div>
+                </div>
+                <button class="escalation-toggle ${policy.enabled ? 'enabled' : ''}" 
+                        onclick="toggleEscalationPolicy(${policy.id})">
+                    ${policy.enabled ? 'Enabled' : 'Disabled'}
+                </button>
+            </div>
+            <div class="escalation-levels">
+                ${policy.levels.map(level => `
+                    <div class="escalation-level">
+                        <div class="escalation-level-header">
+                            <div class="escalation-level-number">${level.level}</div>
+                            <div class="escalation-level-time">After ${level.escalate_after_minutes} minutes</div>
+                        </div>
+                        <div class="escalation-level-roles">
+                            <strong>Action:</strong> ${level.action} | 
+                            <strong>Notify:</strong> ${level.notify_roles.join(', ')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Toggle escalation policy
+async function toggleEscalationPolicy(policyId) {
+    try {
+        await API.fetch(`/escalation-policies/${policyId}/toggle`, { method: 'PUT' });
+        showToast('Escalation policy updated', 'success');
+        loadEscalationPolicies();
+    } catch (error) {
+        showToast('Failed to update policy', 'error');
+        console.error(error);
+    }
+}
+
+// Load on-call schedule
+async function loadOnCallSchedule() {
+    try {
+        const schedule = await API.fetch('/oncall/schedule').then(r => r.json());
+        renderOnCallSchedule(schedule);
+    } catch (error) {
+        console.error('Failed to load on-call schedule:', error);
+    }
+}
+
+// Render on-call schedule
+function renderOnCallSchedule(schedule) {
+    const currentContainer = document.getElementById('oncall-current');
+    const scheduleContainer = document.getElementById('oncall-schedule');
+    
+    if (currentContainer && schedule.current_oncall) {
+        const current = schedule.current_oncall;
+        currentContainer.innerHTML = `
+            <div class="oncall-current">
+                <div class="oncall-card">
+                    <h4><span class="oncall-status-dot"></span> Primary On-Call</h4>
+                    <div class="oncall-person">${current.primary?.name || 'Not assigned'}</div>
+                    <div class="oncall-role">${current.primary?.role || ''}</div>
+                </div>
+                <div class="oncall-card">
+                    <h4><span class="oncall-status-dot"></span> Secondary On-Call</h4>
+                    <div class="oncall-person">${current.secondary?.name || 'Not assigned'}</div>
+                    <div class="oncall-role">${current.secondary?.role || ''}</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (scheduleContainer && schedule.schedule) {
+        scheduleContainer.innerHTML = `
+            <h4 style="margin-top: 2rem;">Upcoming Schedule</h4>
+            <table class="oncall-schedule-table">
+                <thead>
+                    <tr>
+                        <th>Week Starting</th>
+                        <th>Primary</th>
+                        <th>Secondary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${schedule.schedule.map(week => `
+                        <tr>
+                            <td>${week.week_start}</td>
+                            <td>User ${week.primary_user_id}</td>
+                            <td>User ${week.secondary_user_id}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+}
+
+// Load webhooks
+async function loadWebhooks() {
+    try {
+        const webhooks = await API.fetch('/webhooks').then(r => r.json());
+        renderWebhooks(webhooks);
+    } catch (error) {
+        console.error('Failed to load webhooks:', error);
+    }
+}
+
+// Render webhooks
+function renderWebhooks(webhooks) {
+    const container = document.getElementById('webhooks-list');
+    if (!container) return;
+    
+    if (!webhooks || webhooks.length === 0) {
+        container.innerHTML = '<p>No webhooks configured.</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    webhooks.forEach(webhook => {
+        const card = document.createElement('div');
+        card.className = 'webhook-card';
+        
+        const iconClass = {
+            'slack': 'fab fa-slack',
+            'teams': 'fab fa-microsoft',
+            'pagerduty': 'fas fa-pager',
+            'email': 'fas fa-envelope'
+        }[webhook.type] || 'fas fa-plug';
+        
+        card.innerHTML = `
+            <i class="${iconClass} webhook-icon ${webhook.type}"></i>
+            <div class="webhook-info">
+                <div class="webhook-name">${webhook.name}</div>
+                <div class="webhook-type">${webhook.type.toUpperCase()} • ${webhook.enabled ? 'Enabled' : 'Disabled'}</div>
+            </div>
+            <div class="webhook-actions">
+                <button class="webhook-test-btn" onclick="testWebhook(${webhook.id})">Test</button>
+                <button class="webhook-toggle-btn ${webhook.enabled ? 'enabled' : ''}" 
+                        onclick="toggleWebhook(${webhook.id})">
+                    ${webhook.enabled ? 'Disable' : 'Enable'}
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Test webhook
+async function testWebhook(webhookId) {
+    try {
+        const result = await API.fetch(`/webhooks/${webhookId}/test`, { method: 'POST' }).then(r => r.json());
+        showToast(result.message || 'Webhook test successful', 'success');
+    } catch (error) {
+        showToast('Webhook test failed', 'error');
+        console.error(error);
+    }
+}
+
+// Toggle webhook
+async function toggleWebhook(webhookId) {
+    try {
+        await API.fetch(`/webhooks/${webhookId}/toggle`, { method: 'PUT' });
+        showToast('Webhook updated', 'success');
+        loadWebhooks();
+    } catch (error) {
+        showToast('Failed to update webhook', 'error');
+        console.error(error);
+    }
+}

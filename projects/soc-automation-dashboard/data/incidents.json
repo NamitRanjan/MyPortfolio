@@ -1,20 +1,51 @@
 [
   {
-    "id": 5,
-    "title": "Zero-Day Exploitation on DC-01",
+    "id": 7,
+    "title": "Cryptojacking on PROXY-01",
     "severity": "high",
-    "status": "investigating",
-    "created": "2026-02-13T15:55:48.448680Z",
-    "updated": "2026-02-13T15:55:48.448680Z",
+    "status": "resolved",
+    "created": "2026-02-13T12:15:00.435538Z",
+    "updated": "2026-02-14T05:15:00.435538Z",
     "assignee": "Incident Responder",
     "affected_systems": [
-      "DC-01",
-      "APP-SERVER-01",
       "PROXY-01",
-      "WKSTN-5612",
-      "DB-SERVER-02"
+      "APP-SERVER-01",
+      "DC-02"
     ],
-    "description": "Zero-Day Exploitation detected and under investigation",
+    "description": "Cryptojacking detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "12:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "05:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Ransomware Attack on WKSTN-5612",
+    "severity": "medium",
+    "status": "contained",
+    "created": "2026-02-12T21:15:00.435538Z",
+    "updated": "2026-02-13T21:15:00.435538Z",
+    "assignee": "Threat Hunter",
+    "affected_systems": [
+      "WKSTN-5612",
+      "DC-01",
+      "WKSTN-1247",
+      "WEB-SERVER-01"
+    ],
+    "description": "Ransomware Attack detected and under investigation",
     "impact": "High - Business impact assessment ongoing",
     "response_actions": [
       "Enhanced monitoring enabled",
@@ -24,29 +55,29 @@
     ],
     "timeline": [
       {
-        "time": "15:55",
+        "time": "21:15",
         "event": "Initial detection"
       },
       {
-        "time": "15:55",
+        "time": "21:15",
         "event": "Investigation ongoing"
       }
     ]
   },
   {
     "id": 11,
-    "title": "Supply Chain Attack on APP-SERVER-01",
+    "title": "APT Intrusion Attempt on DB-SERVER-03",
     "severity": "critical",
     "status": "contained",
-    "created": "2026-02-12T07:55:48.448680Z",
-    "updated": "2026-02-12T19:55:48.448680Z",
+    "created": "2026-02-12T20:15:00.435538Z",
+    "updated": "2026-02-13T01:15:00.435538Z",
     "assignee": "Security Engineer",
     "affected_systems": [
-      "APP-SERVER-01",
-      "WKSTN-1247",
-      "DC-02"
+      "DB-SERVER-03",
+      "APP-SERVER-02",
+      "WKSTN-2341"
     ],
-    "description": "Supply Chain Attack detected and under investigation",
+    "description": "APT Intrusion Attempt detected and under investigation",
     "impact": "Critical - Business impact assessment ongoing",
     "response_actions": [
       "Enhanced monitoring enabled",
@@ -56,30 +87,381 @@
     ],
     "timeline": [
       {
-        "time": "07:55",
+        "time": "20:15",
         "event": "Initial detection"
       },
       {
-        "time": "19:55",
+        "time": "01:15",
         "event": "Investigation ongoing"
       }
     ]
   },
   {
-    "id": 20,
-    "title": "Web Application Attack on FILE-SERVER-01",
+    "id": 23,
+    "title": "Insider Threat on WEB-SERVER-01",
+    "severity": "critical",
+    "status": "mitigating",
+    "created": "2026-02-12T18:15:00.435538Z",
+    "updated": "2026-02-13T06:15:00.435538Z",
+    "assignee": "CISO",
+    "affected_systems": [
+      "WEB-SERVER-01",
+      "WKSTN-7834",
+      "MAIL-01",
+      "WKSTN-1247"
+    ],
+    "description": "Insider Threat detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "18:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "06:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Malware Infection on DB-SERVER-01",
+    "severity": "critical",
+    "status": "mitigating",
+    "created": "2026-02-12T05:15:00.435538Z",
+    "updated": "2026-02-13T05:15:00.435538Z",
+    "assignee": "Tier 2 SOC Analyst",
+    "affected_systems": [
+      "DB-SERVER-01"
+    ],
+    "description": "Malware Infection detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "05:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "05:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "title": "Insider Threat on WKSTN-0892",
+    "severity": "critical",
+    "status": "contained",
+    "created": "2026-02-12T04:15:00.435538Z",
+    "updated": "2026-02-12T17:15:00.435538Z",
+    "assignee": "SOC Manager",
+    "affected_systems": [
+      "WKSTN-0892",
+      "DC-01",
+      "WEB-SERVER-01"
+    ],
+    "description": "Insider Threat detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "04:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "17:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Credential Dumping on WKSTN-7834",
     "severity": "high",
+    "status": "mitigating",
+    "created": "2026-02-11T21:15:00.435538Z",
+    "updated": "2026-02-12T20:15:00.435538Z",
+    "assignee": "Security Engineer",
+    "affected_systems": [
+      "WKSTN-7834",
+      "PROXY-01",
+      "LOAD-BALANCER-01"
+    ],
+    "description": "Credential Dumping detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "21:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "20:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "Credential Dumping on WEB-SERVER-02",
+    "severity": "high",
+    "status": "investigating",
+    "created": "2026-02-11T21:15:00.435538Z",
+    "updated": "2026-02-12T07:15:00.435538Z",
+    "assignee": "Senior SOC Analyst",
+    "affected_systems": [
+      "WEB-SERVER-02",
+      "WKSTN-1247",
+      "FILE-SERVER-01",
+      "WKSTN-7834",
+      "DB-SERVER-02"
+    ],
+    "description": "Credential Dumping detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "21:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "07:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "title": "Malware Infection on FILE-SERVER-01",
+    "severity": "medium",
     "status": "resolved",
-    "created": "2026-02-12T04:55:48.448680Z",
-    "updated": "2026-02-12T16:55:48.448680Z",
+    "created": "2026-02-10T17:15:00.435538Z",
+    "updated": "2026-02-11T13:15:00.435538Z",
     "assignee": "Tier 2 SOC Analyst",
     "affected_systems": [
       "FILE-SERVER-01",
-      "LOAD-BALANCER-01",
-      "WKSTN-1247",
-      "DB-SERVER-02"
+      "DB-SERVER-03"
     ],
-    "description": "Web Application Attack detected and under investigation",
+    "description": "Malware Infection detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "17:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "13:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "title": "Malware Infection on WKSTN-2341",
+    "severity": "critical",
+    "status": "resolved",
+    "created": "2026-02-10T10:15:00.435538Z",
+    "updated": "2026-02-11T09:15:00.435538Z",
+    "assignee": "Senior SOC Analyst",
+    "affected_systems": [
+      "WKSTN-2341",
+      "APP-SERVER-02",
+      "APP-SERVER-01"
+    ],
+    "description": "Malware Infection detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "10:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "09:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Insider Threat on FILE-SERVER-01",
+    "severity": "critical",
+    "status": "mitigating",
+    "created": "2026-02-10T09:15:00.435538Z",
+    "updated": "2026-02-10T16:15:00.435538Z",
+    "assignee": "CISO",
+    "affected_systems": [
+      "FILE-SERVER-01",
+      "LOAD-BALANCER-01"
+    ],
+    "description": "Insider Threat detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "09:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "16:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Supply Chain Attack on LOAD-BALANCER-01",
+    "severity": "critical",
+    "status": "investigating",
+    "created": "2026-02-09T18:15:00.435538Z",
+    "updated": "2026-02-10T09:15:00.435538Z",
+    "assignee": "SOC Manager",
+    "affected_systems": [
+      "LOAD-BALANCER-01",
+      "WEB-SERVER-01"
+    ],
+    "description": "Supply Chain Attack detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "18:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "09:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "title": "Malware Infection on APP-SERVER-02",
+    "severity": "critical",
+    "status": "resolved",
+    "created": "2026-02-09T13:15:00.435538Z",
+    "updated": "2026-02-10T03:15:00.435538Z",
+    "assignee": "Tier 2 SOC Analyst",
+    "affected_systems": [
+      "APP-SERVER-02",
+      "DC-02",
+      "APP-SERVER-01"
+    ],
+    "description": "Malware Infection detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "13:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "03:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Living Off the Land Attack on WEB-SERVER-01",
+    "severity": "medium",
+    "status": "investigating",
+    "created": "2026-02-08T15:15:00.435538Z",
+    "updated": "2026-02-09T02:15:00.435538Z",
+    "assignee": "CISO",
+    "affected_systems": [
+      "WEB-SERVER-01",
+      "WEB-SERVER-02",
+      "LOAD-BALANCER-01"
+    ],
+    "description": "Living Off the Land Attack detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Host isolated from network",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "15:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "02:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Data Exfiltration on PROXY-01",
+    "severity": "medium",
+    "status": "contained",
+    "created": "2026-02-08T11:15:00.435538Z",
+    "updated": "2026-02-09T03:15:00.435538Z",
+    "assignee": "Senior SOC Analyst",
+    "affected_systems": [
+      "PROXY-01",
+      "DC-02",
+      "WKSTN-7834",
+      "WKSTN-1247",
+      "WKSTN-2341"
+    ],
+    "description": "Data Exfiltration detected and under investigation",
     "impact": "High - Business impact assessment ongoing",
     "response_actions": [
       "Enhanced monitoring enabled",
@@ -89,58 +471,61 @@
     ],
     "timeline": [
       {
-        "time": "04:55",
+        "time": "11:15",
         "event": "Initial detection"
       },
       {
-        "time": "16:55",
+        "time": "03:15",
         "event": "Investigation ongoing"
       }
     ]
   },
   {
     "id": 10,
-    "title": "DDoS Attack on WEB-SERVER-02",
-    "severity": "medium",
-    "status": "mitigating",
-    "created": "2026-02-12T02:55:48.448680Z",
-    "updated": "2026-02-12T15:55:48.448680Z",
-    "assignee": "Security Engineer",
+    "title": "Credential Dumping on DC-01",
+    "severity": "high",
+    "status": "resolved",
+    "created": "2026-02-06T21:15:00.435538Z",
+    "updated": "2026-02-07T16:15:00.435538Z",
+    "assignee": "Tier 1 SOC Analyst",
     "affected_systems": [
-      "WEB-SERVER-02"
+      "DC-01"
     ],
-    "description": "DDoS Attack detected and under investigation",
+    "description": "Credential Dumping detected and under investigation",
     "impact": "High - Business impact assessment ongoing",
     "response_actions": [
-      "Host isolated from network",
+      "Enhanced monitoring enabled",
       "Forensic analysis in progress",
       "Incident ticket created",
       "Stakeholders notified"
     ],
     "timeline": [
       {
-        "time": "02:55",
+        "time": "21:15",
         "event": "Initial detection"
       },
       {
-        "time": "15:55",
+        "time": "16:15",
         "event": "Investigation ongoing"
       }
     ]
   },
   {
-    "id": 3,
-    "title": "Phishing Campaign on WKSTN-7834",
-    "severity": "medium",
-    "status": "mitigating",
-    "created": "2026-02-11T20:55:48.448680Z",
-    "updated": "2026-02-12T12:55:48.448680Z",
-    "assignee": "Threat Hunter",
+    "id": 20,
+    "title": "APT Intrusion Attempt on LOAD-BALANCER-01",
+    "severity": "high",
+    "status": "resolved",
+    "created": "2026-02-06T04:15:00.435538Z",
+    "updated": "2026-02-06T11:15:00.435538Z",
+    "assignee": "Senior SOC Analyst",
     "affected_systems": [
-      "WKSTN-7834",
-      "DC-02"
+      "LOAD-BALANCER-01",
+      "WKSTN-0892",
+      "WEB-SERVER-02",
+      "APP-SERVER-02",
+      "WKSTN-2341"
     ],
-    "description": "Phishing Campaign detected and under investigation",
+    "description": "APT Intrusion Attempt detected and under investigation",
     "impact": "High - Business impact assessment ongoing",
     "response_actions": [
       "Host isolated from network",
@@ -150,25 +535,245 @@
     ],
     "timeline": [
       {
-        "time": "20:55",
+        "time": "04:15",
         "event": "Initial detection"
       },
       {
-        "time": "12:55",
+        "time": "11:15",
         "event": "Investigation ongoing"
       }
     ]
   },
   {
     "id": 1,
-    "title": "Supply Chain Attack on WKSTN-1247",
+    "title": "APT Intrusion Attempt on PROXY-01",
     "severity": "critical",
-    "status": "investigating",
-    "created": "2026-02-11T14:55:48.448680Z",
-    "updated": "2026-02-12T05:55:48.448680Z",
+    "status": "mitigating",
+    "created": "2026-02-06T03:15:00.435538Z",
+    "updated": "2026-02-06T06:15:00.435538Z",
+    "assignee": "Threat Hunter",
+    "affected_systems": [
+      "PROXY-01",
+      "APP-SERVER-01",
+      "WEB-SERVER-01"
+    ],
+    "description": "APT Intrusion Attempt detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "03:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "06:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "title": "Phishing Campaign on DB-SERVER-03",
+    "severity": "critical",
+    "status": "resolved",
+    "created": "2026-02-04T17:15:00.435538Z",
+    "updated": "2026-02-04T18:15:00.435538Z",
+    "assignee": "Security Engineer",
+    "affected_systems": [
+      "DB-SERVER-03",
+      "DB-SERVER-01"
+    ],
+    "description": "Phishing Campaign detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "17:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "18:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "title": "DNS Tunneling on APP-SERVER-01",
+    "severity": "critical",
+    "status": "mitigating",
+    "created": "2026-02-04T08:15:00.435538Z",
+    "updated": "2026-02-05T06:15:00.435538Z",
+    "assignee": "Threat Hunter",
+    "affected_systems": [
+      "APP-SERVER-01",
+      "WKSTN-0892"
+    ],
+    "description": "DNS Tunneling detected and under investigation",
+    "impact": "Critical - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "08:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "06:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "title": "Malware Infection on DB-SERVER-02",
+    "severity": "high",
+    "status": "contained",
+    "created": "2026-02-03T20:15:00.435538Z",
+    "updated": "2026-02-04T14:15:00.435538Z",
     "assignee": "Tier 3 SOC Analyst",
     "affected_systems": [
-      "WKSTN-1247",
+      "DB-SERVER-02",
+      "DB-SERVER-03",
+      "WKSTN-7834"
+    ],
+    "description": "Malware Infection detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "20:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "14:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "DNS Tunneling on FILE-SERVER-01",
+    "severity": "high",
+    "status": "mitigating",
+    "created": "2026-02-03T18:15:00.435538Z",
+    "updated": "2026-02-03T23:15:00.435538Z",
+    "assignee": "Security Engineer",
+    "affected_systems": [
+      "FILE-SERVER-01",
+      "DC-02",
+      "WEB-SERVER-01"
+    ],
+    "description": "DNS Tunneling detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "18:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "23:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Living Off the Land Attack on WKSTN-7834",
+    "severity": "high",
+    "status": "resolved",
+    "created": "2026-02-02T21:15:00.435538Z",
+    "updated": "2026-02-03T18:15:00.435538Z",
+    "assignee": "Threat Hunter",
+    "affected_systems": [
+      "WKSTN-7834",
+      "WKSTN-0892"
+    ],
+    "description": "Living Off the Land Attack detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "21:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "18:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Cryptojacking on WKSTN-0892",
+    "severity": "high",
+    "status": "resolved",
+    "created": "2026-02-02T17:15:00.435538Z",
+    "updated": "2026-02-03T16:15:00.435538Z",
+    "assignee": "Tier 3 SOC Analyst",
+    "affected_systems": [
+      "WKSTN-0892",
+      "APP-SERVER-02"
+    ],
+    "description": "Cryptojacking detected and under investigation",
+    "impact": "High - Business impact assessment ongoing",
+    "response_actions": [
+      "Enhanced monitoring enabled",
+      "Forensic analysis in progress",
+      "Incident ticket created",
+      "Stakeholders notified"
+    ],
+    "timeline": [
+      {
+        "time": "17:15",
+        "event": "Initial detection"
+      },
+      {
+        "time": "16:15",
+        "event": "Investigation ongoing"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Supply Chain Attack on WEB-SERVER-01",
+    "severity": "critical",
+    "status": "resolved",
+    "created": "2026-02-02T15:15:00.435538Z",
+    "updated": "2026-02-02T23:15:00.435538Z",
+    "assignee": "SOC Manager",
+    "affected_systems": [
+      "WEB-SERVER-01",
       "WKSTN-7834"
     ],
     "description": "Supply Chain Attack detected and under investigation",
@@ -181,621 +786,11 @@
     ],
     "timeline": [
       {
-        "time": "14:55",
+        "time": "15:15",
         "event": "Initial detection"
       },
       {
-        "time": "05:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 7,
-    "title": "Supply Chain Attack on MAIL-01",
-    "severity": "critical",
-    "status": "mitigating",
-    "created": "2026-02-11T14:55:48.448680Z",
-    "updated": "2026-02-11T17:55:48.448680Z",
-    "assignee": "CISO",
-    "affected_systems": [
-      "MAIL-01"
-    ],
-    "description": "Supply Chain Attack detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "14:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "17:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "title": "Zero-Day Exploitation on WKSTN-0892",
-    "severity": "critical",
-    "status": "investigating",
-    "created": "2026-02-10T05:55:48.448680Z",
-    "updated": "2026-02-10T23:55:48.448680Z",
-    "assignee": "Threat Hunter",
-    "affected_systems": [
-      "WKSTN-0892",
-      "MAIL-01",
-      "DB-SERVER-02"
-    ],
-    "description": "Zero-Day Exploitation detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "05:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "23:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 22,
-    "title": "Supply Chain Attack on WKSTN-0892",
-    "severity": "critical",
-    "status": "mitigating",
-    "created": "2026-02-07T12:55:48.448680Z",
-    "updated": "2026-02-07T20:55:48.448680Z",
-    "assignee": "Tier 1 SOC Analyst",
-    "affected_systems": [
-      "WKSTN-0892",
-      "WKSTN-2341",
-      "WEB-SERVER-02",
-      "FILE-SERVER-01",
-      "WKSTN-1247"
-    ],
-    "description": "Supply Chain Attack detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "12:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "20:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "title": "Living Off the Land Attack on WKSTN-2341",
-    "severity": "critical",
-    "status": "investigating",
-    "created": "2026-02-07T10:55:48.448680Z",
-    "updated": "2026-02-07T22:55:48.448680Z",
-    "assignee": "Senior SOC Analyst",
-    "affected_systems": [
-      "WKSTN-2341",
-      "WEB-SERVER-01",
-      "FILE-SERVER-01",
-      "DC-02",
-      "WEB-SERVER-02"
-    ],
-    "description": "Living Off the Land Attack detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "10:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "22:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 15,
-    "title": "APT Intrusion Attempt on DB-SERVER-02",
-    "severity": "critical",
-    "status": "investigating",
-    "created": "2026-02-07T03:55:48.448680Z",
-    "updated": "2026-02-07T04:55:48.448680Z",
-    "assignee": "Incident Responder",
-    "affected_systems": [
-      "DB-SERVER-02"
-    ],
-    "description": "APT Intrusion Attempt detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "03:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "04:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "title": "DNS Tunneling on WKSTN-7834",
-    "severity": "medium",
-    "status": "investigating",
-    "created": "2026-02-06T02:55:48.448680Z",
-    "updated": "2026-02-06T15:55:48.448680Z",
-    "assignee": "Incident Responder",
-    "affected_systems": [
-      "WKSTN-7834",
-      "LOAD-BALANCER-01",
-      "DC-01",
-      "WEB-SERVER-02"
-    ],
-    "description": "DNS Tunneling detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "02:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "15:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "title": "Insider Threat on PROXY-01",
-    "severity": "high",
-    "status": "contained",
-    "created": "2026-02-04T21:55:48.448680Z",
-    "updated": "2026-02-05T07:55:48.448680Z",
-    "assignee": "Tier 1 SOC Analyst",
-    "affected_systems": [
-      "PROXY-01",
-      "WEB-SERVER-01"
-    ],
-    "description": "Insider Threat detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "21:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "07:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 17,
-    "title": "Cryptojacking on WKSTN-5612",
-    "severity": "medium",
-    "status": "mitigating",
-    "created": "2026-02-04T19:55:48.448680Z",
-    "updated": "2026-02-05T08:55:48.448680Z",
-    "assignee": "Senior SOC Analyst",
-    "affected_systems": [
-      "WKSTN-5612",
-      "DC-02",
-      "DB-SERVER-02"
-    ],
-    "description": "Cryptojacking detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "19:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "08:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 24,
-    "title": "Insider Threat on APP-SERVER-01",
-    "severity": "high",
-    "status": "resolved",
-    "created": "2026-02-04T18:55:48.448680Z",
-    "updated": "2026-02-05T07:55:48.448680Z",
-    "assignee": "Threat Hunter",
-    "affected_systems": [
-      "APP-SERVER-01",
-      "MAIL-01",
-      "WEB-SERVER-01"
-    ],
-    "description": "Insider Threat detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "18:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "07:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "title": "Supply Chain Attack on WKSTN-7834",
-    "severity": "critical",
-    "status": "mitigating",
-    "created": "2026-02-04T11:55:48.448680Z",
-    "updated": "2026-02-04T17:55:48.448680Z",
-    "assignee": "Security Engineer",
-    "affected_systems": [
-      "WKSTN-7834",
-      "APP-SERVER-01"
-    ],
-    "description": "Supply Chain Attack detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "11:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "17:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 23,
-    "title": "Phishing Campaign on DB-SERVER-02",
-    "severity": "critical",
-    "status": "investigating",
-    "created": "2026-02-04T04:55:48.448680Z",
-    "updated": "2026-02-04T16:55:48.448680Z",
-    "assignee": "Tier 2 SOC Analyst",
-    "affected_systems": [
-      "DB-SERVER-02",
-      "DC-01",
-      "APP-SERVER-02",
-      "WKSTN-5612",
-      "WKSTN-1247"
-    ],
-    "description": "Phishing Campaign detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "04:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "16:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 21,
-    "title": "DNS Tunneling on APP-SERVER-01",
-    "severity": "medium",
-    "status": "resolved",
-    "created": "2026-02-03T22:55:48.448680Z",
-    "updated": "2026-02-04T15:55:48.448680Z",
-    "assignee": "Threat Hunter",
-    "affected_systems": [
-      "APP-SERVER-01",
-      "MAIL-01"
-    ],
-    "description": "DNS Tunneling detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "22:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "15:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "title": "Business Email Compromise on DB-SERVER-01",
-    "severity": "critical",
-    "status": "resolved",
-    "created": "2026-02-03T21:55:48.448680Z",
-    "updated": "2026-02-04T06:55:48.448680Z",
-    "assignee": "Security Engineer",
-    "affected_systems": [
-      "DB-SERVER-01",
-      "LOAD-BALANCER-01",
-      "WKSTN-7834",
-      "APP-SERVER-02",
-      "FILE-SERVER-01"
-    ],
-    "description": "Business Email Compromise detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "21:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "06:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 18,
-    "title": "Supply Chain Attack on WKSTN-5612",
-    "severity": "high",
-    "status": "resolved",
-    "created": "2026-02-03T11:55:48.448680Z",
-    "updated": "2026-02-04T01:55:48.448680Z",
-    "assignee": "Incident Responder",
-    "affected_systems": [
-      "WKSTN-5612",
-      "WKSTN-0892",
-      "FILE-SERVER-01",
-      "WEB-SERVER-01",
-      "DC-01"
-    ],
-    "description": "Supply Chain Attack detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "11:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "01:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "title": "Cryptojacking on LOAD-BALANCER-01",
-    "severity": "medium",
-    "status": "contained",
-    "created": "2026-02-02T14:55:48.448680Z",
-    "updated": "2026-02-03T09:55:48.448680Z",
-    "assignee": "CISO",
-    "affected_systems": [
-      "LOAD-BALANCER-01",
-      "DB-SERVER-02",
-      "DC-02",
-      "FILE-SERVER-01"
-    ],
-    "description": "Cryptojacking detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "14:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "09:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 25,
-    "title": "Zero-Day Exploitation on DB-SERVER-03",
-    "severity": "medium",
-    "status": "investigating",
-    "created": "2026-02-02T08:55:48.448680Z",
-    "updated": "2026-02-03T01:55:48.448680Z",
-    "assignee": "SOC Manager",
-    "affected_systems": [
-      "DB-SERVER-03",
-      "DC-02"
-    ],
-    "description": "Zero-Day Exploitation detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Host isolated from network",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "08:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "01:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "title": "Malware Infection on DC-02",
-    "severity": "critical",
-    "status": "resolved",
-    "created": "2026-02-01T15:55:48.448680Z",
-    "updated": "2026-02-02T10:55:48.448680Z",
-    "assignee": "Tier 3 SOC Analyst",
-    "affected_systems": [
-      "DC-02"
-    ],
-    "description": "Malware Infection detected and under investigation",
-    "impact": "Critical - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "15:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "10:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 19,
-    "title": "DDoS Attack on PROXY-01",
-    "severity": "high",
-    "status": "mitigating",
-    "created": "2026-02-01T08:55:48.448680Z",
-    "updated": "2026-02-02T04:55:48.448680Z",
-    "assignee": "Incident Responder",
-    "affected_systems": [
-      "PROXY-01",
-      "WEB-SERVER-01",
-      "WEB-SERVER-02"
-    ],
-    "description": "DDoS Attack detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "08:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "04:55",
-        "event": "Investigation ongoing"
-      }
-    ]
-  },
-  {
-    "id": 12,
-    "title": "Supply Chain Attack on WKSTN-2341",
-    "severity": "medium",
-    "status": "contained",
-    "created": "2026-02-01T06:55:48.448680Z",
-    "updated": "2026-02-01T22:55:48.448680Z",
-    "assignee": "Security Engineer",
-    "affected_systems": [
-      "WKSTN-2341",
-      "APP-SERVER-01",
-      "LOAD-BALANCER-01"
-    ],
-    "description": "Supply Chain Attack detected and under investigation",
-    "impact": "High - Business impact assessment ongoing",
-    "response_actions": [
-      "Enhanced monitoring enabled",
-      "Forensic analysis in progress",
-      "Incident ticket created",
-      "Stakeholders notified"
-    ],
-    "timeline": [
-      {
-        "time": "06:55",
-        "event": "Initial detection"
-      },
-      {
-        "time": "22:55",
+        "time": "23:15",
         "event": "Investigation ongoing"
       }
     ]

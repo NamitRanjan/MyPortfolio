@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "name": "Critical Alert Escalation",
+    "description": "Escalation path for critical severity alerts",
+    "trigger_severity": "critical",
+    "enabled": true,
+    "levels": [
+      {
+        "level": 1,
+        "escalate_after_minutes": 5,
+        "notify_roles": [
+          "t1_analyst",
+          "t2_analyst"
+        ],
+        "action": "notify"
+      },
+      {
+        "level": 2,
+        "escalate_after_minutes": 15,
+        "notify_roles": [
+          "t3_analyst"
+        ],
+        "action": "notify_and_assign"
+      },
+      {
+        "level": 3,
+        "escalate_after_minutes": 30,
+        "notify_roles": [
+          "soc_manager"
+        ],
+        "action": "notify_and_escalate"
+      },
+      {
+        "level": 4,
+        "escalate_after_minutes": 60,
+        "notify_roles": [
+          "admin"
+        ],
+        "action": "emergency_page"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "High Alert Escalation",
+    "description": "Escalation path for high severity alerts",
+    "trigger_severity": "high",
+    "enabled": true,
+    "levels": [
+      {
+        "level": 1,
+        "escalate_after_minutes": 15,
+        "notify_roles": [
+          "t1_analyst"
+        ],
+        "action": "notify"
+      },
+      {
+        "level": 2,
+        "escalate_after_minutes": 60,
+        "notify_roles": [
+          "t2_analyst"
+        ],
+        "action": "notify_and_assign"
+      },
+      {
+        "level": 3,
+        "escalate_after_minutes": 120,
+        "notify_roles": [
+          "soc_manager"
+        ],
+        "action": "notify_and_escalate"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Medium Alert Escalation",
+    "description": "Escalation path for medium severity alerts",
+    "trigger_severity": "medium",
+    "enabled": true,
+    "levels": [
+      {
+        "level": 1,
+        "escalate_after_minutes": 60,
+        "notify_roles": [
+          "t1_analyst"
+        ],
+        "action": "notify"
+      },
+      {
+        "level": 2,
+        "escalate_after_minutes": 240,
+        "notify_roles": [
+          "t2_analyst"
+        ],
+        "action": "notify_and_assign"
+      }
+    ]
+  }
+]

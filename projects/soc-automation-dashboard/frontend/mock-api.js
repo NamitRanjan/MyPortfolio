@@ -22,6 +22,13 @@ const MOCK_DATA = {
     threatFeeds: [],
     recentThreats: [],
     
+    // Phase 2: Correlations and notifications
+    correlations: [],
+    notifications: [],
+    escalationPolicies: [],
+    oncallSchedule: {},
+    webhookConfig: [],
+    
     // Flag to indicate if data is ready
     ready: false,
     
@@ -29,7 +36,7 @@ const MOCK_DATA = {
     async init() {
         try {
             // Load all data files
-            const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence] = await Promise.all([
+            const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence, correlations, notifications, escalationPolicies, oncallSchedule, webhookConfig] = await Promise.all([
                 fetch('./data/alerts.json').then(r => r.json()).catch(() => []),
                 fetch('./data/threats.json').then(r => r.json()).catch(() => []),
                 fetch('./data/incidents.json').then(r => r.json()).catch(() => []),
@@ -37,7 +44,12 @@ const MOCK_DATA = {
                 fetch('./data/team.json').then(r => r.json()).catch(() => []),
                 fetch('./data/users.json').then(r => r.json()).catch(() => []),
                 fetch('./data/case_notes.json').then(r => r.json()).catch(() => []),
-                fetch('./data/evidence.json').then(r => r.json()).catch(() => [])
+                fetch('./data/evidence.json').then(r => r.json()).catch(() => []),
+                fetch('./data/correlations.json').then(r => r.json()).catch(() => []),
+                fetch('./data/notifications.json').then(r => r.json()).catch(() => []),
+                fetch('./data/escalation_policies.json').then(r => r.json()).catch(() => []),
+                fetch('./data/oncall_schedule.json').then(r => r.json()).catch(() => ({})),
+                fetch('./data/webhook_config.json').then(r => r.json()).catch(() => [])
             ]);
             
             this.alerts = alerts;
@@ -49,6 +61,11 @@ const MOCK_DATA = {
             this.caseNotes = caseNotes;
             this.evidence = evidence;
             this.auditLog = []; // Start empty, will populate on actions
+            this.correlations = correlations;
+            this.notifications = notifications;
+            this.escalationPolicies = escalationPolicies;
+            this.oncallSchedule = oncallSchedule;
+            this.webhookConfig = webhookConfig;
             
             // Calculate stats
             const activeAlerts = alerts.filter(a => a.status === 'active');
@@ -608,6 +625,421 @@ const MOCK_DATA = {
             percentage: Math.round(percentage * 100) / 100,
             status: remaining < 0 ? 'breached' : (percentage > 75 ? 'warning' : 'normal')
         };
+    },
+    
+    // ===== CORRELATION ENGINE METHODS =====
+    
+    getCorrelations(filters = {}) {
+        let correlations = [...this.correlations];
+        
+        if (filters.status) {
+            correlations = correlations.filter(c => c.status === filters.status);
+        }
+        if (filters.risk_level) {
+            correlations = correlations.filter(c => c.risk_level === filters.risk_level);
+        }
+        if (filters.min_score) {
+            correlations = correlations.filter(c => c.correlation_score >= filters.min_score);
+        }
+        
+        return correlations;
+    },
+    
+    getCorrelationDetail(correlationId) {
+        const correlation = this.correlations.find(c => c.id === correlationId);
+        if (!correlation) return null;
+        
+        // Enrich with full alert details
+        const alerts = this.alerts.filter(a => correlation.alert_ids.includes(a.id));
+        return { ...correlation, alerts };
+    },
+    
+    analyzeCorrelations() {
+        // Return existing correlations as if freshly analyzed
+        return {
+            success: true,
+            groups_found: this.correlations.length,
+            correlations: this.correlations
+        };
+    },
+    
+    getCorrelationStats() {
+        if (this.correlations.length === 0) {
+            return {
+                total_groups: 0,
+                average_score: 0,
+                deduplication_rate: 0,
+                alerts_correlated: 0,
+                alerts_uncorrelated: this.alerts.length,
+                by_risk_level: { critical: 0, high: 0, medium: 0, low: 0 }
+            };
+        }
+        
+        const totalGroups = this.correlations.length;
+        const avgScore = this.correlations.reduce((sum, c) => sum + c.correlation_score, 0) / totalGroups;
+        
+        const correlatedAlertIds = new Set();
+        this.correlations.forEach(c => {
+            c.alert_ids.forEach(id => correlatedAlertIds.add(id));
+        });
+        
+        const alertsCorrelated = correlatedAlertIds.size;
+        const alertsUncorrelated = this.alerts.length - alertsCorrelated;
+        
+        // Simple deduplication rate estimate
+        const deduplicationRate = 15.0;
+        
+        return {
+            total_groups: totalGroups,
+            average_score: Math.round(avgScore * 10) / 10,
+            deduplication_rate: deduplicationRate,
+            alerts_correlated: alertsCorrelated,
+            alerts_uncorrelated: alertsUncorrelated,
+            by_risk_level: {
+                critical: this.correlations.filter(c => c.risk_level === 'critical').length,
+                high: this.correlations.filter(c => c.risk_level === 'high').length,
+                medium: this.correlations.filter(c => c.risk_level === 'medium').length,
+                low: this.correlations.filter(c => c.risk_level === 'low').length
+            }
+        };
+    },
+    
+    getRelatedAlerts(alertId) {
+        const targetAlert = this.alerts.find(a => a.id === alertId);
+        if (!targetAlert) return { alert_id: alertId, related_alerts: [] };
+        
+        // Find correlation group containing this alert
+        const correlation = this.correlations.find(c => c.alert_ids.includes(alertId));
+        
+        let relatedAlerts = [];
+        
+        if (correlation) {
+            // Get other alerts from the same correlation
+            const otherAlertIds = correlation.alert_ids.filter(id => id !== alertId);
+            relatedAlerts = this.alerts
+                .filter(a => otherAlertIds.includes(a.id))
+                .map(a => ({
+                    alert: a,
+                    similarity_score: 75 + Math.floor(Math.random() * 20),
+                    entity_similarity: 70 + Math.floor(Math.random() * 25),
+                    time_proximity: 60 + Math.floor(Math.random() * 30),
+                    shared_entities: {
+                        hosts: targetAlert.host === a.host ? [a.host] : [],
+                        users: targetAlert.user === a.user ? [a.user] : [],
+                        mitre_tactics: targetAlert.mitre_tactics.filter(t => a.mitre_tactics.includes(t))
+                    }
+                }));
+        } else {
+            // Find similar alerts by matching properties
+            relatedAlerts = this.alerts
+                .filter(a => a.id !== alertId)
+                .filter(a => 
+                    a.host === targetAlert.host || 
+                    a.user === targetAlert.user ||
+                    a.mitre_tactics.some(t => targetAlert.mitre_tactics.includes(t))
+                )
+                .slice(0, 5)
+                .map(a => ({
+                    alert: a,
+                    similarity_score: 50 + Math.floor(Math.random() * 30),
+                    entity_similarity: 45 + Math.floor(Math.random() * 35),
+                    time_proximity: 40 + Math.floor(Math.random() * 40),
+                    shared_entities: {
+                        hosts: targetAlert.host === a.host ? [a.host] : [],
+                        users: targetAlert.user === a.user ? [a.user] : [],
+                        mitre_tactics: targetAlert.mitre_tactics.filter(t => a.mitre_tactics.includes(t))
+                    }
+                }));
+        }
+        
+        return { alert_id: alertId, related_alerts: relatedAlerts };
+    },
+    
+    getAlertKillChain(alertId) {
+        const correlation = this.correlations.find(c => c.alert_ids.includes(alertId));
+        
+        if (!correlation) {
+            return {
+                alert_id: alertId,
+                in_correlation: false,
+                kill_chain_position: null
+            };
+        }
+        
+        const killChainItem = correlation.kill_chain.find(k => k.alert_id === alertId);
+        
+        return {
+            alert_id: alertId,
+            in_correlation: true,
+            correlation_id: correlation.id,
+            correlation_name: correlation.name,
+            kill_chain_position: killChainItem,
+            kill_chain_coverage: correlation.kill_chain_coverage,
+            risk_level: correlation.risk_level
+        };
+    },
+    
+    getDuplicateAlerts() {
+        // Simple duplication detection
+        const duplicates = [];
+        const seen = new Set();
+        
+        for (let i = 0; i < this.alerts.length; i++) {
+            if (seen.has(i)) continue;
+            
+            const alert = this.alerts[i];
+            const duplicateGroup = [];
+            
+            for (let j = i + 1; j < this.alerts.length; j++) {
+                if (seen.has(j)) continue;
+                
+                const other = this.alerts[j];
+                if (alert.title === other.title && alert.host === other.host) {
+                    duplicateGroup.push(other.id);
+                    seen.add(j);
+                }
+            }
+            
+            if (duplicateGroup.length > 0) {
+                duplicates.push({
+                    primary_alert_id: alert.id,
+                    duplicate_alert_ids: duplicateGroup,
+                    count: duplicateGroup.length + 1,
+                    primary_alert: alert,
+                    duplicate_alerts: this.alerts.filter(a => duplicateGroup.includes(a.id))
+                });
+            }
+        }
+        
+        return {
+            duplicate_groups: duplicates,
+            total_duplicates: duplicates.reduce((sum, d) => sum + d.count - 1, 0)
+        };
+    },
+    
+    deduplicateAlerts() {
+        const result = this.getDuplicateAlerts();
+        return {
+            success: true,
+            ...result,
+            deduplication_rate: this.alerts.length > 0 
+                ? Math.round((result.total_duplicates / this.alerts.length) * 1000) / 10 
+                : 0
+        };
+    },
+    
+    // ===== NOTIFICATION ENGINE METHODS =====
+    
+    getNotifications(filters = {}) {
+        let notifications = [...this.notifications];
+        
+        // Filter by current user (in mock mode, show all)
+        if (filters.user_id) {
+            notifications = notifications.filter(n => n.user_id === filters.user_id);
+        }
+        
+        if (filters.read !== undefined) {
+            const isRead = filters.read === 'true' || filters.read === true;
+            notifications = notifications.filter(n => n.read === isRead);
+        }
+        
+        if (filters.type) {
+            notifications = notifications.filter(n => n.type === filters.type);
+        }
+        
+        if (filters.severity) {
+            notifications = notifications.filter(n => n.severity === filters.severity);
+        }
+        
+        return notifications;
+    },
+    
+    getNotificationCount(userId) {
+        return {
+            unread_count: this.notifications.filter(n => 
+                (!userId || n.user_id === userId) && !n.read
+            ).length
+        };
+    },
+    
+    markNotificationRead(notificationId) {
+        const notification = this.notifications.find(n => n.id === notificationId);
+        if (notification) {
+            notification.read = true;
+            return { success: true, notification };
+        }
+        return { success: false, error: 'Notification not found' };
+    },
+    
+    markAllNotificationsRead(userId) {
+        this.notifications.forEach(n => {
+            if (!userId || n.user_id === userId) {
+                n.read = true;
+            }
+        });
+        return { success: true, message: 'All notifications marked as read' };
+    },
+    
+    sendTestNotification(userId) {
+        const notification = {
+            id: this.notifications.length + 1,
+            user_id: userId,
+            type: 'system_alert',
+            title: 'Test Notification',
+            message: 'This is a test notification from the SOC Automation Platform',
+            severity: 'medium',
+            resource_type: 'system',
+            resource_id: null,
+            read: false,
+            acknowledged_at: null,
+            created_at: new Date().toISOString()
+        };
+        
+        this.notifications.unshift(notification);
+        return { success: true, notification };
+    },
+    
+    // ===== ESCALATION POLICY METHODS =====
+    
+    getEscalationPolicies() {
+        return this.escalationPolicies;
+    },
+    
+    getEscalationPolicy(policyId) {
+        return this.escalationPolicies.find(p => p.id === policyId) || null;
+    },
+    
+    updateEscalationPolicy(policyId, updates) {
+        const policy = this.escalationPolicies.find(p => p.id === policyId);
+        if (policy) {
+            Object.assign(policy, updates);
+            return { success: true, policy };
+        }
+        return { success: false, error: 'Policy not found' };
+    },
+    
+    toggleEscalationPolicy(policyId) {
+        const policy = this.escalationPolicies.find(p => p.id === policyId);
+        if (policy) {
+            policy.enabled = !policy.enabled;
+            return { success: true, policy };
+        }
+        return { success: false, error: 'Policy not found' };
+    },
+    
+    getAlertEscalationStatus(alertId) {
+        const alert = this.alerts.find(a => a.id === alertId);
+        if (!alert) return null;
+        
+        const alertTime = new Date(alert.timestamp);
+        const alertAgeMinutes = (Date.now() - alertTime.getTime()) / (1000 * 60);
+        
+        // Find matching policy
+        const policy = this.escalationPolicies.find(p => 
+            p.trigger_severity === alert.severity && p.enabled
+        );
+        
+        if (!policy) {
+            return {
+                alert_id: alertId,
+                alert_age_minutes: Math.floor(alertAgeMinutes),
+                escalation: null
+            };
+        }
+        
+        // Find current escalation level
+        let currentLevel = null;
+        for (const level of policy.levels) {
+            if (alertAgeMinutes >= level.escalate_after_minutes) {
+                currentLevel = level;
+            }
+        }
+        
+        if (!currentLevel) {
+            return {
+                alert_id: alertId,
+                alert_age_minutes: Math.floor(alertAgeMinutes),
+                escalation: null
+            };
+        }
+        
+        // Find next level
+        let nextLevel = null;
+        for (const level of policy.levels) {
+            if (level.level > currentLevel.level) {
+                nextLevel = level;
+                break;
+            }
+        }
+        
+        return {
+            alert_id: alertId,
+            alert_age_minutes: Math.floor(alertAgeMinutes),
+            escalation: {
+                policy_id: policy.id,
+                policy_name: policy.name,
+                current_level: currentLevel.level,
+                current_action: currentLevel.action,
+                notified_roles: currentLevel.notify_roles,
+                next_escalation_in_minutes: nextLevel 
+                    ? Math.floor(nextLevel.escalate_after_minutes - alertAgeMinutes)
+                    : null,
+                next_level: nextLevel ? nextLevel.level : null
+            }
+        };
+    },
+    
+    // ===== ON-CALL METHODS =====
+    
+    getCurrentOncall() {
+        return this.oncallSchedule.current_oncall || {};
+    },
+    
+    getOncallSchedule() {
+        return this.oncallSchedule;
+    },
+    
+    setOncallOverride(data) {
+        this.oncallSchedule.override = {
+            ...data,
+            set_by: 'system',
+            set_at: new Date().toISOString()
+        };
+        return { success: true, schedule: this.oncallSchedule };
+    },
+    
+    // ===== WEBHOOK METHODS =====
+    
+    getWebhooks() {
+        return this.webhookConfig;
+    },
+    
+    testWebhook(webhookId) {
+        const webhook = this.webhookConfig.find(w => w.id === webhookId);
+        if (!webhook) {
+            return { success: false, error: 'Webhook not found' };
+        }
+        
+        return {
+            success: true,
+            webhook_id: webhook.id,
+            webhook_name: webhook.name,
+            webhook_type: webhook.type,
+            url: webhook.url,
+            event: 'test',
+            timestamp: new Date().toISOString(),
+            simulated: true,
+            message: `Simulated ${webhook.type} webhook trigger successful`
+        };
+    },
+    
+    toggleWebhook(webhookId) {
+        const webhook = this.webhookConfig.find(w => w.id === webhookId);
+        if (webhook) {
+            webhook.enabled = !webhook.enabled;
+            return { success: true, webhook };
+        }
+        return { success: false, error: 'Webhook not found' };
     }
 };
 

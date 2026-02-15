@@ -223,6 +223,10 @@ const API = {
                 const body = options.body ? JSON.parse(options.body) : {};
                 return MOCK_DATA.createHunt(body);
             }
+            if (endpoint === '/hunts/custom' && options.method === 'POST') {
+                const body = options.body ? JSON.parse(options.body) : {};
+                return MOCK_DATA.createCustomHunt(body);
+            }
             if (endpoint.match(/\/hunts\/\d+$/)) {
                 const huntId = endpoint.match(/\/hunts\/(\d+)/)[1];
                 return MOCK_DATA.getHunt(huntId);
@@ -3712,6 +3716,28 @@ function createReportViewerModal() {
 // PHASE 3: THREAT HUNTING PAGE FUNCTIONS
 // ============================================================================
 
+// Initialize threat hunting event listeners
+function initThreatHuntingListeners() {
+    // Create Custom Hunt button
+    const createHuntBtn = document.getElementById('create-custom-hunt');
+    if (createHuntBtn) {
+        createHuntBtn.addEventListener('click', () => {
+            showCreateCustomHuntModal();
+        });
+    }
+    
+    // Launch Hunt buttons (static HTML cards)
+    document.querySelectorAll('.btn-launch-hunt').forEach(btn => {
+        const card = btn.closest('.hunt-package-card');
+        if (card) {
+            btn.addEventListener('click', () => {
+                const huntType = card.getAttribute('data-hunt');
+                launchHuntFromStatic(huntType, card);
+            });
+        }
+    });
+}
+
 // Main threat hunting page loader
 async function loadThreatHuntingPage() {
     showLoading();
@@ -3721,6 +3747,8 @@ async function loadThreatHuntingPage() {
             loadHuntLibrary(),
             loadActiveHunts()
         ]);
+        // Initialize event listeners after content is loaded
+        initThreatHuntingListeners();
     } catch (error) {
         showToast('Failed to load threat hunting data', 'error');
         console.error(error);
@@ -4165,4 +4193,279 @@ function createHuntDetailModal() {
     });
     
     return modal;
+}
+
+// Show custom hunt creation modal
+function showCreateCustomHuntModal() {
+    const modal = document.createElement('div');
+    modal.id = 'create-hunt-modal';
+    modal.className = 'modal';
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Custom Hunt</h2>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-hunt-form">
+                    <div class="form-group">
+                        <label for="hunt-name">Hunt Name *</label>
+                        <input type="text" id="hunt-name" name="name" required 
+                               placeholder="e.g., Suspicious PowerShell Activity">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hunt-hypothesis">Hypothesis *</label>
+                        <textarea id="hunt-hypothesis" name="hypothesis" required rows="3"
+                                  placeholder="Describe what you're looking for and why..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hunt-category">Category *</label>
+                        <select id="hunt-category" name="category" required>
+                            <option value="">Select a category...</option>
+                            <option value="Initial Access">Initial Access</option>
+                            <option value="Execution">Execution</option>
+                            <option value="Persistence">Persistence</option>
+                            <option value="Privilege Escalation">Privilege Escalation</option>
+                            <option value="Defense Evasion">Defense Evasion</option>
+                            <option value="Credential Access">Credential Access</option>
+                            <option value="Discovery">Discovery</option>
+                            <option value="Lateral Movement">Lateral Movement</option>
+                            <option value="Collection">Collection</option>
+                            <option value="Command and Control">Command and Control</option>
+                            <option value="Exfiltration">Exfiltration</option>
+                            <option value="Impact">Impact</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hunt-query">Query (Optional)</label>
+                        <textarea id="hunt-query" name="query" rows="4"
+                                  placeholder="source=logs | where process_name contains 'powershell.exe'"></textarea>
+                        <small>You can also build the query later in the hunt detail page</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hunt-mitre">MITRE Technique (Optional)</label>
+                        <input type="text" id="hunt-mitre" name="mitre_technique" 
+                               placeholder="e.g., T1059.001">
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="this.closest('.modal').remove()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-plus"></i> Create Hunt
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    
+    // Handle form submission
+    const form = modal.querySelector('#create-hunt-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const huntData = {
+            name: formData.get('name'),
+            hypothesis: formData.get('hypothesis'),
+            category: formData.get('category'),
+            query: formData.get('query') || '',
+            mitre_technique: formData.get('mitre_technique') || '',
+            analyst: authState.user?.username || 'analyst'
+        };
+        
+        // Validate required fields
+        if (!huntData.name || !huntData.hypothesis || !huntData.category) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        showLoading();
+        try {
+            const result = await API.fetch('/hunts/custom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(huntData)
+            }).then(r => r.json());
+            
+            showToast('Custom hunt created successfully', 'success');
+            modal.remove();
+            
+            // Reload active hunts and statistics
+            await loadActiveHunts();
+            await loadHuntStatistics();
+            
+            // Open hunt details
+            setTimeout(() => viewHuntDetails(result.hunt_id), 500);
+        } catch (error) {
+            showToast('Failed to create custom hunt', 'error');
+            console.error(error);
+        } finally {
+            hideLoading();
+        }
+    });
+    
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Launch hunt from static HTML card
+function launchHuntFromStatic(huntType, card) {
+    const modal = document.createElement('div');
+    modal.id = 'launch-hunt-modal';
+    modal.className = 'modal';
+    
+    // Get hunt details from card
+    const title = card.querySelector('h4')?.textContent || 'Unknown Hunt';
+    const description = card.querySelector('.hunt-package-description')?.textContent || '';
+    const tags = Array.from(card.querySelectorAll('.tag')).map(t => t.textContent);
+    
+    // Map hunt types to hypotheses and queries
+    const huntTemplates = {
+        'lateral-movement': {
+            hypothesis: 'Adversaries are attempting lateral movement using remote execution tools and authentication protocols (Pass-the-Hash, RDP, SMB).',
+            query: 'source=windows_events | where (event_id=4624 AND logon_type=3) OR (process_name contains "psexec" OR process_name contains "wmic")',
+            category: 'Lateral Movement'
+        },
+        'credential-theft': {
+            hypothesis: 'Attackers are attempting to steal credentials through dumping, spraying, or accessing credential stores.',
+            query: 'source=edr | where process_name contains "mimikatz" OR command_line contains "sekurlsa" OR (event_id=4625 AND failure_count>5)',
+            category: 'Credential Access'
+        },
+        'data-exfil': {
+            hypothesis: 'Suspicious data transfer patterns indicate potential data exfiltration to external locations.',
+            query: 'source=network | where (bytes_out > 100MB OR connections_to_external > 50) AND protocol in ("https", "dns", "ftp")',
+            category: 'Exfiltration'
+        },
+        'persistence': {
+            hypothesis: 'Adversaries are establishing persistence through registry modifications, scheduled tasks, or service creation.',
+            query: 'source=sysmon | where (event_id=13 AND registry_key contains "Run") OR (event_id=1 AND parent_process contains "schtasks")',
+            category: 'Persistence'
+        },
+        'c2-detection': {
+            hypothesis: 'Command and control beaconing patterns detected through network traffic analysis and DNS queries.',
+            query: 'source=network | where (connection_frequency > 10 AND connection_size < 1KB) OR dns_query_entropy > 3.5',
+            category: 'Command and Control'
+        },
+        'powershell-abuse': {
+            hypothesis: 'Malicious PowerShell usage detected through obfuscation, download cradles, and encoded commands.',
+            query: 'source=powershell_logs | where command_line contains "-enc" OR command_line contains "IEX" OR command_line contains "DownloadString"',
+            category: 'Execution'
+        }
+    };
+    
+    const template = huntTemplates[huntType] || {
+        hypothesis: 'Investigate suspicious activity patterns.',
+        query: '',
+        category: 'Discovery'
+    };
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Launch Hunt: ${title}</h2>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #2d3748; border-radius: 4px;">
+                    <p style="color: #a0aec0; margin: 0;">${description}</p>
+                </div>
+                
+                <form id="launch-hunt-form">
+                    <div class="form-group">
+                        <label for="launch-hunt-name">Hunt Name *</label>
+                        <input type="text" id="launch-hunt-name" name="name" required 
+                               value="${title}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="launch-hunt-hypothesis">Hypothesis *</label>
+                        <textarea id="launch-hunt-hypothesis" name="hypothesis" required rows="3">${template.hypothesis}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="launch-hunt-query">Query</label>
+                        <textarea id="launch-hunt-query" name="query" rows="4">${template.query}</textarea>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="this.closest('.modal').remove()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-play"></i> Launch Hunt
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    
+    // Handle form submission
+    const form = modal.querySelector('#launch-hunt-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const huntData = {
+            name: formData.get('name'),
+            hypothesis: formData.get('hypothesis'),
+            query: formData.get('query'),
+            category: template.category,
+            mitre_techniques: tags.filter(t => t.includes('MITRE:')).map(t => t.replace('MITRE:', '').trim()),
+            analyst: authState.user?.username || 'analyst'
+        };
+        
+        showLoading();
+        try {
+            const result = await API.fetch('/hunts/custom', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(huntData)
+            }).then(r => r.json());
+            
+            showToast('Hunt launched successfully', 'success');
+            modal.remove();
+            
+            // Reload active hunts and statistics
+            await loadActiveHunts();
+            await loadHuntStatistics();
+            
+            // Open hunt details
+            setTimeout(() => viewHuntDetails(result.hunt_id), 500);
+        } catch (error) {
+            showToast('Failed to launch hunt', 'error');
+            console.error(error);
+        } finally {
+            hideLoading();
+        }
+    });
+    
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
 }

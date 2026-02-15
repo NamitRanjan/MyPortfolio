@@ -1272,6 +1272,35 @@ const MOCK_DATA = {
         return { success: true, hunt: newHunt };
     },
     
+    createCustomHunt(huntData) {
+        const huntId = Math.max(...this.hunts.map(h => h.id), 0) + 1;
+        const newHunt = {
+            id: huntId,
+            name: huntData.name,
+            hypothesis: huntData.hypothesis,
+            query: huntData.query || '',
+            category: huntData.category || 'Discovery',
+            mitre_technique: huntData.mitre_technique || '',
+            analyst: huntData.analyst || 'analyst',
+            status: 'active',
+            priority: 'medium',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            progress: 10,
+            findings_count: 0,
+            findings: [],
+            journal_entries: []
+        };
+        
+        this.hunts.push(newHunt);
+        
+        // Update hunt metrics
+        this.huntMetrics.active_hunts = (this.huntMetrics.active_hunts || 0) + 1;
+        this.huntMetrics.total_hunts = (this.huntMetrics.total_hunts || 0) + 1;
+        
+        return { success: true, hunt_id: huntId, hunt: newHunt };
+    },
+    
     getHunt(huntId) {
         const hunt = this.hunts.find(h => h.id === parseInt(huntId));
         if (!hunt) {

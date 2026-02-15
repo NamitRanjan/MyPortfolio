@@ -42,26 +42,41 @@ const MOCK_DATA = {
     // Initialize function
     async init() {
         try {
+            // Helper to load data with better error tracking
+            const loadDataFile = async (filename, defaultValue = []) => {
+                try {
+                    const response = await fetch(`./data/${filename}`);
+                    if (!response.ok) {
+                        console.warn(`Failed to load ${filename}: ${response.status} ${response.statusText}`);
+                        return defaultValue;
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.warn(`Failed to load ${filename}:`, error.message);
+                    return defaultValue;
+                }
+            };
+            
             // Load all data files
             const [alerts, threats, incidents, iocs, team, users, caseNotes, evidence, correlations, notifications, escalationPolicies, oncallSchedule, webhookConfig, complianceMappings, reports, hunts, huntLibrary, huntMetrics] = await Promise.all([
-                fetch('./data/alerts.json').then(r => r.json()).catch(() => []),
-                fetch('./data/threats.json').then(r => r.json()).catch(() => []),
-                fetch('./data/incidents.json').then(r => r.json()).catch(() => []),
-                fetch('./data/iocs.json').then(r => r.json()).catch(() => []),
-                fetch('./data/team.json').then(r => r.json()).catch(() => []),
-                fetch('./data/users.json').then(r => r.json()).catch(() => []),
-                fetch('./data/case_notes.json').then(r => r.json()).catch(() => []),
-                fetch('./data/evidence.json').then(r => r.json()).catch(() => []),
-                fetch('./data/correlations.json').then(r => r.json()).catch(() => []),
-                fetch('./data/notifications.json').then(r => r.json()).catch(() => []),
-                fetch('./data/escalation_policies.json').then(r => r.json()).catch(() => []),
-                fetch('./data/oncall_schedule.json').then(r => r.json()).catch(() => ({})),
-                fetch('./data/webhook_config.json').then(r => r.json()).catch(() => []),
-                fetch('./data/compliance_mappings.json').then(r => r.json()).catch(() => []),
-                fetch('./data/reports.json').then(r => r.json()).catch(() => []),
-                fetch('./data/hunts.json').then(r => r.json()).catch(() => []),
-                fetch('./data/hunt_library.json').then(r => r.json()).catch(() => []),
-                fetch('./data/hunt_metrics.json').then(r => r.json()).catch(() => ({}))
+                loadDataFile('alerts.json'),
+                loadDataFile('threats.json'),
+                loadDataFile('incidents.json'),
+                loadDataFile('iocs.json'),
+                loadDataFile('team.json'),
+                loadDataFile('users.json'),
+                loadDataFile('case_notes.json'),
+                loadDataFile('evidence.json'),
+                loadDataFile('correlations.json'),
+                loadDataFile('notifications.json'),
+                loadDataFile('escalation_policies.json'),
+                loadDataFile('oncall_schedule.json', {}),
+                loadDataFile('webhook_config.json'),
+                loadDataFile('compliance_mappings.json'),
+                loadDataFile('reports.json'),
+                loadDataFile('hunts.json'),
+                loadDataFile('hunt_library.json'),
+                loadDataFile('hunt_metrics.json', {})
             ]);
             
             this.alerts = alerts;
@@ -188,9 +203,11 @@ const MOCK_DATA = {
             ];
             
             this.ready = true;
+            console.log('Mock data initialized successfully');
             return true;
         } catch (error) {
             console.error('Failed to initialize mock data:', error);
+            console.error('Please ensure all required data files exist in ./data/ directory');
             return false;
         }
     },

@@ -516,11 +516,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof MOCK_DATA_READY !== 'undefined') {
         try {
             await MOCK_DATA_READY;
+            console.log('Dashboard ready to load');
         } catch (error) {
             console.error('Failed to load mock data, dashboard may not display correctly:', error);
+            showToast('Failed to initialize dashboard data. Please refresh the page.', 'error');
         }
     } else {
         console.warn('MOCK_DATA_READY is not defined - mock-api.js may not be loaded');
+        showToast('Mock API not loaded. Dashboard functionality may be limited.', 'warning');
     }
 
     // Initialize authentication
@@ -638,8 +641,9 @@ async function loadDashboard() {
         renderAlertDistributionChart(alerts);
         renderThreatMap();
     } catch (error) {
-        showToast('Failed to load dashboard data', 'error');
-        console.error(error);
+        console.error('Dashboard loading error:', error);
+        showToast('Failed to load dashboard data. Please check the console for details.', 'error');
+        console.error('Possible causes: Missing data files, API endpoint issues, or network errors.');
     } finally {
         hideLoading();
     }

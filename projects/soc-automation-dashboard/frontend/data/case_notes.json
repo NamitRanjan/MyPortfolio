@@ -1,0 +1,509 @@
+[
+  {
+    "id": 1,
+    "alert_id": 6,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Brute force attack blocked at firewall. Source IP added to blocklist. Monitoring for additional attempts.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T16:15:01.026492Z",
+    "updated_at": "2026-02-15T08:15:01.026512Z",
+    "is_pinned": true,
+    "tags": [
+      "brute_force",
+      "blocked",
+      "firewall"
+    ]
+  },
+  {
+    "id": 2,
+    "alert_id": 6,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-13T20:15:01.026523Z",
+    "updated_at": "2026-02-15T00:15:01.026527Z",
+    "is_pinned": false,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 3,
+    "alert_id": 6,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-13T09:15:01.026533Z",
+    "updated_at": "2026-02-15T01:15:01.026536Z",
+    "is_pinned": true,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 4,
+    "alert_id": 50,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T15:15:01.026542Z",
+    "updated_at": "2026-02-14T09:15:01.026544Z",
+    "is_pinned": true,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 5,
+    "alert_id": 50,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Incident response team activated. Legal and PR teams notified. Recovery procedures initiated.",
+    "type": "response_note",
+    "created_at": "2026-02-14T07:15:01.026549Z",
+    "updated_at": "2026-02-14T12:15:01.026551Z",
+    "is_pinned": false,
+    "tags": [
+      "incident_response",
+      "recovery"
+    ]
+  },
+  {
+    "id": 6,
+    "alert_id": 49,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-14T02:15:01.026556Z",
+    "updated_at": "2026-02-15T04:15:01.026559Z",
+    "is_pinned": false,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 7,
+    "alert_id": 49,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Brute force attack blocked at firewall. Source IP added to blocklist. Monitoring for additional attempts.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T18:15:01.026563Z",
+    "updated_at": "2026-02-14T13:15:01.026565Z",
+    "is_pinned": false,
+    "tags": [
+      "brute_force",
+      "blocked",
+      "firewall"
+    ]
+  },
+  {
+    "id": 8,
+    "alert_id": 49,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T07:15:01.026569Z",
+    "updated_at": "2026-02-14T19:15:01.026572Z",
+    "is_pinned": true,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 9,
+    "alert_id": 42,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T11:15:01.026576Z",
+    "updated_at": "2026-02-15T09:15:01.026579Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 10,
+    "alert_id": 42,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T20:15:01.026583Z",
+    "updated_at": "2026-02-15T06:15:01.026585Z",
+    "is_pinned": true,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 11,
+    "alert_id": 4,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T13:15:01.026590Z",
+    "updated_at": "2026-02-15T00:15:01.026592Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 12,
+    "alert_id": 4,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-15T05:15:01.026596Z",
+    "updated_at": "2026-02-14T22:15:01.026598Z",
+    "is_pinned": true,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 13,
+    "alert_id": 4,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Incident response team activated. Legal and PR teams notified. Recovery procedures initiated.",
+    "type": "response_note",
+    "created_at": "2026-02-13T09:15:01.026602Z",
+    "updated_at": "2026-02-15T05:15:01.026605Z",
+    "is_pinned": false,
+    "tags": [
+      "incident_response",
+      "recovery"
+    ]
+  },
+  {
+    "id": 14,
+    "alert_id": 47,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-13T21:15:01.026609Z",
+    "updated_at": "2026-02-15T01:15:01.026611Z",
+    "is_pinned": false,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 15,
+    "alert_id": 47,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T19:15:01.026615Z",
+    "updated_at": "2026-02-14T10:15:01.026618Z",
+    "is_pinned": true,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 16,
+    "alert_id": 25,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Brute force attack blocked at firewall. Source IP added to blocklist. Monitoring for additional attempts.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T15:15:01.026622Z",
+    "updated_at": "2026-02-15T03:15:01.026625Z",
+    "is_pinned": false,
+    "tags": [
+      "brute_force",
+      "blocked",
+      "firewall"
+    ]
+  },
+  {
+    "id": 17,
+    "alert_id": 43,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-15T04:15:01.026629Z",
+    "updated_at": "2026-02-14T15:15:01.026631Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 18,
+    "alert_id": 43,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T12:15:01.026635Z",
+    "updated_at": "2026-02-15T05:15:01.026638Z",
+    "is_pinned": false,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 19,
+    "alert_id": 23,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T10:15:01.026649Z",
+    "updated_at": "2026-02-14T13:15:01.026652Z",
+    "is_pinned": true,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 20,
+    "alert_id": 23,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T14:15:01.026656Z",
+    "updated_at": "2026-02-14T17:15:01.026658Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 21,
+    "alert_id": 23,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Incident response team activated. Legal and PR teams notified. Recovery procedures initiated.",
+    "type": "response_note",
+    "created_at": "2026-02-14T23:15:01.026662Z",
+    "updated_at": "2026-02-15T08:15:01.026666Z",
+    "is_pinned": true,
+    "tags": [
+      "incident_response",
+      "recovery"
+    ]
+  },
+  {
+    "id": 22,
+    "alert_id": 30,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T06:15:01.026671Z",
+    "updated_at": "2026-02-14T09:15:01.026673Z",
+    "is_pinned": false,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 23,
+    "alert_id": 33,
+    "incident_id": null,
+    "author_id": 4,
+    "author_name": "Emily Zhang",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-15T00:15:01.026678Z",
+    "updated_at": "2026-02-14T16:15:01.026680Z",
+    "is_pinned": false,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 24,
+    "alert_id": 7,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Confirmed C2 communication to suspicious IP. VirusTotal shows multiple detections. Escalating to Tier 3.",
+    "type": "escalation_note",
+    "created_at": "2026-02-14T03:15:01.026684Z",
+    "updated_at": "2026-02-15T01:15:01.026687Z",
+    "is_pinned": true,
+    "tags": [
+      "c2",
+      "escalation",
+      "virustotal"
+    ]
+  },
+  {
+    "id": 25,
+    "alert_id": 48,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T05:15:01.026691Z",
+    "updated_at": "2026-02-14T10:15:01.026693Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 26,
+    "alert_id": 41,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Brute force attack blocked at firewall. Source IP added to blocklist. Monitoring for additional attempts.",
+    "type": "investigation_note",
+    "created_at": "2026-02-15T05:15:01.026698Z",
+    "updated_at": "2026-02-14T23:15:01.026701Z",
+    "is_pinned": false,
+    "tags": [
+      "brute_force",
+      "blocked",
+      "firewall"
+    ]
+  },
+  {
+    "id": 27,
+    "alert_id": 41,
+    "incident_id": null,
+    "author_id": 3,
+    "author_name": "Mike Ross",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-13T17:15:01.026705Z",
+    "updated_at": "2026-02-15T07:15:01.026707Z",
+    "is_pinned": false,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 28,
+    "alert_id": 41,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Phishing email quarantined. Malicious attachment contains known payload. Scanning for additional instances.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T08:15:01.026711Z",
+    "updated_at": "2026-02-14T10:15:01.026713Z",
+    "is_pinned": false,
+    "tags": [
+      "phishing",
+      "email",
+      "malware"
+    ]
+  },
+  {
+    "id": 29,
+    "alert_id": 24,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T20:15:01.026720Z",
+    "updated_at": "2026-02-14T18:15:01.026723Z",
+    "is_pinned": true,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  },
+  {
+    "id": 30,
+    "alert_id": 24,
+    "incident_id": null,
+    "author_id": 5,
+    "author_name": "Jake Miller",
+    "content": "Initial triage completed. PowerShell execution appears to be encoded command downloading second-stage payload. Recommending host isolation.",
+    "type": "investigation_note",
+    "created_at": "2026-02-14T01:15:01.026726Z",
+    "updated_at": "2026-02-14T12:15:01.026729Z",
+    "is_pinned": true,
+    "tags": [
+      "malware",
+      "powershell",
+      "triage"
+    ]
+  }
+]

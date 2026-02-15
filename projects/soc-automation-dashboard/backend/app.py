@@ -30,6 +30,55 @@ def load_data():
 
 alerts_data, threats_data, incidents_data, iocs_data, team_data = load_data()
 
+# Playbook steps configuration
+PLAYBOOK_STEPS = {
+    1: [  # Malware Detection Response
+        {'name': 'Isolate infected host', 'duration': '15s', 'order': 1},
+        {'name': 'Collect forensic artifacts', 'duration': '30s', 'order': 2},
+        {'name': 'Block C2 communications', 'duration': '20s', 'order': 3},
+        {'name': 'Scan for lateral movement', 'duration': '25s', 'order': 4},
+        {'name': 'Update threat signatures', 'duration': '10s', 'order': 5},
+        {'name': 'Generate incident report', 'duration': '20s', 'order': 6}
+    ],
+    2: [  # Phishing Email Investigation
+        {'name': 'Extract email headers', 'duration': '10s', 'order': 1},
+        {'name': 'Analyze URLs and attachments', 'duration': '25s', 'order': 2},
+        {'name': 'Check sender reputation', 'duration': '15s', 'order': 3},
+        {'name': 'Search for similar emails', 'duration': '20s', 'order': 4},
+        {'name': 'Quarantine malicious messages', 'duration': '15s', 'order': 5},
+        {'name': 'Block sender domain', 'duration': '10s', 'order': 6},
+        {'name': 'Notify affected users', 'duration': '15s', 'order': 7},
+        {'name': 'Update email filters', 'duration': '15s', 'order': 8}
+    ],
+    3: [  # Brute Force Attack Mitigation
+        {'name': 'Identify attack source', 'duration': '10s', 'order': 1},
+        {'name': 'Block source IP address', 'duration': '5s', 'order': 2},
+        {'name': 'Reset compromised credentials', 'duration': '20s', 'order': 3},
+        {'name': 'Enable MFA for account', 'duration': '15s', 'order': 4},
+        {'name': 'Generate security alert', 'duration': '10s', 'order': 5}
+    ],
+    4: [  # Data Exfiltration Prevention
+        {'name': 'Identify data transfer', 'duration': '20s', 'order': 1},
+        {'name': 'Block outbound connection', 'duration': '10s', 'order': 2},
+        {'name': 'Isolate affected endpoint', 'duration': '15s', 'order': 3},
+        {'name': 'Analyze transferred data', 'duration': '30s', 'order': 4},
+        {'name': 'Check for data staging', 'duration': '25s', 'order': 5},
+        {'name': 'Update DLP policies', 'duration': '15s', 'order': 6},
+        {'name': 'Notify security team', 'duration': '10s', 'order': 7}
+    ],
+    5: [  # Insider Threat Investigation
+        {'name': 'Collect user activity logs', 'duration': '25s', 'order': 1},
+        {'name': 'Analyze access patterns', 'duration': '30s', 'order': 2},
+        {'name': 'Review privilege usage', 'duration': '20s', 'order': 3},
+        {'name': 'Check data access history', 'duration': '25s', 'order': 4},
+        {'name': 'Correlate with external events', 'duration': '30s', 'order': 5},
+        {'name': 'Enable enhanced monitoring', 'duration': '15s', 'order': 6},
+        {'name': 'Restrict sensitive access', 'duration': '20s', 'order': 7},
+        {'name': 'Notify HR and legal', 'duration': '15s', 'order': 8},
+        {'name': 'Generate investigation report', 'duration': '20s', 'order': 9}
+    ]
+}
+
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
@@ -241,6 +290,46 @@ def get_playbooks():
     ]
     
     return jsonify(playbooks)
+
+@app.route('/api/playbooks/<int:playbook_id>/steps')
+def get_playbook_steps(playbook_id):
+    """Get detailed steps for a specific playbook"""
+    steps = PLAYBOOK_STEPS.get(playbook_id, [])
+    if not steps:
+        return jsonify({'error': 'Playbook not found'}), 404
+    
+    return jsonify(steps)
+
+@app.route('/api/playbooks/<int:playbook_id>/execute', methods=['POST'])
+def execute_playbook(playbook_id):
+    """Execute a playbook and return step-by-step results"""
+    steps = PLAYBOOK_STEPS.get(playbook_id, [])
+    if not steps:
+        return jsonify({'error': 'Playbook not found'}), 404
+    
+    # Simulate execution with 90% success rate
+    success = random.random() > 0.1
+    
+    # Add status to each step
+    steps_with_status = []
+    for i, step in enumerate(steps):
+        step_copy = step.copy()
+        step_copy['status'] = 'completed' if success else ('completed' if i < len(steps) - 1 else 'failed')
+        steps_with_status.append(step_copy)
+    
+    # Calculate total execution time
+    execution_time = sum(int(step['duration'].replace('s', '')) for step in steps)
+    
+    result = {
+        'playbook_id': playbook_id,
+        'status': 'completed' if success else 'failed',
+        'steps': steps_with_status,
+        'execution_time': execution_time,
+        'timestamp': datetime.now().isoformat(),
+        'message': 'Playbook executed successfully. All steps completed.' if success else 'Playbook execution failed. Please review the logs.'
+    }
+    
+    return jsonify(result)
 
 @app.route('/api/metrics/performance')
 def get_performance_metrics():

@@ -56,6 +56,14 @@ const API = {
             return MOCK_DATA.getIOCs(Object.fromEntries(params));
         }
         if (endpoint === '/playbooks') return MOCK_DATA.getPlaybooks();
+        if (endpoint.startsWith('/playbooks/') && endpoint.includes('/execute')) {
+            const playbookId = parseInt(endpoint.match(/\/playbooks\/(\d+)/)[1]);
+            return MOCK_DATA.executePlaybook(playbookId);
+        }
+        if (endpoint.startsWith('/playbooks/') && endpoint.includes('/steps')) {
+            const playbookId = parseInt(endpoint.match(/\/playbooks\/(\d+)/)[1]);
+            return MOCK_DATA.getPlaybookSteps(playbookId);
+        }
         if (endpoint.startsWith('/team')) {
             const params = new URLSearchParams(endpoint.split('?')[1]);
             return MOCK_DATA.getTeam(Object.fromEntries(params));
@@ -75,7 +83,10 @@ const state = {
     threats: [],
     incidents: [],
     playbooks: [],
-    currentAlert: null
+    currentAlert: null,
+    currentThreat: null,
+    currentIncident: null,
+    currentPlaybook: null
 };
 
 // Initialize Dashboard
@@ -460,6 +471,8 @@ function renderThreats(threats) {
                 </div>
             </div>
         `;
+        
+        item.addEventListener('click', () => showThreatDetails(threat));
         container.appendChild(item);
     });
 }
@@ -525,6 +538,8 @@ function renderIncidents(incidents) {
                 </div>
             </div>
         `;
+        
+        item.addEventListener('click', () => showIncidentDetails(incident));
         container.appendChild(item);
     });
 }
@@ -576,6 +591,16 @@ function renderPlaybooks(playbooks) {
                     ${playbook.triggers.map(trigger => `<span class="trigger-tag"><i class="fas fa-bolt"></i> ${trigger}</span>`).join('')}
                 </div>
             </div>
+            <div class="playbook-actions">
+                <button class="playbook-btn playbook-btn-primary" onclick="runPlaybook(${playbook.id})">
+                    <i class="fas fa-play"></i> Run Playbook
+                </button>
+                <button class="playbook-btn playbook-btn-secondary" onclick="viewPlaybookSteps(${playbook.id})">
+                    <i class="fas fa-list"></i> View Steps
+                </button>
+            </div>
+            <div id="playbook-steps-${playbook.id}" style="display: none;"></div>
+            <div id="playbook-execution-${playbook.id}" style="display: none;"></div>
         `;
         container.appendChild(card);
     });
@@ -713,6 +738,329 @@ async function respondToAlert() {
         console.error(error);
     } finally {
         hideLoading();
+    }
+}
+
+// Threat Detail Modal
+function showThreatDetails(threat) {
+    state.currentThreat = threat;
+    const modal = document.getElementById('alert-modal');
+    const modalBody = document.getElementById('modal-body');
+    
+    // Derive MITRE ATT&CK mapping from threat type
+    const mitreMapping = {
+        'malware': ['Initial Access', 'Execution', 'Persistence'],
+        'ransomware': ['Impact', 'Command and Control', 'Exfiltration'],
+        'phishing': ['Initial Access', 'Credential Access'],
+        'ddos': ['Impact', 'Resource Development'],
+        'botnet': ['Command and Control', 'Execution'],
+        'apt': ['Reconnaissance', 'Initial Access', 'Lateral Movement'],
+        'intrusion': ['Initial Access', 'Privilege Escalation', 'Persistence']
+    };
+    
+    const mitreTactics = mitreMapping[threat.type.toLowerCase()] || ['Unknown'];
+    
+    // Derive kill chain phase from threat type
+    const killChainPhases = {
+        'malware': 'Delivery / Installation',
+        'ransomware': 'Actions on Objectives',
+        'phishing': 'Reconnaissance / Weaponization',
+        'ddos': 'Actions on Objectives',
+        'botnet': 'Command and Control',
+        'apt': 'Reconnaissance / Exploitation',
+        'intrusion': 'Exploitation / Installation'
+    };
+    
+    const killChain = killChainPhases[threat.type.toLowerCase()] || 'Unknown';
+    
+    // Generate recommended actions based on threat type
+    const recommendedActions = {
+        'malware': ['Isolate affected systems immediately', 'Run full malware scan', 'Block C2 communications', 'Update antivirus signatures'],
+        'ransomware': ['Isolate infected hosts', 'Disable affected user accounts', 'Block file encryption activities', 'Initiate backup restoration procedures'],
+        'phishing': ['Quarantine malicious emails', 'Block sender domain', 'Reset credentials of affected users', 'Increase email security awareness'],
+        'ddos': ['Enable DDoS mitigation', 'Block attacking IP ranges', 'Scale infrastructure resources', 'Contact ISP for upstream filtering'],
+        'botnet': ['Block C2 server communications', 'Isolate infected machines', 'Remove malware', 'Update security policies'],
+        'apt': ['Preserve forensic evidence', 'Isolate compromised systems', 'Identify lateral movement paths', 'Engage incident response team'],
+        'intrusion': ['Isolate compromised systems', 'Patch exploited vulnerabilities', 'Reset affected credentials', 'Review access logs']
+    };
+    
+    const actions = recommendedActions[threat.type.toLowerCase()] || ['Investigate further', 'Monitor for suspicious activity'];
+    
+    document.getElementById('modal-title').innerHTML = `<i class="fas fa-bug"></i> ${threat.name}`;
+    
+    // Update button texts for threat context
+    document.getElementById('investigate-btn').innerHTML = '<i class="fas fa-search"></i> Investigate';
+    document.getElementById('respond-btn').innerHTML = '<i class="fas fa-ban"></i> Block Threat';
+    
+    modalBody.innerHTML = `
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <span class="badge ${threat.severity}">${threat.severity}</span>
+            <span class="badge ${threat.action}">${threat.action}</span>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Description:</strong>
+            <p style="margin-top: 0.5rem; color: #a0aec0;">${threat.description}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Network Flow Details:</strong>
+            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div><i class="fas fa-arrow-right"></i> Source IP: <span style="color: #a0aec0;">${threat.source_ip}</span></div>
+                <div><i class="fas fa-bullseye"></i> Destination IP: <span style="color: #a0aec0;">${threat.destination_ip}</span></div>
+                <div><i class="fas fa-globe"></i> Country: <span style="color: #a0aec0;">${threat.country}</span></div>
+                <div><i class="fas fa-shield-virus"></i> Type: <span style="color: #a0aec0;">${threat.type}</span></div>
+            </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Threat Intelligence:</strong>
+            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div><i class="fas fa-fingerprint"></i> IOCs Detected: <span style="color: #a0aec0;">${threat.indicators}</span></div>
+                <div><i class="fas fa-percentage"></i> Confidence: <span style="color: #a0aec0;">${threat.confidence}%</span></div>
+                <div><i class="fas fa-layer-group"></i> Kill Chain: <span style="color: #a0aec0;">${killChain}</span></div>
+                <div><i class="fas fa-clock"></i> Detected: <span style="color: #a0aec0;">${formatTime(threat.timestamp)}</span></div>
+            </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">MITRE ATT&CK Mapping:</strong>
+            <div class="alert-indicators" style="margin-top: 0.5rem;">
+                ${mitreTactics.map(tactic => `<span class="indicator-tag">${tactic}</span>`).join('')}
+            </div>
+        </div>
+        <div>
+            <strong style="color: #00a3e0;">Recommended Containment Actions:</strong>
+            <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #a0aec0;">
+                ${actions.map(action => `<li>${action}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+// Incident Detail Modal
+function showIncidentDetails(incident) {
+    state.currentIncident = incident;
+    const modal = document.getElementById('alert-modal');
+    const modalBody = document.getElementById('modal-body');
+    
+    document.getElementById('modal-title').innerHTML = `<i class="fas fa-fire"></i> ${incident.title}`;
+    
+    // Update button texts for incident context
+    document.getElementById('investigate-btn').innerHTML = '<i class="fas fa-level-up-alt"></i> Escalate';
+    document.getElementById('respond-btn').innerHTML = '<i class="fas fa-edit"></i> Update Status';
+    
+    // Generate incident timeline entries
+    const timeline = [
+        { time: incident.created, event: 'Incident created', type: 'info' },
+        { time: incident.updated, event: 'Last updated', type: 'info' },
+        { time: new Date(new Date(incident.created).getTime() + 10*60000).toISOString(), event: `Assigned to ${incident.assignee}`, type: 'success' }
+    ];
+    
+    // Add timeline entries for response actions
+    incident.response_actions.forEach((action, index) => {
+        const actionTime = new Date(new Date(incident.created).getTime() + (15 + index * 5) * 60000).toISOString();
+        timeline.push({ time: actionTime, event: action, type: 'success' });
+    });
+    
+    timeline.sort((a, b) => new Date(a.time) - new Date(b.time));
+    
+    modalBody.innerHTML = `
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <span class="badge ${incident.severity}">${incident.severity}</span>
+            <span class="badge ${incident.status}">${incident.status}</span>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Description:</strong>
+            <p style="margin-top: 0.5rem; color: #a0aec0;">${incident.description}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Impact Assessment:</strong>
+            <p style="margin-top: 0.5rem; color: #a0aec0;">${incident.impact}</p>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Incident Details:</strong>
+            <div style="margin-top: 0.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div><i class="fas fa-user-shield"></i> Assignee: <span style="color: #a0aec0;">${incident.assignee}</span></div>
+                <div><i class="fas fa-clock"></i> Created: <span style="color: #a0aec0;">${formatTime(incident.created)}</span></div>
+                <div><i class="fas fa-sync"></i> Updated: <span style="color: #a0aec0;">${formatTime(incident.updated)}</span></div>
+                <div><i class="fas fa-exclamation-circle"></i> Severity: <span class="badge ${incident.severity}">${incident.severity}</span></div>
+            </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Affected Systems:</strong>
+            <div class="alert-indicators" style="margin-top: 0.5rem;">
+                ${incident.affected_systems.map(sys => `<span class="indicator-tag"><i class="fas fa-server"></i> ${sys}</span>`).join('')}
+            </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+            <strong style="color: #00a3e0;">Response Actions Taken:</strong>
+            <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #a0aec0;">
+                ${incident.response_actions.map(action => `<li><i class="fas fa-check" style="color: #28a745; margin-right: 0.5rem;"></i>${action}</li>`).join('')}
+            </ul>
+        </div>
+        <div>
+            <strong style="color: #00a3e0;">Incident Timeline:</strong>
+            <div style="margin-top: 0.75rem;">
+                ${timeline.map(entry => `
+                    <div style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(255, 255, 255, 0.03); border-left: 3px solid var(--primary-color); border-radius: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #a0aec0;">${entry.event}</span>
+                            <span style="color: #718096; font-size: 0.85rem;">${formatTime(entry.time)}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+// Playbook Functions
+async function viewPlaybookSteps(playbookId) {
+    const container = document.getElementById(`playbook-steps-${playbookId}`);
+    
+    if (container.style.display === 'block') {
+        container.style.display = 'none';
+        return;
+    }
+    
+    showLoading();
+    try {
+        const steps = await API.fetch(`/playbooks/${playbookId}/steps`).then(r => r.json());
+        
+        container.innerHTML = `
+            <div class="playbook-steps-list">
+                <strong style="color: #00a3e0; margin-bottom: 0.75rem; display: block;">
+                    <i class="fas fa-list-ol"></i> Playbook Steps
+                </strong>
+                ${steps.map((step, index) => `
+                    <div class="playbook-step">
+                        <div class="step-number">${step.order}</div>
+                        <div class="step-content">
+                            <div class="step-name">${step.name}</div>
+                            <div class="step-duration"><i class="fas fa-clock"></i> Expected duration: ${step.duration}</div>
+                        </div>
+                        <div class="step-status pending">Pending</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.style.display = 'block';
+    } catch (error) {
+        showToast('Failed to load playbook steps', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+async function runPlaybook(playbookId) {
+    const playbook = state.playbooks.find(p => p.id === playbookId);
+    if (!playbook) return;
+    
+    const executionContainer = document.getElementById(`playbook-execution-${playbookId}`);
+    const stepsContainer = document.getElementById(`playbook-steps-${playbookId}`);
+    
+    // Hide steps if visible
+    stepsContainer.style.display = 'none';
+    
+    showLoading();
+    
+    try {
+        const result = await API.fetch(`/playbooks/${playbookId}/execute`, {
+            method: 'POST'
+        }).then(r => r.json());
+        
+        // Show execution in progress
+        executionContainer.innerHTML = `
+            <div class="playbook-execution">
+                <div class="execution-header">
+                    <div class="execution-title"><i class="fas fa-cog fa-spin"></i> Executing Playbook...</div>
+                    <div class="execution-status">
+                        <span id="exec-progress-${playbookId}">0/${result.steps.length}</span>
+                    </div>
+                </div>
+                <div class="step-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="exec-progress-bar-${playbookId}" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div id="exec-steps-${playbookId}" style="margin-top: 1rem;"></div>
+            </div>
+        `;
+        executionContainer.style.display = 'block';
+        
+        hideLoading();
+        
+        // Animate step execution
+        const stepsDiv = document.getElementById(`exec-steps-${playbookId}`);
+        const progressBar = document.getElementById(`exec-progress-bar-${playbookId}`);
+        const progressText = document.getElementById(`exec-progress-${playbookId}`);
+        
+        for (let i = 0; i < result.steps.length; i++) {
+            const step = result.steps[i];
+            const duration = parseInt(step.duration) || 15;
+            
+            // Add step to execution display
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'playbook-step';
+            stepDiv.innerHTML = `
+                <div class="step-number">${step.order}</div>
+                <div class="step-content">
+                    <div class="step-name">${step.name}</div>
+                    <div class="step-duration"><i class="fas fa-clock"></i> ${step.duration}</div>
+                </div>
+                <div class="step-status running"><i class="fas fa-spinner fa-spin"></i> Running</div>
+            `;
+            stepsDiv.appendChild(stepDiv);
+            
+            // Simulate step execution
+            await new Promise(resolve => setTimeout(resolve, duration * 50)); // Faster for demo
+            
+            // Update step status
+            const statusDiv = stepDiv.querySelector('.step-status');
+            statusDiv.className = `step-status ${step.status}`;
+            statusDiv.innerHTML = step.status === 'completed' 
+                ? '<i class="fas fa-check"></i> Completed' 
+                : '<i class="fas fa-times"></i> Failed';
+            
+            // Update progress
+            const progress = ((i + 1) / result.steps.length) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${i + 1}/${result.steps.length}`;
+        }
+        
+        // Show final result
+        const resultDiv = document.createElement('div');
+        resultDiv.className = `execution-result ${result.status === 'completed' ? 'success' : 'failure'}`;
+        resultDiv.innerHTML = `
+            <i class="fas fa-${result.status === 'completed' ? 'check-circle' : 'exclamation-triangle'}"></i>
+            <div>
+                <strong>${result.status === 'completed' ? 'Success!' : 'Execution Failed'}</strong>
+                <div style="margin-top: 0.25rem; color: #a0aec0;">${result.message}</div>
+            </div>
+        `;
+        executionContainer.querySelector('.playbook-execution').appendChild(resultDiv);
+        
+        // Update execution header
+        document.querySelector(`#playbook-execution-${playbookId} .execution-title`).innerHTML = 
+            result.status === 'completed' 
+                ? '<i class="fas fa-check-circle" style="color: #28a745;"></i> Execution Complete'
+                : '<i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Execution Failed';
+        
+        // Show toast notification
+        showToast(
+            result.status === 'completed' 
+                ? `Playbook "${playbook.name}" executed successfully!`
+                : `Playbook "${playbook.name}" execution failed.`,
+            result.status === 'completed' ? 'success' : 'error'
+        );
+        
+    } catch (error) {
+        hideLoading();
+        showToast('Failed to execute playbook', 'error');
+        console.error(error);
     }
 }
 

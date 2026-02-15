@@ -55,8 +55,12 @@ const API = {
         // Parse endpoint and return appropriate mock data
         if (endpoint === '/auth/login') {
             const body = options.body ? JSON.parse(options.body) : {};
+            // Use crypto.getRandomValues for better security in mock mode
+            const randomValues = new Uint32Array(4);
+            crypto.getRandomValues(randomValues);
+            const token = 'mock-' + Array.from(randomValues).map(v => v.toString(16)).join('-');
             return {
-                token: 'mock-jwt-token-' + Date.now(),
+                token,
                 user: {
                     id: 1,
                     username: body.username || 'demo',
@@ -77,9 +81,9 @@ const API = {
                 user: authState.user || { username: 'demo', display_name: 'Demo User', role: 'admin' }
             };
         }
-        if (endpoint === '/audit/logs') {
+        if (endpoint.startsWith('/audit-log')) {
             const params = new URLSearchParams(endpoint.split('?')[1]);
-            return MOCK_DATA.getAuditLogs ? MOCK_DATA.getAuditLogs(Object.fromEntries(params)) : [];
+            return MOCK_DATA.getAuditLogs ? MOCK_DATA.getAuditLogs(Object.fromEntries(params)) : { logs: [], total: 0 };
         }
         if (endpoint === '/dashboard/stats') return MOCK_DATA.getDashboardStats();
         if (endpoint.startsWith('/alerts')) {
@@ -217,7 +221,7 @@ function updateUIForAuthenticatedUser() {
     if (roleBadge) {
         const role = authState.user.role || 'analyst';
         roleBadge.textContent = role.replace('_', ' ').toUpperCase();
-        roleBadge.className = 'role-badge role-' + role;
+        roleBadge.className = 'role-badge ' + role;
     }
     
     // Show logout button
@@ -272,8 +276,16 @@ function initAuthHandlers() {
             const password = document.getElementById('password')?.value;
             const errorDiv = document.getElementById('login-error');
             
-            if (!username || !password) {
+            if (!username && !password) {
                 if (errorDiv) errorDiv.textContent = 'Please enter username and password';
+                return;
+            }
+            if (!username) {
+                if (errorDiv) errorDiv.textContent = 'Please enter username';
+                return;
+            }
+            if (!password) {
+                if (errorDiv) errorDiv.textContent = 'Please enter password';
                 return;
             }
             
@@ -1585,9 +1597,11 @@ async function loadAuditLog(filters = {}) {
     try {
         // Build query string
         const params = new URLSearchParams(filters);
-        const response = await API.fetch(`/audit/logs?${params.toString()}`);
-        const logs = await response.json();
+        const response = await API.fetch(`/audit-log?${params.toString()}`);
+        const data = await response.json();
         
+        // Handle both array and object responses
+        const logs = Array.isArray(data) ? data : (data.logs || []);
         renderAuditLog(logs);
     } catch (error) {
         showToast('Failed to load audit logs', 'error');

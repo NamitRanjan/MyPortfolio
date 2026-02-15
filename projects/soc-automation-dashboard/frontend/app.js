@@ -1049,7 +1049,7 @@ async function loadNotes(alertId) {
             html += `
                 <div class="add-form" style="margin-top: 1rem;">
                     <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Note</h4>
-                    <form id="add-note-form" onsubmit="return handleAddNote(event, ${alertId})">
+                    <form id="add-note-form">
                         <textarea id="note-content" placeholder="Enter investigation note..." rows="4" required style="width: 100%; margin-bottom: 0.75rem; padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;"></textarea>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                             <select id="note-type" required style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
@@ -1067,6 +1067,14 @@ async function loadNotes(alertId) {
         }
         
         notesContent.innerHTML = html;
+        
+        // Attach event listener for add note form
+        if (canAddNotes) {
+            const form = document.getElementById('add-note-form');
+            if (form) {
+                form.addEventListener('submit', (event) => handleAddNote(event, alertId));
+            }
+        }
     } catch (error) {
         notesContent.innerHTML = '<p style="color: #dc3545;">Failed to load notes</p>';
         console.error('Error loading notes:', error);
@@ -1176,9 +1184,9 @@ async function loadEvidence(alertId) {
             html += `
                 <div class="add-form" style="margin-top: 1rem;">
                     <h4 style="color: #00a3e0; margin-bottom: 0.75rem;">Add Evidence</h4>
-                    <form id="add-evidence-form" onsubmit="return handleAddEvidence(event, ${alertId})">
+                    <form id="add-evidence-form">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <select id="evidence-type" required onchange="toggleHashType()" style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
+                            <select id="evidence-type" required style="padding: 0.5rem; background: #1a1f2e; border: 1px solid #2d3548; color: #e0e0e0; border-radius: 4px;">
                                 <option value="">Select type...</option>
                                 <option value="file_hash">File Hash</option>
                                 <option value="ip_address">IP Address</option>
@@ -1203,6 +1211,19 @@ async function loadEvidence(alertId) {
         }
         
         evidenceContent.innerHTML = html;
+        
+        // Attach event listeners for add evidence form
+        if (canAddEvidence) {
+            const form = document.getElementById('add-evidence-form');
+            if (form) {
+                form.addEventListener('submit', (event) => handleAddEvidence(event, alertId));
+            }
+            
+            const typeSelect = document.getElementById('evidence-type');
+            if (typeSelect) {
+                typeSelect.addEventListener('change', toggleHashType);
+            }
+        }
     } catch (error) {
         evidenceContent.innerHTML = '<p style="color: #dc3545;">Failed to load evidence</p>';
         console.error('Error loading evidence:', error);

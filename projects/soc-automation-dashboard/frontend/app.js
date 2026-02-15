@@ -22,6 +22,7 @@ const API = {
         }
         
         // Use mock data - return Response-like object
+        // Note: Only .json() and .ok are needed by current call sites
         const data = this.mockResponse(endpoint, options);
         return {
             ok: true,

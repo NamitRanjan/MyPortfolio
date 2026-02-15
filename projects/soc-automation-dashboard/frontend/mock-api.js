@@ -335,7 +335,9 @@ const MOCK_DATA = {
 };
 
 // Initialize mock data on page load
-// (isGitHubPages is defined in app.js)
+// Note: Initialization is unconditional to support backend fallback scenarios.
+// Even when a backend is available, if it fails, the code falls back to mock data,
+// so the mock data must be pre-loaded for the fallback to work correctly.
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Initializing mock data');
     MOCK_DATA.init().then(() => {

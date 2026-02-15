@@ -6,15 +6,18 @@ const MOCK_DATA = {
     stats: null,
     
     // All security data
-    alerts: null,
-    threats: null,
-    incidents: null,
-    iocs: null,
-    team: null,
+    alerts: [],
+    threats: [],
+    incidents: [],
+    iocs: [],
+    team: [],
     
     // Threat intel
-    threatFeeds: null,
-    recentThreats: null,
+    threatFeeds: [],
+    recentThreats: [],
+    
+    // Flag to indicate if data is ready
+    ready: false,
     
     // Initialize function
     async init() {
@@ -137,6 +140,7 @@ const MOCK_DATA = {
                 }
             ];
             
+            this.ready = true;
             return true;
         } catch (error) {
             console.error('Failed to initialize mock data:', error);
@@ -330,13 +334,13 @@ const MOCK_DATA = {
     }
 };
 
-// Detect if we're running on GitHub Pages or with backend
-const isGitHubPages = window.location.hostname.includes('github.io') || !window.location.hostname.includes('localhost');
-
-// Initialize mock data if on GitHub Pages
-if (isGitHubPages) {
-    console.log('Running in GitHub Pages mode with mock data');
+// Initialize mock data on page load
+// Note: Initialization is unconditional to support backend fallback scenarios.
+// Even when a backend is available, if it fails, the code falls back to mock data,
+// so the mock data must be pre-loaded for the fallback to work correctly.
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Initializing mock data');
     MOCK_DATA.init().then(() => {
         console.log('Mock data initialized successfully');
     });
-}
+});

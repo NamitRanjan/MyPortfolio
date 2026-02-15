@@ -501,6 +501,377 @@ for i in range(50):  # Generate 50 sample audit entries
 # Sort audit log by timestamp descending
 audit_log.sort(key=lambda x: x['timestamp'], reverse=True)
 
+# Generate correlations
+print("Generating alert correlations...")
+correlations = []
+
+# Correlation 1: Coordinated Attack on WKSTN-1247
+wkstn_alerts = [a for a in alerts if a['host'] == 'WKSTN-1247'][:4]
+if len(wkstn_alerts) >= 2:
+    correlations.append({
+        'id': 1,
+        'name': 'Coordinated Attack on WKSTN-1247',
+        'description': 'Multiple indicators suggest a coordinated attack targeting workstation WKSTN-1247, progressing from initial access through lateral movement.',
+        'correlation_score': 92,
+        'created_at': (datetime.now() - timedelta(hours=6)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=2)).isoformat() + 'Z',
+        'status': 'active',
+        'alert_ids': [a['id'] for a in wkstn_alerts],
+        'shared_entities': {
+            'hosts': ['WKSTN-1247'],
+            'users': list(set([a['user'] for a in wkstn_alerts])),
+            'ips': ['185.220.101.45'],
+            'mitre_tactics': list(set([t for a in wkstn_alerts for t in a.get('mitre_tactics', [])]))
+        },
+        'kill_chain': [
+            {'stage': 'Initial Access', 'alert_id': wkstn_alerts[0]['id'], 'technique': 'T1566.001', 'timestamp': wkstn_alerts[0]['timestamp']},
+            {'stage': 'Execution', 'alert_id': wkstn_alerts[1]['id'], 'technique': 'T1059.001', 'timestamp': wkstn_alerts[1]['timestamp']}
+        ] if len(wkstn_alerts) >= 2 else [],
+        'kill_chain_coverage': min(4, len(wkstn_alerts)),
+        'total_kill_chain_stages': 14,
+        'risk_level': 'critical',
+        'recommended_action': 'Immediate host isolation and full forensic investigation'
+    })
+
+# Correlation 2: Brute Force Campaign
+brute_force_alerts = [a for a in alerts if 'brute_force' in ' '.join(a.get('indicators', [])).lower() or 'failed' in a['title'].lower()][:3]
+if len(brute_force_alerts) >= 2:
+    correlations.append({
+        'id': 2,
+        'name': 'Brute Force Attack Campaign',
+        'description': 'Coordinated brute force attempts detected across multiple hosts from suspicious IP addresses.',
+        'correlation_score': 78,
+        'created_at': (datetime.now() - timedelta(hours=8)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=4)).isoformat() + 'Z',
+        'status': 'active',
+        'alert_ids': [a['id'] for a in brute_force_alerts],
+        'shared_entities': {
+            'hosts': list(set([a['host'] for a in brute_force_alerts])),
+            'users': list(set([a['user'] for a in brute_force_alerts])),
+            'ips': ['192.168.1.100', '10.0.0.50'],
+            'mitre_tactics': ['T1110']
+        },
+        'kill_chain': [
+            {'stage': 'Credential Access', 'alert_id': brute_force_alerts[0]['id'], 'technique': 'T1110', 'timestamp': brute_force_alerts[0]['timestamp']}
+        ],
+        'kill_chain_coverage': 1,
+        'total_kill_chain_stages': 14,
+        'risk_level': 'high',
+        'recommended_action': 'Block source IPs and enforce account lockout policies'
+    })
+
+# Correlation 3: Malware Propagation
+malware_alerts = [a for a in alerts if a['severity'] == 'critical' and ('malware' in a['title'].lower() or 'suspicious' in a['title'].lower())][:4]
+if len(malware_alerts) >= 2:
+    correlations.append({
+        'id': 3,
+        'name': 'Malware Propagation Pattern',
+        'description': 'Malware activity detected across multiple systems indicating potential propagation or coordinated infection.',
+        'correlation_score': 85,
+        'created_at': (datetime.now() - timedelta(hours=5)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=1)).isoformat() + 'Z',
+        'status': 'active',
+        'alert_ids': [a['id'] for a in malware_alerts],
+        'shared_entities': {
+            'hosts': list(set([a['host'] for a in malware_alerts])),
+            'users': list(set([a['user'] for a in malware_alerts])),
+            'ips': [],
+            'mitre_tactics': list(set([t for a in malware_alerts for t in a.get('mitre_tactics', [])]))
+        },
+        'kill_chain': [
+            {'stage': 'Execution', 'alert_id': malware_alerts[0]['id'], 'technique': 'T1204.002', 'timestamp': malware_alerts[0]['timestamp']},
+            {'stage': 'Defense Evasion', 'alert_id': malware_alerts[1]['id'], 'technique': 'T1055', 'timestamp': malware_alerts[1]['timestamp']}
+        ] if len(malware_alerts) >= 2 else [],
+        'kill_chain_coverage': 2,
+        'total_kill_chain_stages': 14,
+        'risk_level': 'critical',
+        'recommended_action': 'Isolate infected systems and perform malware analysis'
+    })
+
+# Correlation 4: Privilege Escalation Chain
+priv_esc_alerts = [a for a in alerts if 'privilege' in a['title'].lower() or 'escalation' in a['title'].lower()][:3]
+if len(priv_esc_alerts) >= 2:
+    correlations.append({
+        'id': 4,
+        'name': 'Privilege Escalation Campaign',
+        'description': 'Multiple privilege escalation attempts detected, indicating attacker attempting to gain elevated access.',
+        'correlation_score': 81,
+        'created_at': (datetime.now() - timedelta(hours=7)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=3)).isoformat() + 'Z',
+        'status': 'active',
+        'alert_ids': [a['id'] for a in priv_esc_alerts],
+        'shared_entities': {
+            'hosts': list(set([a['host'] for a in priv_esc_alerts])),
+            'users': list(set([a['user'] for a in priv_esc_alerts])),
+            'ips': [],
+            'mitre_tactics': ['T1068', 'T1134']
+        },
+        'kill_chain': [
+            {'stage': 'Privilege Escalation', 'alert_id': priv_esc_alerts[0]['id'], 'technique': 'T1068', 'timestamp': priv_esc_alerts[0]['timestamp']}
+        ],
+        'kill_chain_coverage': 1,
+        'total_kill_chain_stages': 14,
+        'risk_level': 'high',
+        'recommended_action': 'Review access controls and patch known vulnerabilities'
+    })
+
+# Correlation 5: Data Exfiltration Pattern
+exfil_alerts = [a for a in alerts if 'outbound' in a['title'].lower() or 'traffic' in a['title'].lower() or 'exfiltration' in ' '.join(a.get('indicators', [])).lower()][:3]
+if len(exfil_alerts) >= 2:
+    correlations.append({
+        'id': 5,
+        'name': 'Potential Data Exfiltration',
+        'description': 'Unusual network traffic patterns suggesting data exfiltration attempts.',
+        'correlation_score': 74,
+        'created_at': (datetime.now() - timedelta(hours=4)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=1)).isoformat() + 'Z',
+        'status': 'active',
+        'alert_ids': [a['id'] for a in exfil_alerts],
+        'shared_entities': {
+            'hosts': list(set([a['host'] for a in exfil_alerts])),
+            'users': list(set([a['user'] for a in exfil_alerts])),
+            'ips': ['185.220.101.45', '203.0.113.42'],
+            'mitre_tactics': ['T1041', 'T1048']
+        },
+        'kill_chain': [
+            {'stage': 'Exfiltration', 'alert_id': exfil_alerts[0]['id'], 'technique': 'T1041', 'timestamp': exfil_alerts[0]['timestamp']}
+        ],
+        'kill_chain_coverage': 1,
+        'total_kill_chain_stages': 14,
+        'risk_level': 'high',
+        'recommended_action': 'Block suspicious connections and investigate data access logs'
+    })
+
+# Correlation 6: Persistence Mechanism
+persistence_alerts = [a for a in alerts if 'persistence' in ' '.join(a.get('indicators', [])).lower() or 'registry' in a['title'].lower()][:3]
+if len(persistence_alerts) >= 2:
+    correlations.append({
+        'id': 6,
+        'name': 'Persistence Establishment',
+        'description': 'Multiple persistence mechanisms detected across systems.',
+        'correlation_score': 69,
+        'created_at': (datetime.now() - timedelta(hours=9)).isoformat() + 'Z',
+        'updated_at': (datetime.now() - timedelta(hours=5)).isoformat() + 'Z',
+        'status': 'monitoring',
+        'alert_ids': [a['id'] for a in persistence_alerts],
+        'shared_entities': {
+            'hosts': list(set([a['host'] for a in persistence_alerts])),
+            'users': list(set([a['user'] for a in persistence_alerts])),
+            'ips': [],
+            'mitre_tactics': ['T1547.001']
+        },
+        'kill_chain': [
+            {'stage': 'Persistence', 'alert_id': persistence_alerts[0]['id'], 'technique': 'T1547.001', 'timestamp': persistence_alerts[0]['timestamp']}
+        ],
+        'kill_chain_coverage': 1,
+        'total_kill_chain_stages': 14,
+        'risk_level': 'medium',
+        'recommended_action': 'Remove persistence mechanisms and monitor for reinfection'
+    })
+
+# Generate notifications
+print("Generating notifications...")
+notifications = []
+notification_types = [
+    ('alert_assigned', 'New Critical Alert Assigned', 'A critical alert has been assigned to you', 'critical'),
+    ('alert_escalated', 'Alert Escalated to Level 2', 'Alert requires immediate attention', 'high'),
+    ('sla_breach', 'SLA Breach Warning', 'Alert is approaching SLA threshold', 'high'),
+    ('playbook_completed', 'Playbook Execution Completed', 'Automated playbook has finished execution', 'medium'),
+    ('correlation_detected', 'New Alert Correlation Detected', 'Multiple related alerts have been grouped', 'high'),
+    ('system_alert', 'System Notification', 'SOC platform update available', 'low')
+]
+
+for i, (n_type, title, message, severity) in enumerate(notification_types):
+    for j in range(random.randint(2, 4)):
+        user = random.choice(users)
+        notifications.append({
+            'id': len(notifications) + 1,
+            'user_id': user['id'],
+            'type': n_type,
+            'title': title,
+            'message': message,
+            'severity': severity,
+            'resource_type': 'alert' if 'alert' in n_type or 'sla' in n_type else ('playbook' if 'playbook' in n_type else 'correlation' if 'correlation' in n_type else 'system'),
+            'resource_id': random.randint(1, 50) if 'system' not in n_type else None,
+            'read': random.choice([True, False, False]),
+            'acknowledged_at': None,
+            'created_at': (datetime.now() - timedelta(hours=random.randint(1, 24))).isoformat() + 'Z'
+        })
+
+# Sort notifications by created_at descending
+notifications.sort(key=lambda x: x['created_at'], reverse=True)
+
+# Generate escalation policies
+print("Generating escalation policies...")
+escalation_policies = [
+    {
+        'id': 1,
+        'name': 'Critical Alert Escalation',
+        'description': 'Escalation path for critical severity alerts',
+        'trigger_severity': 'critical',
+        'enabled': True,
+        'levels': [
+            {
+                'level': 1,
+                'escalate_after_minutes': 5,
+                'notify_roles': ['t1_analyst', 't2_analyst'],
+                'action': 'notify'
+            },
+            {
+                'level': 2,
+                'escalate_after_minutes': 15,
+                'notify_roles': ['t3_analyst'],
+                'action': 'notify_and_assign'
+            },
+            {
+                'level': 3,
+                'escalate_after_minutes': 30,
+                'notify_roles': ['soc_manager'],
+                'action': 'notify_and_escalate'
+            },
+            {
+                'level': 4,
+                'escalate_after_minutes': 60,
+                'notify_roles': ['admin'],
+                'action': 'emergency_page'
+            }
+        ]
+    },
+    {
+        'id': 2,
+        'name': 'High Alert Escalation',
+        'description': 'Escalation path for high severity alerts',
+        'trigger_severity': 'high',
+        'enabled': True,
+        'levels': [
+            {
+                'level': 1,
+                'escalate_after_minutes': 15,
+                'notify_roles': ['t1_analyst'],
+                'action': 'notify'
+            },
+            {
+                'level': 2,
+                'escalate_after_minutes': 60,
+                'notify_roles': ['t2_analyst'],
+                'action': 'notify_and_assign'
+            },
+            {
+                'level': 3,
+                'escalate_after_minutes': 120,
+                'notify_roles': ['soc_manager'],
+                'action': 'notify_and_escalate'
+            }
+        ]
+    },
+    {
+        'id': 3,
+        'name': 'Medium Alert Escalation',
+        'description': 'Escalation path for medium severity alerts',
+        'trigger_severity': 'medium',
+        'enabled': True,
+        'levels': [
+            {
+                'level': 1,
+                'escalate_after_minutes': 60,
+                'notify_roles': ['t1_analyst'],
+                'action': 'notify'
+            },
+            {
+                'level': 2,
+                'escalate_after_minutes': 240,
+                'notify_roles': ['t2_analyst'],
+                'action': 'notify_and_assign'
+            }
+        ]
+    }
+]
+
+# Generate on-call schedule
+print("Generating on-call schedule...")
+oncall_schedule = {
+    'current_oncall': {
+        'primary': {
+            'user_id': 4,
+            'name': 'Emily Zhang',
+            'role': 't2_analyst',
+            'start': (datetime.now() - timedelta(days=5)).isoformat() + 'Z',
+            'end': (datetime.now() + timedelta(days=2)).isoformat() + 'Z'
+        },
+        'secondary': {
+            'user_id': 3,
+            'name': 'Mike Ross',
+            'role': 't3_analyst',
+            'start': (datetime.now() - timedelta(days=5)).isoformat() + 'Z',
+            'end': (datetime.now() + timedelta(days=2)).isoformat() + 'Z'
+        }
+    },
+    'schedule': [
+        {
+            'week_start': (datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d'),
+            'primary_user_id': 4,
+            'secondary_user_id': 3
+        },
+        {
+            'week_start': (datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d'),
+            'primary_user_id': 5,
+            'secondary_user_id': 4
+        },
+        {
+            'week_start': (datetime.now() + timedelta(days=9)).strftime('%Y-%m-%d'),
+            'primary_user_id': 3,
+            'secondary_user_id': 5
+        },
+        {
+            'week_start': (datetime.now() + timedelta(days=16)).strftime('%Y-%m-%d'),
+            'primary_user_id': 4,
+            'secondary_user_id': 3
+        }
+    ],
+    'override': None
+}
+
+# Generate webhook config
+print("Generating webhook configuration...")
+webhook_config = [
+    {
+        'id': 1,
+        'name': 'Slack SOC Channel',
+        'type': 'slack',
+        'url': 'https://hooks.slack.com/services/SIMULATED/WEBHOOK/URL',
+        'enabled': True,
+        'trigger_severity': ['critical', 'high'],
+        'events': ['new_alert', 'sla_breach', 'escalation']
+    },
+    {
+        'id': 2,
+        'name': 'Teams Security Channel',
+        'type': 'teams',
+        'url': 'https://outlook.office.com/webhook/SIMULATED/URL',
+        'enabled': True,
+        'trigger_severity': ['critical'],
+        'events': ['new_alert', 'escalation']
+    },
+    {
+        'id': 3,
+        'name': 'PagerDuty Integration',
+        'type': 'pagerduty',
+        'url': 'https://events.pagerduty.com/v2/enqueue',
+        'enabled': True,
+        'trigger_severity': ['critical'],
+        'events': ['sla_breach', 'escalation']
+    },
+    {
+        'id': 4,
+        'name': 'Email Notifications',
+        'type': 'email',
+        'url': 'smtp://mail.soc.local:587',
+        'enabled': True,
+        'trigger_severity': ['critical', 'high', 'medium'],
+        'events': ['new_alert', 'assignment', 'sla_breach']
+    }
+]
+
 # Save to files
 with open('alerts.json', 'w') as f:
     json.dump(alerts, f, indent=2)
@@ -526,6 +897,21 @@ with open('evidence.json', 'w') as f:
 with open('audit_log.json', 'w') as f:
     json.dump(audit_log, f, indent=2)
 
+with open('correlations.json', 'w') as f:
+    json.dump(correlations, f, indent=2)
+
+with open('notifications.json', 'w') as f:
+    json.dump(notifications, f, indent=2)
+
+with open('escalation_policies.json', 'w') as f:
+    json.dump(escalation_policies, f, indent=2)
+
+with open('oncall_schedule.json', 'w') as f:
+    json.dump(oncall_schedule, f, indent=2)
+
+with open('webhook_config.json', 'w') as f:
+    json.dump(webhook_config, f, indent=2)
+
 print("\nData generation complete!")
 print(f"- {len(alerts)} alerts")
 print(f"- {len(threats)} threats")
@@ -535,3 +921,7 @@ print(f"- {len(users)} users")
 print(f"- {len(case_notes)} case notes")
 print(f"- {len(evidence_list)} evidence items")
 print(f"- {len(audit_log)} audit log entries")
+print(f"- {len(correlations)} correlation groups")
+print(f"- {len(notifications)} notifications")
+print(f"- {len(escalation_policies)} escalation policies")
+print(f"- {len(webhook_config)} webhook configurations")

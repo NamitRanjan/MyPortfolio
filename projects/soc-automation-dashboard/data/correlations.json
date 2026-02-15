@@ -1,0 +1,280 @@
+[
+  {
+    "id": 1,
+    "name": "Coordinated Attack on WKSTN-1247",
+    "description": "Multiple indicators suggest a coordinated attack targeting workstation WKSTN-1247, progressing from initial access through lateral movement.",
+    "correlation_score": 92,
+    "created_at": "2026-02-15T03:15:01.027461Z",
+    "updated_at": "2026-02-15T07:15:01.027467Z",
+    "status": "active",
+    "alert_ids": [
+      42,
+      25,
+      34,
+      39
+    ],
+    "shared_entities": {
+      "hosts": [
+        "WKSTN-1247"
+      ],
+      "users": [
+        "jane.smith",
+        "john.doe",
+        "backup_service",
+        "admin"
+      ],
+      "ips": [
+        "185.220.101.45"
+      ],
+      "mitre_tactics": [
+        "T1059.001",
+        "T1027",
+        "T1547.001"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Initial Access",
+        "alert_id": 42,
+        "technique": "T1566.001",
+        "timestamp": "2026-02-15T02:15:00.434906Z"
+      },
+      {
+        "stage": "Execution",
+        "alert_id": 25,
+        "technique": "T1059.001",
+        "timestamp": "2026-02-14T19:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 4,
+    "total_kill_chain_stages": 14,
+    "risk_level": "critical",
+    "recommended_action": "Immediate host isolation and full forensic investigation"
+  },
+  {
+    "id": 2,
+    "name": "Brute Force Attack Campaign",
+    "description": "Coordinated brute force attempts detected across multiple hosts from suspicious IP addresses.",
+    "correlation_score": 78,
+    "created_at": "2026-02-15T01:15:01.027528Z",
+    "updated_at": "2026-02-15T05:15:01.027534Z",
+    "status": "active",
+    "alert_ids": [
+      47,
+      30,
+      44
+    ],
+    "shared_entities": {
+      "hosts": [
+        "WEB-SERVER-01",
+        "DB-SERVER-02",
+        "WKSTN-5612"
+      ],
+      "users": [
+        "jane.smith",
+        "system",
+        "dbadmin"
+      ],
+      "ips": [
+        "192.168.1.100",
+        "10.0.0.50"
+      ],
+      "mitre_tactics": [
+        "T1110"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Credential Access",
+        "alert_id": 47,
+        "technique": "T1110",
+        "timestamp": "2026-02-14T22:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 1,
+    "total_kill_chain_stages": 14,
+    "risk_level": "high",
+    "recommended_action": "Block source IPs and enforce account lockout policies"
+  },
+  {
+    "id": 3,
+    "name": "Malware Propagation Pattern",
+    "description": "Malware activity detected across multiple systems indicating potential propagation or coordinated infection.",
+    "correlation_score": 85,
+    "created_at": "2026-02-15T04:15:01.027557Z",
+    "updated_at": "2026-02-15T08:15:01.027561Z",
+    "status": "active",
+    "alert_ids": [
+      50,
+      49,
+      4,
+      33
+    ],
+    "shared_entities": {
+      "hosts": [
+        "WEB-SERVER-01",
+        "WKSTN-0892",
+        "MAIL-01"
+      ],
+      "users": [
+        "system",
+        "chris.brown",
+        "admin",
+        "jane.smith"
+      ],
+      "ips": [],
+      "mitre_tactics": [
+        "T1204.002"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Execution",
+        "alert_id": 50,
+        "technique": "T1204.002",
+        "timestamp": "2026-02-15T06:15:00.434906Z"
+      },
+      {
+        "stage": "Defense Evasion",
+        "alert_id": 49,
+        "technique": "T1055",
+        "timestamp": "2026-02-15T03:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 2,
+    "total_kill_chain_stages": 14,
+    "risk_level": "critical",
+    "recommended_action": "Isolate infected systems and perform malware analysis"
+  },
+  {
+    "id": 4,
+    "name": "Privilege Escalation Campaign",
+    "description": "Multiple privilege escalation attempts detected, indicating attacker attempting to gain elevated access.",
+    "correlation_score": 81,
+    "created_at": "2026-02-15T02:15:01.027591Z",
+    "updated_at": "2026-02-15T06:15:01.027595Z",
+    "status": "active",
+    "alert_ids": [
+      23,
+      48,
+      8
+    ],
+    "shared_entities": {
+      "hosts": [
+        "DB-SERVER-03",
+        "LOAD-BALANCER-01",
+        "WKSTN-7834"
+      ],
+      "users": [
+        "jane.smith",
+        "robert.wilson",
+        "kevin.rodriguez"
+      ],
+      "ips": [],
+      "mitre_tactics": [
+        "T1068",
+        "T1134"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Privilege Escalation",
+        "alert_id": 23,
+        "technique": "T1068",
+        "timestamp": "2026-02-14T08:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 1,
+    "total_kill_chain_stages": 14,
+    "risk_level": "high",
+    "recommended_action": "Review access controls and patch known vulnerabilities"
+  },
+  {
+    "id": 5,
+    "name": "Potential Data Exfiltration",
+    "description": "Unusual network traffic patterns suggesting data exfiltration attempts.",
+    "correlation_score": 74,
+    "created_at": "2026-02-15T05:15:01.027640Z",
+    "updated_at": "2026-02-15T08:15:01.027645Z",
+    "status": "active",
+    "alert_ids": [
+      6,
+      41,
+      3
+    ],
+    "shared_entities": {
+      "hosts": [
+        "FILE-SERVER-01",
+        "DB-SERVER-01",
+        "WKSTN-0892"
+      ],
+      "users": [
+        "sarah.williams",
+        "robert.wilson",
+        "backup_service"
+      ],
+      "ips": [
+        "185.220.101.45",
+        "203.0.113.42"
+      ],
+      "mitre_tactics": [
+        "T1041",
+        "T1048"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Exfiltration",
+        "alert_id": 6,
+        "technique": "T1041",
+        "timestamp": "2026-02-15T09:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 1,
+    "total_kill_chain_stages": 14,
+    "risk_level": "high",
+    "recommended_action": "Block suspicious connections and investigate data access logs"
+  },
+  {
+    "id": 6,
+    "name": "Persistence Establishment",
+    "description": "Multiple persistence mechanisms detected across systems.",
+    "correlation_score": 69,
+    "created_at": "2026-02-15T00:15:01.027683Z",
+    "updated_at": "2026-02-15T04:15:01.027689Z",
+    "status": "monitoring",
+    "alert_ids": [
+      34,
+      32,
+      12
+    ],
+    "shared_entities": {
+      "hosts": [
+        "APP-SERVER-01",
+        "WEB-SERVER-01",
+        "WKSTN-1247"
+      ],
+      "users": [
+        "amanda.lee",
+        "admin",
+        "backup_service"
+      ],
+      "ips": [],
+      "mitre_tactics": [
+        "T1547.001"
+      ]
+    },
+    "kill_chain": [
+      {
+        "stage": "Persistence",
+        "alert_id": 34,
+        "technique": "T1547.001",
+        "timestamp": "2026-02-13T01:15:00.434906Z"
+      }
+    ],
+    "kill_chain_coverage": 1,
+    "total_kill_chain_stages": 14,
+    "risk_level": "medium",
+    "recommended_action": "Remove persistence mechanisms and monitor for reinfection"
+  }
+]

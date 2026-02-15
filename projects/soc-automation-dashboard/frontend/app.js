@@ -12,17 +12,21 @@ const API = {
     async fetch(endpoint, options = {}) {
         if (API_BASE && !isGitHubPages) {
             try {
-                const response = await API.fetch(`${endpoint}`, options);
+                const response = await window.fetch(`${API_BASE}${endpoint}`, options);
                 if (response.ok) {
-                    return response.json();
+                    return response;
                 }
             } catch (error) {
                 console.log('Backend unavailable, falling back to mock data');
             }
         }
         
-        // Use mock data
-        return this.mockResponse(endpoint, options);
+        // Use mock data - return Response-like object
+        const data = this.mockResponse(endpoint, options);
+        return {
+            ok: true,
+            json: async () => data
+        };
     },
     
     mockResponse(endpoint, options) {

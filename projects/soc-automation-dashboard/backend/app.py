@@ -6,9 +6,17 @@ A production-ready Flask application for security operations automation
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash
 import json
 import random
 import os
+
+# Import authentication and audit modules
+from auth import (
+    authenticate, generate_token, verify_token, invalidate_token,
+    requires_auth, requires_role, get_token_from_request, get_user_by_id
+)
+from audit import log_action, filter_audit_log
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
@@ -27,6 +35,26 @@ def load_data():
     with open(os.path.join(data_dir, 'team.json'), 'r') as f:
         team = json.load(f)
     return alerts, threats, incidents, iocs, team
+
+def load_case_notes():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'case_notes.json'), 'r') as f:
+        return json.load(f)
+
+def save_case_notes(notes):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'case_notes.json'), 'w') as f:
+        json.dump(notes, f, indent=2)
+
+def load_evidence():
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'evidence.json'), 'r') as f:
+        return json.load(f)
+
+def save_evidence(evidence):
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'evidence.json'), 'w') as f:
+        json.dump(evidence, f, indent=2)
 
 alerts_data, threats_data, incidents_data, iocs_data, team_data = load_data()
 
@@ -83,6 +111,138 @@ PLAYBOOK_STEPS = {
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
+# ============= Authentication Endpoints =============
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """User login endpoint"""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'error': 'Username and password required'}), 400
+    
+    user = authenticate(username, password)
+    
+    if not user:
+        # Log failed login attempt
+        log_action(None, username, 'login_failed', 'auth', None, {'reason': 'invalid_credentials'})
+        return jsonify({'error': 'Invalid username or password'}), 401
+    
+    # Generate JWT token
+    token = generate_token(user)
+    
+    # Log successful login
+    log_action(user['id'], user['username'], 'login', 'auth', None)
+    
+    return jsonify({
+        'token': token,
+        'user': {
+            'id': user['id'],
+            'username': user['username'],
+            'role': user['role'],
+            'display_name': user['display_name'],
+            'email': user['email']
+        }
+    })
+
+@app.route('/api/auth/logout', methods=['POST'])
+@requires_auth
+def logout():
+    """User logout endpoint"""
+    token = get_token_from_request()
+    
+    # Log logout
+    user = request.current_user
+    log_action(user['user_id'], user['username'], 'logout', 'auth', None)
+    
+    # Invalidate token
+    invalidate_token(token)
+    
+    return jsonify({'message': 'Logged out successfully'})
+
+@app.route('/api/auth/me')
+@requires_auth
+def get_current_user():
+    """Get current user info from token"""
+    user_payload = request.current_user
+    user = get_user_by_id(user_payload['user_id'])
+    
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    return jsonify({
+        'id': user['id'],
+        'username': user['username'],
+        'role': user['role'],
+        'display_name': user['display_name'],
+        'email': user['email']
+    })
+
+@app.route('/api/auth/change-password', methods=['POST'])
+@requires_auth
+def change_password():
+    """Change user password"""
+    data = request.get_json()
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    
+    if not current_password or not new_password:
+        return jsonify({'error': 'Current and new password required'}), 400
+    
+    user_payload = request.current_user
+    user = get_user_by_id(user_payload['user_id'])
+    
+    # Verify current password
+    from werkzeug.security import check_password_hash
+    if not check_password_hash(user['password_hash'], current_password):
+        return jsonify({'error': 'Current password is incorrect'}), 401
+    
+    # Update password in data file
+    from auth import load_users
+    users = load_users()
+    for u in users:
+        if u['id'] == user['id']:
+            u['password_hash'] = generate_password_hash(new_password)
+            break
+    
+    # Save updated users
+    data_dir = os.path.join(os.path.dirname(__file__), '../data')
+    with open(os.path.join(data_dir, 'users.json'), 'w') as f:
+        json.dump(users, f, indent=2)
+    
+    # Log password change
+    log_action(user['id'], user['username'], 'password_changed', 'auth', None)
+    
+    return jsonify({'message': 'Password changed successfully'})
+
+# ============= Audit Log Endpoints =============
+
+@app.route('/api/audit-log')
+@requires_role('view_audit_log')
+def get_audit_log():
+    """Get audit log with filtering and pagination"""
+    user_id = request.args.get('user_id', type=int)
+    action = request.args.get('action')
+    resource_type = request.args.get('resource_type')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 50, type=int)
+    
+    result = filter_audit_log(
+        user_id=user_id,
+        action=action,
+        resource_type=resource_type,
+        start_date=start_date,
+        end_date=end_date,
+        page=page,
+        per_page=per_page
+    )
+    
+    return jsonify(result)
+
 @app.route('/api/dashboard/stats')
 def get_dashboard_stats():
     """Get overall dashboard statistics"""
@@ -116,11 +276,14 @@ def get_alerts():
     return jsonify(filtered_alerts)
 
 @app.route('/api/alerts/<int:alert_id>/investigate', methods=['POST'])
+@requires_role('investigate')
 def investigate_alert(alert_id):
     """Trigger automated investigation playbook"""
     alert = next((a for a in alerts_data if a['id'] == alert_id), None)
     if not alert:
         return jsonify({'error': 'Alert not found'}), 404
+    
+    user = request.current_user
     
     # Simulate automated investigation
     investigation = {
@@ -141,12 +304,17 @@ def investigate_alert(alert_id):
         'timestamp': datetime.now().isoformat()
     }
     
+    # Log action
+    log_action(user['user_id'], user['username'], 'alert_investigated', 'alert', alert_id)
+    
     return jsonify(investigation)
 
 @app.route('/api/alerts/<int:alert_id>/respond', methods=['POST'])
+@requires_role('execute_response')
 def respond_to_alert(alert_id):
     """Execute automated response playbook"""
     action = request.json.get('action')
+    user = request.current_user
     
     response = {
         'alert_id': alert_id,
@@ -177,6 +345,10 @@ def respond_to_alert(alert_id):
             'Behavior analytics updated',
             'Watchlist updated'
         ]
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'alert_response_executed', 'alert', alert_id,
+               {'action': action})
     
     return jsonify(response)
 
@@ -301,11 +473,14 @@ def get_playbook_steps(playbook_id):
     return jsonify(steps)
 
 @app.route('/api/playbooks/<int:playbook_id>/execute', methods=['POST'])
+@requires_role('manage_playbooks')
 def execute_playbook(playbook_id):
     """Execute a playbook and return step-by-step results"""
     steps = PLAYBOOK_STEPS.get(playbook_id, [])
     if not steps:
         return jsonify({'error': 'Playbook not found'}), 404
+    
+    user = request.current_user
     
     # Simulate execution with 90% success rate
     success = random.random() > 0.1
@@ -328,6 +503,10 @@ def execute_playbook(playbook_id):
         'timestamp': datetime.now().isoformat(),
         'message': 'Playbook executed successfully. All steps completed.' if success else 'Playbook execution failed. Please review the logs.'
     }
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'playbook_executed', 'playbook', playbook_id,
+               {'status': result['status']})
     
     return jsonify(result)
 
@@ -525,6 +704,366 @@ def get_advanced_stats():
         }
     }
     return jsonify(stats)
+
+# ============= Case Notes Endpoints =============
+
+@app.route('/api/alerts/<int:alert_id>/notes')
+@requires_role('view_alerts')
+def get_alert_notes(alert_id):
+    """Get all notes for an alert"""
+    notes = load_case_notes()
+    alert_notes = [n for n in notes if n['alert_id'] == alert_id]
+    return jsonify(alert_notes)
+
+@app.route('/api/alerts/<int:alert_id>/notes', methods=['POST'])
+@requires_role('add_notes')
+def add_alert_note(alert_id):
+    """Add a note to an alert"""
+    data = request.get_json()
+    user = request.current_user
+    
+    notes = load_case_notes()
+    
+    # Generate new ID
+    new_id = max([n['id'] for n in notes], default=0) + 1
+    
+    new_note = {
+        'id': new_id,
+        'alert_id': alert_id,
+        'incident_id': data.get('incident_id'),
+        'author_id': user['user_id'],
+        'author_name': user['display_name'],
+        'content': data.get('content', ''),
+        'type': data.get('type', 'investigation_note'),
+        'created_at': datetime.utcnow().isoformat() + 'Z',
+        'updated_at': datetime.utcnow().isoformat() + 'Z',
+        'is_pinned': data.get('is_pinned', False),
+        'tags': data.get('tags', [])
+    }
+    
+    notes.append(new_note)
+    save_case_notes(notes)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'note_added', 'alert', alert_id, 
+               {'note_type': new_note['type']})
+    
+    return jsonify(new_note), 201
+
+@app.route('/api/incidents/<int:incident_id>/notes')
+@requires_role('view_alerts')
+def get_incident_notes(incident_id):
+    """Get all notes for an incident"""
+    notes = load_case_notes()
+    incident_notes = [n for n in notes if n['incident_id'] == incident_id]
+    return jsonify(incident_notes)
+
+@app.route('/api/incidents/<int:incident_id>/notes', methods=['POST'])
+@requires_role('add_notes')
+def add_incident_note(incident_id):
+    """Add a note to an incident"""
+    data = request.get_json()
+    user = request.current_user
+    
+    notes = load_case_notes()
+    
+    # Generate new ID
+    new_id = max([n['id'] for n in notes], default=0) + 1
+    
+    new_note = {
+        'id': new_id,
+        'alert_id': data.get('alert_id'),
+        'incident_id': incident_id,
+        'author_id': user['user_id'],
+        'author_name': user['display_name'],
+        'content': data.get('content', ''),
+        'type': data.get('type', 'investigation_note'),
+        'created_at': datetime.utcnow().isoformat() + 'Z',
+        'updated_at': datetime.utcnow().isoformat() + 'Z',
+        'is_pinned': data.get('is_pinned', False),
+        'tags': data.get('tags', [])
+    }
+    
+    notes.append(new_note)
+    save_case_notes(notes)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'note_added', 'incident', incident_id,
+               {'note_type': new_note['type']})
+    
+    return jsonify(new_note), 201
+
+@app.route('/api/notes/<int:note_id>', methods=['PUT'])
+@requires_role('add_notes')
+def update_note(note_id):
+    """Update a note (only author or admin)"""
+    data = request.get_json()
+    user = request.current_user
+    
+    notes = load_case_notes()
+    note = next((n for n in notes if n['id'] == note_id), None)
+    
+    if not note:
+        return jsonify({'error': 'Note not found'}), 404
+    
+    # Check if user is author or admin
+    if note['author_id'] != user['user_id'] and user['role'] != 'admin':
+        return jsonify({'error': 'Not authorized to update this note'}), 403
+    
+    # Update note
+    if 'content' in data:
+        note['content'] = data['content']
+    if 'type' in data:
+        note['type'] = data['type']
+    if 'is_pinned' in data:
+        note['is_pinned'] = data['is_pinned']
+    if 'tags' in data:
+        note['tags'] = data['tags']
+    
+    note['updated_at'] = datetime.utcnow().isoformat() + 'Z'
+    
+    save_case_notes(notes)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'note_updated', 'note', note_id)
+    
+    return jsonify(note)
+
+@app.route('/api/notes/<int:note_id>', methods=['DELETE'])
+@requires_role('add_notes')
+def delete_note(note_id):
+    """Delete a note (only author or admin)"""
+    user = request.current_user
+    
+    notes = load_case_notes()
+    note = next((n for n in notes if n['id'] == note_id), None)
+    
+    if not note:
+        return jsonify({'error': 'Note not found'}), 404
+    
+    # Check if user is author or admin
+    if note['author_id'] != user['user_id'] and user['role'] != 'admin':
+        return jsonify({'error': 'Not authorized to delete this note'}), 403
+    
+    # Remove note
+    notes = [n for n in notes if n['id'] != note_id]
+    save_case_notes(notes)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'note_deleted', 'note', note_id)
+    
+    return jsonify({'message': 'Note deleted successfully'})
+
+# ============= Evidence Endpoints =============
+
+@app.route('/api/alerts/<int:alert_id>/evidence')
+@requires_role('view_alerts')
+def get_alert_evidence(alert_id):
+    """Get evidence for an alert"""
+    evidence = load_evidence()
+    alert_evidence = [e for e in evidence if e['alert_id'] == alert_id]
+    return jsonify(alert_evidence)
+
+@app.route('/api/alerts/<int:alert_id>/evidence', methods=['POST'])
+@requires_role('add_evidence')
+def add_alert_evidence(alert_id):
+    """Add evidence to an alert"""
+    data = request.get_json()
+    user = request.current_user
+    
+    evidence = load_evidence()
+    
+    # Generate new ID
+    new_id = max([e['id'] for e in evidence], default=0) + 1
+    
+    new_evidence = {
+        'id': new_id,
+        'alert_id': alert_id,
+        'incident_id': data.get('incident_id'),
+        'type': data.get('type', 'file_hash'),
+        'value': data.get('value', ''),
+        'hash_type': data.get('hash_type'),
+        'description': data.get('description', ''),
+        'collected_by_id': user['user_id'],
+        'collected_by_name': user['display_name'],
+        'collected_at': datetime.utcnow().isoformat() + 'Z',
+        'chain_of_custody': [
+            {
+                'action': 'collected',
+                'by': user['display_name'],
+                'at': datetime.utcnow().isoformat() + 'Z',
+                'notes': data.get('initial_notes', 'Evidence collected')
+            }
+        ],
+        'tags': data.get('tags', []),
+        'status': 'collected'
+    }
+    
+    evidence.append(new_evidence)
+    save_evidence(evidence)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'evidence_added', 'alert', alert_id,
+               {'evidence_type': new_evidence['type']})
+    
+    return jsonify(new_evidence), 201
+
+@app.route('/api/incidents/<int:incident_id>/evidence')
+@requires_role('view_alerts')
+def get_incident_evidence(incident_id):
+    """Get evidence for an incident"""
+    evidence = load_evidence()
+    incident_evidence = [e for e in evidence if e['incident_id'] == incident_id]
+    return jsonify(incident_evidence)
+
+@app.route('/api/incidents/<int:incident_id>/evidence', methods=['POST'])
+@requires_role('add_evidence')
+def add_incident_evidence(incident_id):
+    """Add evidence to an incident"""
+    data = request.get_json()
+    user = request.current_user
+    
+    evidence = load_evidence()
+    
+    # Generate new ID
+    new_id = max([e['id'] for e in evidence], default=0) + 1
+    
+    new_evidence = {
+        'id': new_id,
+        'alert_id': data.get('alert_id'),
+        'incident_id': incident_id,
+        'type': data.get('type', 'file_hash'),
+        'value': data.get('value', ''),
+        'hash_type': data.get('hash_type'),
+        'description': data.get('description', ''),
+        'collected_by_id': user['user_id'],
+        'collected_by_name': user['display_name'],
+        'collected_at': datetime.utcnow().isoformat() + 'Z',
+        'chain_of_custody': [
+            {
+                'action': 'collected',
+                'by': user['display_name'],
+                'at': datetime.utcnow().isoformat() + 'Z',
+                'notes': data.get('initial_notes', 'Evidence collected')
+            }
+        ],
+        'tags': data.get('tags', []),
+        'status': 'collected'
+    }
+    
+    evidence.append(new_evidence)
+    save_evidence(evidence)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'evidence_added', 'incident', incident_id,
+               {'evidence_type': new_evidence['type']})
+    
+    return jsonify(new_evidence), 201
+
+@app.route('/api/evidence/<int:evidence_id>/custody', methods=['PUT'])
+@requires_role('add_evidence')
+def add_custody_entry(evidence_id):
+    """Add a chain-of-custody entry"""
+    data = request.get_json()
+    user = request.current_user
+    
+    evidence = load_evidence()
+    evidence_item = next((e for e in evidence if e['id'] == evidence_id), None)
+    
+    if not evidence_item:
+        return jsonify({'error': 'Evidence not found'}), 404
+    
+    # Add custody entry
+    custody_entry = {
+        'action': data.get('action', 'transferred'),
+        'by': user['display_name'],
+        'at': datetime.utcnow().isoformat() + 'Z',
+        'notes': data.get('notes', '')
+    }
+    
+    evidence_item['chain_of_custody'].append(custody_entry)
+    
+    # Update status if provided
+    if 'status' in data:
+        evidence_item['status'] = data['status']
+    
+    save_evidence(evidence)
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'custody_updated', 'evidence', evidence_id,
+               {'action': custody_entry['action']})
+    
+    return jsonify(evidence_item)
+
+# ============= Analyst Assignment & SLA Endpoints =============
+
+@app.route('/api/alerts/<int:alert_id>/assign', methods=['POST'])
+@requires_role('assign_analyst')
+def assign_alert(alert_id):
+    """Assign an analyst to an alert"""
+    data = request.get_json()
+    user = request.current_user
+    analyst_id = data.get('analyst_id')
+    
+    # Find the alert
+    alert = next((a for a in alerts_data if a['id'] == alert_id), None)
+    if not alert:
+        return jsonify({'error': 'Alert not found'}), 404
+    
+    # Update assignment (in-memory for now)
+    alert['assigned_to'] = analyst_id
+    alert['assigned_at'] = datetime.utcnow().isoformat() + 'Z'
+    
+    # Log action
+    log_action(user['user_id'], user['username'], 'alert_assigned', 'alert', alert_id,
+               {'analyst_id': analyst_id})
+    
+    return jsonify({
+        'alert_id': alert_id,
+        'assigned_to': analyst_id,
+        'assigned_at': alert['assigned_at']
+    })
+
+@app.route('/api/alerts/<int:alert_id>/sla')
+@requires_role('view_alerts')
+def get_alert_sla(alert_id):
+    """Get SLA status for an alert"""
+    alert = next((a for a in alerts_data if a['id'] == alert_id), None)
+    if not alert:
+        return jsonify({'error': 'Alert not found'}), 404
+    
+    # SLA definitions
+    sla_times = {
+        'critical': 15,  # 15 minutes
+        'high': 60,      # 1 hour
+        'medium': 240,   # 4 hours
+        'low': 1440      # 24 hours
+    }
+    
+    severity = alert.get('severity', 'medium')
+    sla_minutes = sla_times.get(severity, 240)
+    
+    # Calculate time elapsed
+    timestamp = alert.get('timestamp', datetime.utcnow().isoformat())
+    alert_time = datetime.fromisoformat(timestamp.replace('Z', ''))
+    elapsed = (datetime.utcnow() - alert_time).total_seconds() / 60
+    
+    remaining = sla_minutes - elapsed
+    is_breached = remaining < 0
+    
+    # Calculate percentage
+    percentage = min(100, (elapsed / sla_minutes) * 100)
+    
+    return jsonify({
+        'alert_id': alert_id,
+        'severity': severity,
+        'sla_minutes': sla_minutes,
+        'elapsed_minutes': int(elapsed),
+        'remaining_minutes': int(remaining),
+        'is_breached': is_breached,
+        'percentage': round(percentage, 2),
+        'status': 'breached' if is_breached else ('warning' if percentage > 75 else 'normal')
+    })
 
 if __name__ == '__main__':
     import os

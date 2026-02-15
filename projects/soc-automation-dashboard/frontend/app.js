@@ -1004,8 +1004,7 @@ async function loadNotes(alertId) {
     const notesContent = document.getElementById('notes-content');
     try {
         const response = await API.fetch(`/alerts/${alertId}/notes`);
-        const data = await response.json();
-        const notes = data.notes || [];
+        const notes = await response.json();
         
         const permissions = authState.user?.permissions || {};
         const canAddNotes = permissions.add_notes || authState.user?.role === 'admin';
@@ -1025,7 +1024,7 @@ async function loadNotes(alertId) {
                             <div>
                                 ${pinnedIcon}
                                 <strong style="color: #00a3e0;">${note.author_name}</strong>
-                                <span class="badge ${note.note_type}" style="margin-left: 0.5rem; font-size: 0.75rem;">${note.note_type.replace('_', ' ')}</span>
+                                <span class="badge ${note.type}" style="margin-left: 0.5rem; font-size: 0.75rem;">${note.type.replace('_', ' ')}</span>
                             </div>
                             <span style="color: #6c757d; font-size: 0.875rem;">${new Date(note.created_at).toLocaleString()}</span>
                         </div>
@@ -1116,8 +1115,7 @@ async function loadEvidence(alertId) {
     const evidenceContent = document.getElementById('evidence-content');
     try {
         const response = await API.fetch(`/alerts/${alertId}/evidence`);
-        const data = await response.json();
-        const evidenceItems = data.evidence || [];
+        const evidenceItems = await response.json();
         
         const permissions = authState.user?.permissions || {};
         const canAddEvidence = permissions.add_evidence || authState.user?.role === 'admin';
@@ -1135,14 +1133,14 @@ async function loadEvidence(alertId) {
                     'url': 'fa-link',
                     'email': 'fa-envelope'
                 };
-                const icon = typeIcons[evidence.evidence_type] || 'fa-database';
+                const icon = typeIcons[evidence.type] || 'fa-database';
                 
                 html += `
                     <div class="evidence-item">
                         <div class="evidence-header">
                             <div>
                                 <i class="fas ${icon}" style="color: #00a3e0; margin-right: 0.5rem;"></i>
-                                <strong style="color: #00a3e0;">${evidence.evidence_type.replace('_', ' ').toUpperCase()}</strong>
+                                <strong style="color: #00a3e0;">${evidence.type.replace('_', ' ').toUpperCase()}</strong>
                                 <span class="badge ${evidence.status}" style="margin-left: 0.5rem; font-size: 0.75rem;">${evidence.status}</span>
                             </div>
                         </div>
@@ -1159,13 +1157,13 @@ async function loadEvidence(alertId) {
                                 ${evidence.chain_of_custody.map(entry => `
                                     <div style="margin-top: 0.25rem; font-size: 0.875rem; color: #a0aec0;">
                                         <i class="fas fa-chevron-right" style="font-size: 0.5rem; margin-right: 0.25rem;"></i>
-                                        ${entry.action} by ${entry.user} at ${new Date(entry.timestamp).toLocaleString()}
+                                        ${entry.action} by ${entry.by} at ${new Date(entry.at).toLocaleString()}
                                     </div>
                                 `).join('')}
                             </div>
                         ` : ''}
                         <div style="margin-top: 0.75rem; font-size: 0.875rem; color: #6c757d;">
-                            Collected by <strong>${evidence.collected_by}</strong> at ${new Date(evidence.collected_at).toLocaleString()}
+                            Collected by <strong>${evidence.collected_by_name}</strong> at ${new Date(evidence.collected_at).toLocaleString()}
                         </div>
                         ${evidence.tags && evidence.tags.length > 0 ? `
                             <div style="margin-top: 0.5rem;">
@@ -1251,7 +1249,7 @@ async function handleAddEvidence(event, alertId) {
     const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
     
     const payload = {
-        evidence_type: evidenceType,
+        type: evidenceType,
         value,
         description,
         tags
@@ -1288,13 +1286,10 @@ async function loadSLA(alertId) {
     const slaContent = document.getElementById('sla-content');
     try {
         const response = await API.fetch(`/alerts/${alertId}/sla`);
-        const data = await response.json();
-        const sla = data.sla || {};
+        const sla = await response.json();
         
-        // Calculate percentage
-        const percentage = sla.sla_target_minutes > 0 
-            ? Math.min(100, (sla.elapsed_minutes / sla.sla_target_minutes) * 100)
-            : 0;
+        // Calculate percentage (already provided by backend)
+        const percentage = sla.percentage || 0;
         
         // Determine status and color
         let statusColor = '#28a745'; // green
@@ -1309,11 +1304,11 @@ async function loadSLA(alertId) {
         
         // Format remaining time
         let remainingText = '';
-        if (sla.status === 'breached') {
+        if (sla.is_breached) {
             remainingText = `<span style="color: #dc3545; font-weight: bold;">BREACHED</span>`;
         } else if (sla.remaining_minutes !== undefined) {
-            const hours = Math.floor(sla.remaining_minutes / 60);
-            const minutes = Math.floor(sla.remaining_minutes % 60);
+            const hours = Math.floor(Math.abs(sla.remaining_minutes) / 60);
+            const minutes = Math.floor(Math.abs(sla.remaining_minutes) % 60);
             remainingText = `${hours}h ${minutes}m remaining`;
         }
         
@@ -1339,7 +1334,7 @@ async function loadSLA(alertId) {
                     <div style="padding: 1rem; background: rgba(0, 163, 224, 0.1); border-radius: 8px;">
                         <div style="color: #6c757d; font-size: 0.875rem; margin-bottom: 0.25rem;">SLA Target</div>
                         <div style="color: #00a3e0; font-size: 1.5rem; font-weight: bold;">
-                            ${Math.floor(sla.sla_target_minutes / 60)}h ${Math.floor(sla.sla_target_minutes % 60)}m
+                            ${Math.floor(sla.sla_minutes / 60)}h ${Math.floor(sla.sla_minutes % 60)}m
                         </div>
                     </div>
                 </div>
@@ -1347,34 +1342,22 @@ async function loadSLA(alertId) {
                 <div style="padding: 1rem; background: rgba(45, 53, 72, 0.5); border-radius: 8px;">
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.875rem;">
                         <div>
-                            <span style="color: #6c757d;">Alert Created:</span>
-                            <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.alert_created_at).toLocaleString()}</div>
+                            <span style="color: #6c757d;">Severity Level:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem; text-transform: uppercase;">${sla.severity}</div>
                         </div>
                         <div>
-                            <span style="color: #6c757d;">SLA Deadline:</span>
-                            <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.sla_deadline).toLocaleString()}</div>
+                            <span style="color: #6c757d;">Alert ID:</span>
+                            <div style="color: #a0aec0; margin-top: 0.25rem;">#${sla.alert_id}</div>
                         </div>
-                        ${sla.first_response_at ? `
-                            <div>
-                                <span style="color: #6c757d;">First Response:</span>
-                                <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.first_response_at).toLocaleString()}</div>
-                            </div>
-                        ` : ''}
-                        ${sla.resolved_at ? `
-                            <div>
-                                <span style="color: #6c757d;">Resolved:</span>
-                                <div style="color: #a0aec0; margin-top: 0.25rem;">${new Date(sla.resolved_at).toLocaleString()}</div>
-                            </div>
-                        ` : ''}
                     </div>
                 </div>
                 
-                ${sla.sla_violations && sla.sla_violations.length > 0 ? `
+                ${sla.is_breached ? `
                     <div style="margin-top: 1rem; padding: 1rem; background: rgba(220, 53, 69, 0.1); border-left: 3px solid #dc3545; border-radius: 8px;">
-                        <strong style="color: #dc3545;">SLA Violations:</strong>
-                        <ul style="margin-top: 0.5rem; padding-left: 1.5rem; color: #a0aec0;">
-                            ${sla.sla_violations.map(violation => `<li>${violation}</li>`).join('')}
-                        </ul>
+                        <strong style="color: #dc3545;"><i class="fas fa-exclamation-triangle"></i> SLA Breach</strong>
+                        <p style="margin-top: 0.5rem; color: #a0aec0;">
+                            This alert has exceeded its SLA target by ${Math.floor(Math.abs(sla.remaining_minutes) / 60)} hours and ${Math.floor(Math.abs(sla.remaining_minutes) % 60)} minutes.
+                        </p>
                     </div>
                 ` : ''}
             </div>

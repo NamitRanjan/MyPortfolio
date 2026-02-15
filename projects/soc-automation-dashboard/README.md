@@ -140,6 +140,86 @@ python -m http.server 8080
 ```
 Then navigate to `http://localhost:8080`
 
+5. **Login with demo credentials**
+The dashboard now requires authentication. Use any of these demo accounts:
+- **Admin** - `admin` / `SOCdemo2026!` - Full access
+- **SOC Manager** - `sarah.chen` / `SOCdemo2026!` - Management access
+- **T3 Analyst** - `mike.ross` / `SOCdemo2026!` - Senior analyst access
+- **T2 Analyst** - `emily.zhang` / `SOCdemo2026!` - Analyst access
+- **T1 Analyst** - `jake.miller` / `SOCdemo2026!` - Junior analyst access
+- **Viewer** - `viewer` / `SOCdemo2026!` - Read-only access
+
+> **Note:** When deployed on GitHub Pages, the dashboard runs in mock mode with client-side authentication that works without a backend server.
+
+---
+
+## 🔐 Authentication & Authorization
+
+### Role-Based Access Control (RBAC)
+
+The dashboard implements a comprehensive RBAC system with 6 distinct roles:
+
+| Role | View Alerts | Investigate | Execute Response | Manage Playbooks | Manage Team | Admin Settings |
+|------|------------|-------------|-----------------|-----------------|-------------|---------------|
+| **admin** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **soc_manager** | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **t3_analyst** | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ |
+| **t2_analyst** | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **t1_analyst** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **read_only** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+### JWT Token-Based Authentication
+
+- Tokens expire after 8 hours (one SOC shift)
+- All API requests require a valid JWT token
+- Token is stored in browser localStorage
+- Automatic logout on token expiration
+
+### Security Features
+
+- Password hashing using `werkzeug.security`
+- Token blacklist for logout
+- Comprehensive audit logging
+- IP address tracking
+- Action-level permissions enforcement
+
+---
+
+## 📋 New Features in v3.0
+
+### Analyst Workbench
+
+#### Case Notes & Evidence Tracking
+- **Investigation Notes**: Document findings and analysis
+- **Evidence Management**: Track forensic artifacts with chain of custody
+- **Note Types**: Investigation, escalation, and response notes
+- **Evidence Types**: File hashes, IP addresses, domains, URLs, emails
+- **Chain of Custody**: Complete audit trail for all evidence
+- **Tagging System**: Organize notes and evidence with custom tags
+
+#### SLA Monitoring
+- **Real-time SLA tracking** for all alerts
+- **Visual progress indicators** with color coding
+- **SLA breach warnings** and notifications
+- **Severity-based targets**:
+  - Critical: 15 minutes
+  - High: 1 hour
+  - Medium: 4 hours
+  - Low: 24 hours
+
+#### Analyst Assignment
+- Assign alerts to specific analysts
+- Track assignment history
+- Monitor analyst workload
+- Assignment-based filtering
+
+#### Audit Log
+- Comprehensive activity tracking
+- User action logging
+- Filter by user, action, date range
+- IP address tracking
+- Admin/Manager access only
+
 ---
 
 ## 🐳 Docker Deployment

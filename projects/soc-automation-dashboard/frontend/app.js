@@ -10,9 +10,30 @@ const API_BASE = isGitHubPages ? null : 'http://localhost:5000/api';
 // API wrapper that uses mock data when backend unavailable
 const API = {
     async fetch(endpoint, options = {}) {
+        // Add Authorization header if token exists
+        if (authState.token && (!options.headers || !options.headers.Authorization)) {
+            options.headers = {
+                ...options.headers,
+                'Authorization': `Bearer ${authState.token}`
+            };
+        }
+        
         if (API_BASE && !isGitHubPages) {
             try {
                 const response = await window.fetch(`${API_BASE}${endpoint}`, options);
+                
+                // Handle 401 Unauthorized
+                if (response.status === 401) {
+                    console.log('Unauthorized - clearing token and showing login');
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('user_info');
+                    authState.token = null;
+                    authState.user = null;
+                    authState.isAuthenticated = false;
+                    showLoginScreen();
+                    return { ok: false, status: 401, json: async () => ({ error: 'Unauthorized' }) };
+                }
+                
                 if (response.ok) {
                     return response;
                 }
@@ -32,6 +53,34 @@ const API = {
     
     mockResponse(endpoint, options) {
         // Parse endpoint and return appropriate mock data
+        if (endpoint === '/auth/login') {
+            const body = options.body ? JSON.parse(options.body) : {};
+            return {
+                token: 'mock-jwt-token-' + Date.now(),
+                user: {
+                    id: 1,
+                    username: body.username || 'demo',
+                    display_name: body.username === 'admin' ? 'Admin User' : 'Demo Analyst',
+                    role: body.username === 'admin' ? 'admin' : 't1_analyst',
+                    permissions: {
+                        investigate: true,
+                        respond: body.username === 'admin' || body.username === 't3_analyst',
+                        manage_playbooks: body.username === 'admin' || body.username === 'soc_manager'
+                    }
+                }
+            };
+        }
+        if (endpoint === '/auth/logout') return { success: true };
+        if (endpoint === '/auth/validate') {
+            return {
+                valid: true,
+                user: authState.user || { username: 'demo', display_name: 'Demo User', role: 'admin' }
+            };
+        }
+        if (endpoint === '/audit/logs') {
+            const params = new URLSearchParams(endpoint.split('?')[1]);
+            return MOCK_DATA.getAuditLogs ? MOCK_DATA.getAuditLogs(Object.fromEntries(params)) : [];
+        }
         if (endpoint === '/dashboard/stats') return MOCK_DATA.getDashboardStats();
         if (endpoint.startsWith('/alerts')) {
             if (endpoint.includes('/investigate')) {
@@ -77,6 +126,218 @@ const API = {
     }
 };
 
+// Authentication State Management
+const authState = {
+    token: null,
+    user: null,
+    isAuthenticated: false
+};
+
+// Check for stored token on load
+function checkAuth() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+        authState.token = token;
+        authState.isAuthenticated = true;
+        
+        // Try to get user info from token or make API call
+        const userInfo = localStorage.getItem('user_info');
+        if (userInfo) {
+            try {
+                authState.user = JSON.parse(userInfo);
+                updateUIForAuthenticatedUser();
+            } catch (e) {
+                console.error('Failed to parse user info:', e);
+                showLoginScreen();
+            }
+        } else {
+            // In production, validate token with backend
+            if (!isGitHubPages) {
+                validateToken().then(valid => {
+                    if (!valid) showLoginScreen();
+                });
+            } else {
+                // Mock mode - use stored user or default
+                authState.user = { display_name: 'Demo User', role: 'admin' };
+                updateUIForAuthenticatedUser();
+            }
+        }
+    } else {
+        showLoginScreen();
+    }
+}
+
+async function validateToken() {
+    try {
+        const response = await window.fetch(`${API_BASE}/auth/validate`, {
+            headers: { 'Authorization': `Bearer ${authState.token}` }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            authState.user = data.user;
+            localStorage.setItem('user_info', JSON.stringify(data.user));
+            updateUIForAuthenticatedUser();
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Token validation failed:', error);
+        return false;
+    }
+}
+
+function showLoginScreen() {
+    authState.isAuthenticated = false;
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) {
+        loginOverlay.style.display = 'flex';
+    }
+}
+
+function hideLoginScreen() {
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay) {
+        loginOverlay.style.display = 'none';
+    }
+}
+
+function updateUIForAuthenticatedUser() {
+    hideLoginScreen();
+    
+    if (!authState.user) return;
+    
+    // Update user display
+    const displayName = document.getElementById('user-display-name');
+    if (displayName) {
+        displayName.textContent = authState.user.display_name || authState.user.username || 'User';
+    }
+    
+    // Update role badge
+    const roleBadge = document.getElementById('user-role-badge');
+    if (roleBadge) {
+        const role = authState.user.role || 'analyst';
+        roleBadge.textContent = role.replace('_', ' ').toUpperCase();
+        roleBadge.className = 'role-badge role-' + role;
+    }
+    
+    // Show logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.style.display = 'block';
+    }
+    
+    // Role-based UI updates
+    updateRoleBasedUI();
+}
+
+function updateRoleBasedUI() {
+    if (!authState.user) return;
+    
+    const role = authState.user.role;
+    
+    // Show/hide audit log nav (only admin and soc_manager)
+    const auditLogNav = document.getElementById('audit-log-nav');
+    if (auditLogNav) {
+        auditLogNav.style.display = (role === 'admin' || role === 'soc_manager') ? 'block' : 'none';
+    }
+    
+    // Check permissions for investigate and respond buttons
+    const permissions = authState.user.permissions || {};
+    
+    // Show/hide investigate button
+    const investigateBtns = document.querySelectorAll('.investigate-btn, #investigate-btn');
+    investigateBtns.forEach(btn => {
+        if (permissions.investigate === false) {
+            btn.style.display = 'none';
+        }
+    });
+    
+    // Show/hide respond button
+    const respondBtns = document.querySelectorAll('.respond-btn, #respond-btn');
+    respondBtns.forEach(btn => {
+        if (permissions.respond === false) {
+            btn.style.display = 'none';
+        }
+    });
+}
+
+// Login Handler
+function initAuthHandlers() {
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username')?.value;
+            const password = document.getElementById('password')?.value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (!username || !password) {
+                if (errorDiv) errorDiv.textContent = 'Please enter username and password';
+                return;
+            }
+            
+            try {
+                const response = await API.fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    // Store token and user info
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('user_info', JSON.stringify(data.user));
+                    
+                    authState.token = data.token;
+                    authState.user = data.user;
+                    authState.isAuthenticated = true;
+                    
+                    // Update UI
+                    updateUIForAuthenticatedUser();
+                    
+                    // Clear form
+                    loginForm.reset();
+                    if (errorDiv) errorDiv.textContent = '';
+                    
+                    // Load dashboard
+                    loadDashboard();
+                } else {
+                    if (errorDiv) errorDiv.textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                if (errorDiv) errorDiv.textContent = 'Login failed. Please try again.';
+            }
+        });
+    }
+    
+    // Logout Handler
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                // Call logout endpoint
+                await API.fetch('/auth/logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            // Clear local state
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            authState.token = null;
+            authState.user = null;
+            authState.isAuthenticated = false;
+            
+            // Show login screen
+            showLoginScreen();
+        });
+    }
+}
+
 // State Management
 const state = {
     alerts: [],
@@ -102,9 +363,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.warn('MOCK_DATA_READY is not defined - mock-api.js may not be loaded');
     }
 
+    // Initialize authentication
+    initAuthHandlers();
+    checkAuth();
+    
     initNavigation();
-    loadDashboard();
-    startRealTimeUpdates();
+    
+    // Only load dashboard if authenticated
+    if (authState.isAuthenticated) {
+        loadDashboard();
+        startRealTimeUpdates();
+    }
+    
     initFilters();
     initModal();
 });
@@ -126,13 +396,13 @@ function switchPage(page) {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
-    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
     
     // Update pages
     document.querySelectorAll('.page').forEach(p => {
         p.classList.remove('active');
     });
-    document.getElementById(`${page}-page`).classList.add('active');
+    document.getElementById(`${page}-page`)?.classList.add('active');
     
     // Load page data
     switch(page) {
@@ -156,6 +426,9 @@ function switchPage(page) {
             break;
         case 'threat-intel':
             loadThreatIntel();
+            break;
+        case 'audit-log':
+            loadAuditLog();
             break;
     }
 }
@@ -1306,7 +1579,101 @@ function initTeamFilters() {
     }
 }
 
+// Audit Log Functionality
+async function loadAuditLog(filters = {}) {
+    showLoading();
+    try {
+        // Build query string
+        const params = new URLSearchParams(filters);
+        const response = await API.fetch(`/audit/logs?${params.toString()}`);
+        const logs = await response.json();
+        
+        renderAuditLog(logs);
+    } catch (error) {
+        showToast('Failed to load audit logs', 'error');
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderAuditLog(logs) {
+    const tbody = document.getElementById('audit-log-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (!logs || logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #a0aec0;">No audit logs found</td></tr>';
+        return;
+    }
+    
+    logs.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${formatTime(log.timestamp)}</td>
+            <td>${log.user || 'System'}</td>
+            <td><span class="badge ${getActionClass(log.action)}">${log.action}</span></td>
+            <td>${log.resource || '-'}</td>
+            <td>${log.details || '-'}</td>
+            <td>${log.ip_address || '-'}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getActionClass(action) {
+    const actionLower = (action || '').toLowerCase();
+    if (actionLower.includes('delete') || actionLower.includes('remove')) return 'critical';
+    if (actionLower.includes('create') || actionLower.includes('add')) return 'low';
+    if (actionLower.includes('update') || actionLower.includes('modify')) return 'medium';
+    if (actionLower.includes('login') || actionLower.includes('logout')) return 'info';
+    return 'info';
+}
+
+function initAuditLogFilters() {
+    const applyBtn = document.getElementById('audit-filter-apply');
+    const resetBtn = document.getElementById('audit-filter-reset');
+    
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            const filters = {};
+            
+            const userFilter = document.getElementById('audit-filter-user')?.value;
+            if (userFilter) filters.user = userFilter;
+            
+            const actionFilter = document.getElementById('audit-filter-action')?.value;
+            if (actionFilter) filters.action = actionFilter;
+            
+            const dateFromFilter = document.getElementById('audit-filter-date-from')?.value;
+            if (dateFromFilter) filters.date_from = dateFromFilter;
+            
+            const dateToFilter = document.getElementById('audit-filter-date-to')?.value;
+            if (dateToFilter) filters.date_to = dateToFilter;
+            
+            loadAuditLog(filters);
+        });
+    }
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            const userInput = document.getElementById('audit-filter-user');
+            const actionSelect = document.getElementById('audit-filter-action');
+            const dateFromInput = document.getElementById('audit-filter-date-from');
+            const dateToInput = document.getElementById('audit-filter-date-to');
+            
+            if (userInput) userInput.value = '';
+            if (actionSelect) actionSelect.value = '';
+            if (dateFromInput) dateFromInput.value = '';
+            if (dateToInput) dateToInput.value = '';
+            
+            loadAuditLog();
+        });
+    }
+}
+
 // Initialize filters on load
 document.addEventListener('DOMContentLoaded', () => {
     initTeamFilters();
+    initAuditLogFilters();
 });

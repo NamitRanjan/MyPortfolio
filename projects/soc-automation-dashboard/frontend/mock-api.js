@@ -87,7 +87,8 @@ const MOCK_DATA = {
             this.users = users;
             this.caseNotes = caseNotes;
             this.evidence = evidence;
-            this.auditLog = []; // Start empty, will populate on actions
+            // Initialize audit log with realistic dummy data
+            this.auditLog = this.generateDummyAuditLog();
             this.correlations = correlations;
             this.notifications = notifications;
             this.escalationPolicies = escalationPolicies;
@@ -210,6 +211,63 @@ const MOCK_DATA = {
             console.error('Please ensure all required data files exist in ./data/ directory');
             return false;
         }
+    },
+    
+    // Generate realistic dummy audit log entries
+    generateDummyAuditLog() {
+        const now = Date.now();
+        const entries = [];
+        const users = [
+            { id: 1, username: 'admin', name: 'Admin User' },
+            { id: 2, username: 'sarah.chen', name: 'Sarah Chen' },
+            { id: 3, username: 'mike.ross', name: 'Mike Ross' },
+            { id: 4, username: 'emily.zhang', name: 'Emily Zhang' },
+            { id: 5, username: 'david.kim', name: 'David Kim' }
+        ];
+        
+        const actions = [
+            { action: 'login', resource: 'authentication', details: 'Successful login' },
+            { action: 'logout', resource: 'authentication', details: 'User logged out' },
+            { action: 'alert_investigated', resource: 'alert', details: 'Alert investigation completed' },
+            { action: 'alert_response_executed', resource: 'alert', details: 'Response action executed' },
+            { action: 'playbook_executed', resource: 'playbook', details: 'Automated playbook run' },
+            { action: 'note_added', resource: 'case', details: 'Investigation note added' },
+            { action: 'evidence_added', resource: 'case', details: 'Evidence artifact uploaded' },
+            { action: 'incident_created', resource: 'incident', details: 'New incident created from alerts' },
+            { action: 'incident_escalated', resource: 'incident', details: 'Incident escalated to tier 3' },
+            { action: 'threat_hunt_created', resource: 'hunt', details: 'New threat hunt initiated' },
+            { action: 'compliance_scan', resource: 'compliance', details: 'Compliance framework scan completed' },
+            { action: 'settings_updated', resource: 'settings', details: 'System configuration modified' }
+        ];
+        
+        const ips = ['10.0.1.15', '10.0.1.23', '10.0.2.45', '10.0.3.12', '10.0.1.89'];
+        
+        // Generate 50 audit log entries spanning last 7 days
+        for (let i = 0; i < 50; i++) {
+            const user = users[Math.floor(Math.random() * users.length)];
+            const actionData = actions[Math.floor(Math.random() * actions.length)];
+            const hoursAgo = Math.floor(Math.random() * 168); // Last 7 days
+            const timestamp = new Date(now - (hoursAgo * 3600000)).toISOString();
+            
+            entries.push({
+                id: i + 1,
+                timestamp: timestamp,
+                user_id: user.id,
+                user: user.name,
+                username: user.username,
+                action: actionData.action,
+                resource_type: actionData.resource,
+                resource: actionData.resource,
+                resource_id: Math.floor(Math.random() * 100) + 1,
+                details: actionData.details,
+                ip_address: ips[Math.floor(Math.random() * ips.length)]
+            });
+        }
+        
+        // Sort by timestamp descending
+        entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        return entries;
     },
     
     // API methods
@@ -621,12 +679,17 @@ const MOCK_DATA = {
         const paginated = filtered.slice(start, end);
         
         return {
-            entries: paginated,
+            logs: paginated,  // Changed from 'entries' to 'logs' to match app.js expectations
             total: filtered.length,
             page: page,
             per_page: perPage,
             total_pages: Math.ceil(filtered.length / perPage)
         };
+    },
+    
+    // Alias for compatibility
+    getAuditLogs(filters = {}) {
+        return this.getAuditLog(filters);
     },
     
     // SLA calculation

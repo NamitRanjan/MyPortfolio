@@ -456,7 +456,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For questions, issues, or suggestions:
 - Open an issue on GitHub
 - Contact via LinkedIn
-- Email: namit.ranjan@example.com
+- Email: namit.ranjan@gmail.com
 
 ---
 

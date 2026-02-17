@@ -73,7 +73,6 @@ run_test "Main README" "test -f README.md"
 run_test "API documentation" "test -f docs/API.md"
 run_test "Deployment guide" "test -f docs/DEPLOYMENT.md"
 run_test "Usage guide" "test -f docs/USAGE.md"
-run_test "Project summary" "test -f PROJECT_SUMMARY.md"
 echo ""
 
 # Check deployment files

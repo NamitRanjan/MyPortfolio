@@ -157,3 +157,6 @@ Implemented ATT&CK-aligned detections for common SOC scenarios:
 - Integrate TheHive for case management + responder workflow.
 - Add SOAR enrichment for IOC reputation and asset criticality scoring.
 - Extend lab to cloud telemetry (Azure/M365 audit signals).
+
+## Further Reading
+- Medium blog: [Creating a SOC Analyst Home Lab](https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9)

@@ -52,13 +52,13 @@ I am currently upskilling in DevOps practices to strengthen my cloud security ca
 
 ## Featured Projects
 
-### 1) SOC Detection Lab (End-to-End Monitoring Pipeline)
-Built a home SOC that ingests host/network logs into SIEM, applies custom detections mapped to MITRE ATT&CK, and supports repeatable alert triage workflows.
+### 1) SOC Detection Lab (Enterprise-Style Home Lab)
+Built a reproducible SOC homelab with isolated attacker/victim VMs, endpoint + network telemetry, SIEM detections mapped to MITRE ATT&CK, and documented triage playbooks.
 
 **Highlights**
-- Centralized telemetry from Windows endpoints and network sensors.
-- Implemented ATT&CK-aligned detection logic and triage runbooks.
-- Practiced incident handling from alert intake to closure documentation.
+- Centralized Sysmon + network sensor telemetry into a single SIEM workflow.
+- Implemented ATT&CK-aligned detections with iterative tuning and a documented coverage snapshot.
+- Documented reproducibility with sample incident timeline and analyst triage workflow.
 
 ➡️ **Project deep dive:** [`projects/soc-detection-lab.md`](projects/soc-detection-lab.md)
 

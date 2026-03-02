@@ -30,3 +30,9 @@ All portfolio projects are organized under the `projects/` folder:
 - [Endpoint Detection & Response](projects/endpoint-detection-response.md)
 - [Azure Fortinet Cloud Security](projects/azure-fortinet-cloud-security.md)
 - [SOC Automation Dashboard](projects/soc-automation-dashboard.md)
+
+### Blog Links (Medium)
+- [The SOC Automation Project](https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)
+- [Creating a SOC Analyst Home Lab](https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9)
+- [Exploring Cybersecurity in the Cloud: Fortigate Deployment on Azure (Part 2)](https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead)
+

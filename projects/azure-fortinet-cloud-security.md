@@ -26,3 +26,6 @@ Design and monitor a cloud-native security deployment with strong perimeter cont
 
 ## Skills Demonstrated
 `Cloud Security` · `Firewall Operations` · `Threat Monitoring` · `Incident Analysis`
+
+## Further Reading
+- Medium blog: [Exploring Cybersecurity in the Cloud: Fortigate Deployment on Azure (Part 2)](https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead)

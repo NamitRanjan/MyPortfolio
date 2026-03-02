@@ -26,3 +26,6 @@ Automate repetitive SOC tasks to improve consistency and reduce manual effort in
 
 ## Skills Demonstrated
 `SOAR Engineering` · `Case Management` · `Threat Enrichment` · `Workflow Automation`
+
+## Further Reading
+- Medium blog: [The SOC Automation Project](https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)

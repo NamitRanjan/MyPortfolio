@@ -29,6 +29,7 @@ All portfolio projects are organized under the `projects/` folder:
 - [SOAR Automation Pipeline](projects/soar-automation-pipeline.md)
 - [Endpoint Detection & Response](projects/endpoint-detection-response.md)
 - [Azure Fortinet Cloud Security](projects/azure-fortinet-cloud-security.md)
+- <a href="https://namitranjan.github.io/MyPortfolio/" target="_blank" rel="noopener noreferrer">SOC Automation Dashboard (Showstopper Project — Live Demo)</a> · [Project Docs](projects/soc-automation-dashboard/README.md)
 - [SOC Automation Dashboard](projects/soc-automation-dashboard/README.md)
 
 ### Blog Links (Medium)

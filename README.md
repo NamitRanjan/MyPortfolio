@@ -6,7 +6,9 @@
 
 ## Professional Summary
 
-Cybersecurity practitioner with hands-on experience designing SOC labs, tuning SIEM detections, automating incident response workflows, and investigating endpoint/network telemetry. I build practical blue-team systems focused on measurable improvements in detection coverage, triage speed, and incident containment.
+Cybersecurity professional with 6+ years of hands-on experience across SOC operations, detection engineering, incident response, and threat monitoring. I build practical blue-team systems focused on improving detection coverage, triage speed, and incident containment.
+
+I am currently upskilling in DevOps practices to strengthen my cloud security capabilities. While I am not a DevOps engineer, I am intentionally using this path to grow into a cloud security professional over the coming years.
 
 ---
 
@@ -16,11 +18,19 @@ Cybersecurity practitioner with hands-on experience designing SOC labs, tuning S
 |-----------------------------------------------|----------------------------|
 | SIEM Implementation and Log Analysis          | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
 | Network Traffic Monitoring and Attack Detection | <a href="https://github.com/NamitRanjan/Detection-Lab/tree/main">Detection Lab</a>|
-| Security Automation with Shuffle SOAR         | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab|
-| Incident Response Planning and Execution      | <a href="https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9">SOC Home Lab|
-| Case Management with TheHive                  | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c)">SOC Automation Lab|
-| Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure|
+| Security Automation with Shuffle SOAR         | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab</a> |
+| Incident Response Planning and Execution      | <a href="https://medium.com/@namit.ranjan/creating-a-soc-analyst-home-lab-c288bcf237f9">SOC Home Lab</a> |
+| Case Management with TheHive                  | <a href="https://medium.com/@namit.ranjan/the-soc-automation-project-983c54d7999c">SOC Automation Lab</a> |
+| Exploring Cybersecurity in Azure              | <a href="https://medium.com/@namit.ranjan/exploring-cybersecurity-in-the-cloud-a-hands-on-guide-to-fortigate-deployment-on-azure-part-2-775d6d002ead">Exploring Azure</a> |
 | Full-Stack SOC Automation Dashboard           | <a href="https://github.com/NamitRanjan/MyPortfolio/tree/main/projects/soc-automation-dashboard">SOC Automation Dashboard</a>
+
+---
+
+## Learning Journey: DevOps for Cloud Security
+
+- Learning CI/CD concepts to better secure modern deployment pipelines.
+- Practicing infrastructure and cloud tooling to understand security controls in context.
+- Building projects that connect SOC, detection engineering, and cloud-native security operations.
 
 ---
 
